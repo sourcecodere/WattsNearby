@@ -24,6 +24,7 @@ public class OcmDbHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     public OcmDbHelper(Context context) {
+
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -125,5 +126,25 @@ public class OcmDbHelper extends SQLiteOpenHelper {
             db.execSQL("PRAGMA foreign_keys=ON;");
         }
     }
+
+    /**
+     * This database is only a cache for online data, so its upgrade policy is simply to discard
+     * the data and call through to onCreate to recreate the table. Note that this only fires if
+     * you change the version number for your database (in our case, DATABASE_VERSION). It does NOT
+     * depend on the version number for your application found in your app/build.gradle file. If
+     * you want to update the schema without wiping data, commenting out the current body of this
+     * method should be your top priority before modifying this method.
+     *
+     * @param sqLiteDatabase Database that is being upgraded
+     * @param oldVersion     The old database version
+     * @param newVersion     The new database version
+     */
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ConnectionEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + StationEntry.TABLE_NAME);
+        onCreate(sqLiteDatabase);
+    }
+
 }
-}
+

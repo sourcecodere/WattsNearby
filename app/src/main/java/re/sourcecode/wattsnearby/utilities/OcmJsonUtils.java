@@ -85,17 +85,10 @@ public class OcmJsonUtils {
 
         for(int i = 0; i < ocmJsonArray.length(); i++) {
             JSONObject ocmJsonObj = ocmJsonArray.getJSONObject(i);
-
+            //
 
 
         }
-
-
-
-
-
-
-
 
     }
 
