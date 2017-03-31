@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 public class MainMapActivity extends AppCompatActivity {
 
+    private static final String TAG = MainMapActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

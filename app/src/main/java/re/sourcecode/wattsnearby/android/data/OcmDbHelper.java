@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class OcmDbHelper extends SQLiteOpenHelper {
 
 
+    private static final String TAG = OcmDbHelper.class.getSimpleName();
+
     public static final String DB_NAME = "ocm.db";
 
     /*
@@ -72,7 +74,7 @@ public class OcmDbHelper extends SQLiteOpenHelper {
                         " UNIQUE (" + OcmContract.StationEntry.COLUMN_TIME_UPDATED + ") ON CONFLICT REPLACE);";
 
 
-        final String SQL_CREATE_OCM_CONNTIONS_TABLE =
+        final String SQL_CREATE_OCM_CONNECTION_TABLE =
 
                 "CREATE TABLE " + OcmContract.ConnectionEntry.TABLE_NAME + " (" +
 
@@ -99,7 +101,7 @@ public class OcmDbHelper extends SQLiteOpenHelper {
          * that SQL with the execSQL method of our SQLite database object.
          */
         db.execSQL(SQL_CREATE_OCM_TABLE);
-        db.execSQL(SQL_CREATE_OCM_CONNTIONS_TABLE);
+        db.execSQL(SQL_CREATE_OCM_CONNECTION_TABLE);
     }
 
     /**

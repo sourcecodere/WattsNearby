@@ -1,4 +1,4 @@
-package re.sourcecode.wattsnearby.utilities;
+package re.sourcecode.wattsnearby.android.utilities;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,8 +13,8 @@ import org.json.JSONObject;
 
 public class OcmJsonUtils {
 
-
-    // http://api.openchargemap.io/v2/poi/?output=json&countrycode=NO&maxresults=10&latitude=60.029265&longitude=11.0952163&distanceunit=km&distance=2
+    private static final String TAG = OcmJsonUtils.class.getSimpleName();
+    // https://api.openchargemap.io/v2/poi/?output=json&countrycode=NO&maxresults=10&latitude=60.029265&longitude=11.0952163&distanceunit=km&distance=2
 
     /* ID */
     private static final String OCM_ID = "ID";
@@ -85,7 +85,7 @@ public class OcmJsonUtils {
 
         for(int i = 0; i < ocmJsonArray.length(); i++) {
             JSONObject ocmJsonObj = ocmJsonArray.getJSONObject(i);
-            //
+            // TODO
 
 
         }

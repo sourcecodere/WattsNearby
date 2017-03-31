@@ -6,6 +6,7 @@ package re.sourcecode.wattsnearby.android.data;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -20,13 +21,17 @@ import android.support.annotation.NonNull;
  */
 public class OcmProvider extends ContentProvider {
 
+    private static final String TAG = OcmProvider.class.getSimpleName();
+
     /*
      * These constant will be used to match URIs with the data they are looking for. We will take
      * advantage of the UriMatcher class to make that matching MUCH easier than doing something
      * ourselves, such as using regular expressions.
      */
-    public static final int CODE_STATIONS = 100;
-    //public static final int CODE_STATIONS_NEARBY = 101; //nearby?nearby?lat=40.123213&lon=10.123123&distance=2
+    public static final int CODE_STATION = 100;
+    public static final int CODE_STATION_ID = 101;
+    public static final int CODE_CONNECTION = 200;
+    public static final int CODE_CONNECTION_ID = 201;
 
 
     /*
@@ -36,43 +41,6 @@ public class OcmProvider extends ContentProvider {
      */
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private OcmDbHelper mOpenHelper;
-
-    /**
-     * Creates the UriMatcher that will match each URI to the CODE_STATIONS and CODE_STATIONS_NEARBY constant defined above.
-     *
-     * @return A UriMatcher that correctly matches the constants for CODE_STATIONS and CODE_STATIONS_NEARBY
-     */
-    public static UriMatcher buildUriMatcher() {
-
-        /*
-         * All paths added to the UriMatcher have a corresponding code to return when a match is
-         * found. The code passed into the constructor of UriMatcher here represents the code to
-         * return for the root URI. It's common to use NO_MATCH as the code for this case.
-         */
-        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = OcmContract.CONTENT_AUTHORITY;
-
-        /*
-         * For each type of URI you want to add, create a corresponding code. Preferably, these are
-         * constant fields in your class so that you can use them throughout the class and you no
-         * they aren't going to change. In Sunshine, we use CODE_WEATHER or CODE_WEATHER_WITH_DATE.
-         */
-
-        /* This URI is content://re.sourcecode.wattsnearby/stations/ */
-        matcher.addURI(authority, OcmContract.PATH_STATIONS, CODE_STATIONS);
-
-        /*
-         * This URI would look something like
-         * content://re.sourcecode.wattsnearby/stations/nearby?lat=40.123213&lon=10.123123&distance=2
-         * The "/#" signifies to the UriMatcher that if PATH_STATIONS is followed by nearby and
-         * "GET" key value pairs,
-         * that it should return the CODE_STATIONS_NEARBY code
-         */
-        //matcher.addURI(authority, OcmContract.PATH_STATIONS + "/nearby", CODE_STATIONS_NEARBY);
-
-
-        return matcher;
-    }
 
     /**
      * In onCreate, we initialize our content provider on startup. This method is called for all
@@ -101,49 +69,63 @@ public class OcmProvider extends ContentProvider {
     }
 
     /**
-     * Handles requests to insert a set of new rows. In WattsNearby, we are only going to be
-     * inserting multiple rows of data at a position from a api query. There is no use case
-     * for inserting a single row of data into our ContentProvider, and so we are only going to
-     * implement bulkInsert. In a normal ContentProvider's implementation, you will probably want
-     * to provide proper functionality for the insert method as well.
+     * Creates the UriMatcher that will match each URI to the CODE_STATIONS and CODE_STATIONS_NEARBY constant defined above.
      *
-     * @param uri    The content:// URI of the insertion request.
-     * @param values An array of sets of column_name/value pairs to add to the database.
-     *               This must not be {@code null}.
-     * @return The number of values that were inserted.
+     * @return A UriMatcher that correctly matches the constants for CODE_STATIONS and CODE_STATIONS_NEARBY
+     */
+    public static UriMatcher buildUriMatcher() {
+
+        /*
+         * All paths added to the UriMatcher have a corresponding code to return when a match is
+         * found. The code passed into the constructor of UriMatcher here represents the code to
+         * return for the root URI. It's common to use NO_MATCH as the code for this case.
+         */
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final String authority = OcmContract.CONTENT_AUTHORITY;
+
+        /*
+         * For each type of URI you want to add, create a corresponding code. Preferably, these are
+         * constant fields in your class so that you can use them throughout the class and you no
+         * they aren't going to change. In Sunshine, we use CODE_WEATHER or CODE_WEATHER_WITH_DATE.
+         */
+
+        /* This URI is content://re.sourcecode.wattsnearby/station/ */
+        matcher.addURI(authority, OcmContract.PATH_STATION, CODE_STATION);
+        /* This URI is content://re.sourcecode.wattsnearby/station/<id> */
+        matcher.addURI(authority, OcmContract.PATH_STATION + "/#", CODE_STATION_ID);
+        /* This URI is content://re.sourcecode.wattsnearby/connection/ */
+        matcher.addURI(authority, OcmContract.PATH_CONNECTION, CODE_CONNECTION);
+        /* This URI is content://re.sourcecode.wattsnearby/connection/<id> */
+        matcher.addURI(authority, OcmContract.PATH_CONNECTION + "/#", CODE_CONNECTION_ID);
+
+        /*
+         * This URI would look something like
+         * content://re.sourcecode.wattsnearby/stations/nearby?lat=40.123213&lon=10.123123&distance=2
+         * The "/#" signifies to the UriMatcher that if PATH_STATIONS is followed by nearby and
+         * "GET" key value pairs,
+         * that it should return the CODE_STATIONS_NEARBY code
+         */
+        //matcher.addURI(authority, OcmContract.PATH_STATIONS + "/nearby", CODE_STATIONS_NEARBY);
+
+
+        return matcher;
+    }
+
+    /**
+     * In WattsNearby, we aren't going to do anything with this method. However, we are required to
+     * override it as OcmProvider extends ContentProvider and getType is an abstract method in
+     * ContentProvider. Normally, this method handles requests for the MIME type of the data at the
+     * given URI. For example, if your app provided images at a particular URI, then you would
+     * return an image URI from this method.
+     *
+     * @param uri the URI to query.
+     * @return nothing in WattsNearby, but normally a MIME type string, or null if there is no type.
      */
     @Override
-    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-
-        switch (sUriMatcher.match(uri)) {
-
-            case CODE_STATIONS:
-                db.beginTransaction();
-                int rowsInserted = 0;
-                try {
-                    for (ContentValues value : values) {
-                        // TODO: insert connections
-                        long _id = db.insert(OcmContract.StationEntry.TABLE_NAME, null, value);
-                        if (_id != -1) {
-                            rowsInserted++;
-                        }
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
-
-                if (rowsInserted > 0) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                }
-
-                return rowsInserted;
-
-            default:
-                return super.bulkInsert(uri, values);
-        }
+    public String getType(@NonNull Uri uri) {
+        throw new RuntimeException("We are not implementing getType in WattsNearby.");
     }
+
 
     /**
      * Handles query requests from clients. We will use this method in Wattsnearby to query for all
@@ -163,8 +145,9 @@ public class OcmProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
+        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-        Cursor cursor;
+        Cursor retCursor;
 
         /*
          * Here's the switch statement that, given a URI, will determine what kind of request is
@@ -212,7 +195,7 @@ public class OcmProvider extends ContentProvider {
             /*
              * When sUriMatcher's match method is called with a URI that looks EXACTLY like this
              *
-             *      content://re.sourcecode.wattsnearby/stations/
+             *      content://re.sourcecode.wattsnearby/station/
              *
              * sUriMatcher's match method will return the code that indicates to us that we need
              * to return all of the weather in our weather table.
@@ -220,8 +203,8 @@ public class OcmProvider extends ContentProvider {
              * In this case, we want to return a cursor that contains every row of weather data
              * in our weather table.
              */
-            case CODE_STATIONS: {
-                cursor = mOpenHelper.getReadableDatabase().query(
+            case CODE_STATION: {
+                retCursor = db.query(
                         OcmContract.StationEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -229,17 +212,100 @@ public class OcmProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-
                 break;
             }
-
+            case CODE_STATION_ID: {
+                long _id = ContentUris.parseId(uri);
+                retCursor = db.query(
+                        OcmContract.StationEntry.TABLE_NAME,
+                        projection,
+                        OcmContract.StationEntry._ID + "= ?",
+                        new String[]{String.valueOf(_id)},
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            }
+            case CODE_CONNECTION: {
+                retCursor = db.query(
+                        OcmContract.ConnectionEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            }
+            case CODE_CONNECTION_ID: {
+                long _id = ContentUris.parseId(uri);
+                retCursor = db.query(
+                        OcmContract.ConnectionEntry.TABLE_NAME,
+                        projection,
+                        OcmContract.ConnectionEntry._ID + "= ?",
+                        new String[]{String.valueOf(_id)},
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return cursor;
+        // Set the notification URI for the cursor to the one passed into the function. This
+        // causes the cursor to register a content observer to watch for changes that happen to
+        // this URI and any of it's descendants. By descendants, we mean any URI that begins
+        // with this path.
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
+
+    /**
+     * Handles requests to insert a single new row. In WattsNearby, we are only going to be
+     * inserting single row of data at a time from a charging stations.
+     *
+     * @param uri    The URI of the insertion request. This must not be null.
+     * @param values A set of column_name/value pairs to add to the database.
+     *               This must not be null
+     * @return nothing in WattsNearby, but normally the URI for the newly inserted item.
+     */
+    @Override
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        long _id;
+        Uri returnUri;
+
+        switch (sUriMatcher.match(uri)) {
+
+            case CODE_STATION:
+                _id = db.insert(OcmContract.StationEntry.TABLE_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = OcmContract.StationEntry.buildStationUri(_id);
+                } else {
+                    throw new UnsupportedOperationException("Unable to insert row into: " + uri);
+                }
+                break;
+
+            case CODE_CONNECTION:
+                _id = db.insert(OcmContract.ConnectionEntry.TABLE_NAME, null, values);
+                if (_id > 0) {
+                    returnUri = OcmContract.ConnectionEntry.buildStationUri(_id);
+                } else {
+                    throw new UnsupportedOperationException("Unable to insert row into: " + uri);
+                }
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri " + uri);
+        }
+
+        // Use this on the URI passed into the function to notify any observers that the uri has
+        // changed.
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
+    }
+
 
     /**
      * Deletes data at a given URI with optional arguments for more fine tuned deletions.
@@ -251,6 +317,8 @@ public class OcmProvider extends ContentProvider {
      */
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         /* Users of the delete method will expect the number of rows deleted to be returned. */
         int numRowsDeleted;
@@ -266,14 +334,19 @@ public class OcmProvider extends ContentProvider {
 
         switch (sUriMatcher.match(uri)) {
 
-            case CODE_STATIONS:
-                numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
+            case CODE_STATION:
+                numRowsDeleted = db.delete(
                         OcmContract.StationEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
 
                 break;
-
+            case CODE_CONNECTION:
+                numRowsDeleted = db.delete(
+                        OcmContract.ConnectionEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -286,41 +359,46 @@ public class OcmProvider extends ContentProvider {
         return numRowsDeleted;
     }
 
-    /**
-     * In WattsNearby, we aren't going to do anything with this method. However, we are required to
-     * override it as OcmProvider extends ContentProvider and getType is an abstract method in
-     * ContentProvider. Normally, this method handles requests for the MIME type of the data at the
-     * given URI. For example, if your app provided images at a particular URI, then you would
-     * return an image URI from this method.
-     *
-     * @param uri the URI to query.
-     * @return nothing in WattsNearby, but normally a MIME type string, or null if there is no type.
-     */
-    @Override
-    public String getType(@NonNull Uri uri) {
-        throw new RuntimeException("We are not implementing getType in WattsNearby.");
-    }
-
-    /**
-     * In WattsNearby, we aren't going to do anything with this method. However, we are required to
-     * override it as OcmProvider extends ContentProvider and insert is an abstract method in
-     * ContentProvider. Rather than the single insert method, we are only going to implement
-     * {@link OcmProvider#bulkInsert}.
-     *
-     * @param uri    The URI of the insertion request. This must not be null.
-     * @param values A set of column_name/value pairs to add to the database.
-     *               This must not be null
-     * @return nothing in WattsNearby, but normally the URI for the newly inserted item.
-     */
-    @Override
-    public Uri insert(@NonNull Uri uri, ContentValues values) {
-        throw new RuntimeException(
-                "We are not implementing insert in WattsNearby. Use bulkInsert instead");
-    }
-
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new RuntimeException("We are not implementing update in WattsNearby");
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int rows;
+
+        switch(sUriMatcher.match(uri)){
+            case CODE_STATION:
+                rows = db.update(OcmContract.StationEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case CODE_CONNECTION:
+                rows = db.update(OcmContract.ConnectionEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if(rows != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rows;
+    }
+
+    /**
+     * Handles requests to insert a set of new rows. In WattsNearby, we aren't going to do
+     * anything with this method. However, we are required to override it as OcmProvider
+     * extends ContentProvider and bulkInsert is an abstract method in
+     * ContentProvider. Rather than the bulk insert method, we are only going to implement
+     * {@link OcmProvider#insert}.
+     *
+     * @param uri    The content:// URI of the insertion request.
+     * @param values An array of sets of column_name/value pairs to add to the database.
+     *               This must not be {@code null}.
+     * @return The number of values that were inserted.
+     */
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        throw new RuntimeException(
+                "We are not implementing bulkInsert in WattsNearby. Use insert instead");
+
     }
 
     /**
