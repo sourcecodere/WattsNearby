@@ -1,4 +1,4 @@
-package re.sourcecode.wattsnearby.data;
+package re.sourcecode.wattsnearby.android.data;
 
 /**
  * Created by olem on 3/24/17.
