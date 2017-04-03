@@ -1,4 +1,4 @@
-package re.sourcecode.wattsnearby.android.utilities;
+package re.sourcecode.android.wattsnearby.utilities;
 
 import android.content.Context;
 import android.net.Uri;
@@ -15,9 +15,9 @@ import java.util.Scanner;
  * Created by olem on 3/31/17.
  */
 
-public final class OcmNetworkUtils {
+public final class WattsOCMNetworkUtils {
 
-    private static final String TAG = OcmNetworkUtils.class.getSimpleName();
+    private static final String TAG = WattsOCMNetworkUtils.class.getSimpleName();
 
     // API URI sample:  https://api.openchargemap.io/v2/poi/?output=json&maxresults=10&latitude=60.029265&longitude=11.0952163&distanceunit=km&distance=2
     /* The base OCM API url */

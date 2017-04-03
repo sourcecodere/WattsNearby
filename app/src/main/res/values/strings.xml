@@ -1,9 +1,19 @@
 <resources>
     <string name="app_name">WattsNearby</string>
 
-
+    <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
     <!-- Credits -->
     <!-- IC launcher icon -->
-    <string name="ic_launcher_credit"><div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div></string>
+    <string name="ic_launcher_credit" translatable="false">
+        <div>Icons made by
+            <a href="http://www.freepik.com" title="Freepik">Freepik</a>
+            from
+            <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
+            is licensed by
+            <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">
+                CC 3.0 BY
+            </a>
+        </div>
+    </string>
 </resources>

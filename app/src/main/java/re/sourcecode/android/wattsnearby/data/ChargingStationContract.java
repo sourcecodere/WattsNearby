@@ -1,4 +1,4 @@
-package re.sourcecode.wattsnearby.android.data;
+package re.sourcecode.android.wattsnearby.data;
 
 import android.content.ContentUris;
 import android.net.Uri;
@@ -8,16 +8,16 @@ import android.provider.BaseColumns;
  * Created by olem on 3/16/17.
  */
 
-public class OcmContract {
+public class ChargingStationContract {
 
-    private static final String TAG = OcmContract.class.getSimpleName();
+    private static final String TAG = ChargingStationContract.class.getSimpleName();
     /*
     * The "Content authority" is a name for the entire content provider, similar to the
     * relationship between a domain name and its website. A convenient string to use for the
     * content authority is the package name for the app, which is guaranteed to be unique on the
     * Play Store.
     */
-    public static final String CONTENT_AUTHORITY = "re.sourcecode.wattsnearby";
+    public static final String CONTENT_AUTHORITY = "re.sourcecode.android.wattsnearby";
 
     /*
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
@@ -77,7 +77,7 @@ public class OcmContract {
 
         /* Address/Location info */
         public static final String COLUMN_LAT = "lat";
-        public static final String COLUMN_LON = "lat";
+        public static final String COLUMN_LON = "lon";
         public static final String COLUMN_DISTANCE = "distance";
         public static final String COLUMN_ADDR_TITLE = "addr_title";
         public static final String COLUMN_ADDR_LINE1 = "addr_line1";
@@ -141,5 +141,6 @@ public class OcmContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
+
 
 }

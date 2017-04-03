@@ -1,4 +1,4 @@
-package re.sourcecode.wattsnearby.android.data;
+package re.sourcecode.android.wattsnearby.data;
 
 /**
  * Created by olem on 3/24/17.
@@ -19,9 +19,9 @@ import android.support.annotation.NonNull;
  * bulkInsert data, query data, and delete data.
  *
  */
-public class OcmProvider extends ContentProvider {
+public class ChargingStationProvider extends ContentProvider {
 
-    private static final String TAG = OcmProvider.class.getSimpleName();
+    private static final String TAG = ChargingStationProvider.class.getSimpleName();
 
     /*
      * These constant will be used to match URIs with the data they are looking for. We will take
@@ -40,7 +40,7 @@ public class OcmProvider extends ContentProvider {
      * common convention in Android programming.
      */
     private static final UriMatcher sUriMatcher = buildUriMatcher();
-    private OcmDbHelper mOpenHelper;
+    private ChargingStationDbHelper mOpenHelper;
 
     /**
      * In onCreate, we initialize our content provider on startup. This method is called for all
@@ -61,10 +61,10 @@ public class OcmProvider extends ContentProvider {
     public boolean onCreate() {
         /*
          * As noted in the comment above, onCreate is run on the main thread, so performing any
-         * lengthy operations will cause lag in your app. Since OcmDbHelper's constructor is
+         * lengthy operations will cause lag in your app. Since ChargingStationDbHelper's constructor is
          * very lightweight, we are safe to perform that initialization here.
          */
-        mOpenHelper = new OcmDbHelper(getContext());
+        mOpenHelper = new ChargingStationDbHelper(getContext());
         return true;
     }
 
@@ -81,7 +81,7 @@ public class OcmProvider extends ContentProvider {
          * return for the root URI. It's common to use NO_MATCH as the code for this case.
          */
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = OcmContract.CONTENT_AUTHORITY;
+        final String authority = ChargingStationContract.CONTENT_AUTHORITY;
 
         /*
          * For each type of URI you want to add, create a corresponding code. Preferably, these are
@@ -90,13 +90,13 @@ public class OcmProvider extends ContentProvider {
          */
 
         /* This URI is content://re.sourcecode.wattsnearby/station/ */
-        matcher.addURI(authority, OcmContract.PATH_STATION, CODE_STATION);
+        matcher.addURI(authority, ChargingStationContract.PATH_STATION, CODE_STATION);
         /* This URI is content://re.sourcecode.wattsnearby/station/<id> */
-        matcher.addURI(authority, OcmContract.PATH_STATION + "/#", CODE_STATION_ID);
+        matcher.addURI(authority, ChargingStationContract.PATH_STATION + "/#", CODE_STATION_ID);
         /* This URI is content://re.sourcecode.wattsnearby/connection/ */
-        matcher.addURI(authority, OcmContract.PATH_CONNECTION, CODE_CONNECTION);
+        matcher.addURI(authority, ChargingStationContract.PATH_CONNECTION, CODE_CONNECTION);
         /* This URI is content://re.sourcecode.wattsnearby/connection/<id> */
-        matcher.addURI(authority, OcmContract.PATH_CONNECTION + "/#", CODE_CONNECTION_ID);
+        matcher.addURI(authority, ChargingStationContract.PATH_CONNECTION + "/#", CODE_CONNECTION_ID);
 
         /*
          * This URI would look something like
@@ -105,7 +105,7 @@ public class OcmProvider extends ContentProvider {
          * "GET" key value pairs,
          * that it should return the CODE_STATIONS_NEARBY code
          */
-        //matcher.addURI(authority, OcmContract.PATH_STATIONS + "/nearby", CODE_STATIONS_NEARBY);
+        //matcher.addURI(authority, ChargingStationContract.PATH_STATIONS + "/nearby", CODE_STATIONS_NEARBY);
 
 
         return matcher;
@@ -113,7 +113,7 @@ public class OcmProvider extends ContentProvider {
 
     /**
      * In WattsNearby, we aren't going to do anything with this method. However, we are required to
-     * override it as OcmProvider extends ContentProvider and getType is an abstract method in
+     * override it as ChargingStationProvider extends ContentProvider and getType is an abstract method in
      * ContentProvider. Normally, this method handles requests for the MIME type of the data at the
      * given URI. For example, if your app provided images at a particular URI, then you would
      * return an image URI from this method.
@@ -175,9 +175,9 @@ public class OcmProvider extends ContentProvider {
                  * path segment. In the comment above, the last path segment is 1472214172 and
                  * represents the number of seconds since the epoch, or UTC time.
                  */
-            //String lat  = uri.getQueryParameter(OcmContract.StationEntry.COLUMN_LAT);
-            //String lon  = uri.getQueryParameter(OcmContract.StationEntry.COLUMN_LON);
-            //String distance  = uri.getQueryParameter(OcmContract.StationEntry.COLUMN_DISTANCE);
+            //String lat  = uri.getQueryParameter(ChargingStationContract.StationEntry.COLUMN_LAT);
+            //String lon  = uri.getQueryParameter(ChargingStationContract.StationEntry.COLUMN_LON);
+            //String distance  = uri.getQueryParameter(ChargingStationContract.StationEntry.COLUMN_DISTANCE);
 
                 /*
                  * The query method accepts a string array of arguments, as there may be more
@@ -205,7 +205,7 @@ public class OcmProvider extends ContentProvider {
              */
             case CODE_STATION: {
                 retCursor = db.query(
-                        OcmContract.StationEntry.TABLE_NAME,
+                        ChargingStationContract.StationEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -217,9 +217,9 @@ public class OcmProvider extends ContentProvider {
             case CODE_STATION_ID: {
                 long _id = ContentUris.parseId(uri);
                 retCursor = db.query(
-                        OcmContract.StationEntry.TABLE_NAME,
+                        ChargingStationContract.StationEntry.TABLE_NAME,
                         projection,
-                        OcmContract.StationEntry._ID + "= ?",
+                        ChargingStationContract.StationEntry.COLUMN_ID + "= ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -228,7 +228,7 @@ public class OcmProvider extends ContentProvider {
             }
             case CODE_CONNECTION: {
                 retCursor = db.query(
-                        OcmContract.ConnectionEntry.TABLE_NAME,
+                        ChargingStationContract.ConnectionEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -240,9 +240,9 @@ public class OcmProvider extends ContentProvider {
             case CODE_CONNECTION_ID: {
                 long _id = ContentUris.parseId(uri);
                 retCursor = db.query(
-                        OcmContract.ConnectionEntry.TABLE_NAME,
+                        ChargingStationContract.ConnectionEntry.TABLE_NAME,
                         projection,
-                        OcmContract.ConnectionEntry._ID + "= ?",
+                        ChargingStationContract.ConnectionEntry._ID + "= ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -279,18 +279,18 @@ public class OcmProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
             case CODE_STATION:
-                _id = db.insert(OcmContract.StationEntry.TABLE_NAME, null, values);
+                _id = db.insert(ChargingStationContract.StationEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
-                    returnUri = OcmContract.StationEntry.buildStationUri(_id);
+                    returnUri = ChargingStationContract.StationEntry.buildStationUri(_id);
                 } else {
                     throw new UnsupportedOperationException("Unable to insert row into: " + uri);
                 }
                 break;
 
             case CODE_CONNECTION:
-                _id = db.insert(OcmContract.ConnectionEntry.TABLE_NAME, null, values);
+                _id = db.insert(ChargingStationContract.ConnectionEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
-                    returnUri = OcmContract.ConnectionEntry.buildStationUri(_id);
+                    returnUri = ChargingStationContract.ConnectionEntry.buildStationUri(_id);
                 } else {
                     throw new UnsupportedOperationException("Unable to insert row into: " + uri);
                 }
@@ -336,14 +336,14 @@ public class OcmProvider extends ContentProvider {
 
             case CODE_STATION:
                 numRowsDeleted = db.delete(
-                        OcmContract.StationEntry.TABLE_NAME,
+                        ChargingStationContract.StationEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
 
                 break;
             case CODE_CONNECTION:
                 numRowsDeleted = db.delete(
-                        OcmContract.ConnectionEntry.TABLE_NAME,
+                        ChargingStationContract.ConnectionEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
@@ -366,10 +366,10 @@ public class OcmProvider extends ContentProvider {
 
         switch(sUriMatcher.match(uri)){
             case CODE_STATION:
-                rows = db.update(OcmContract.StationEntry.TABLE_NAME, values, selection, selectionArgs);
+                rows = db.update(ChargingStationContract.StationEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case CODE_CONNECTION:
-                rows = db.update(OcmContract.ConnectionEntry.TABLE_NAME, values, selection, selectionArgs);
+                rows = db.update(ChargingStationContract.ConnectionEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -384,10 +384,10 @@ public class OcmProvider extends ContentProvider {
 
     /**
      * Handles requests to insert a set of new rows. In WattsNearby, we aren't going to do
-     * anything with this method. However, we are required to override it as OcmProvider
+     * anything with this method. However, we are required to override it as ChargingStationProvider
      * extends ContentProvider and bulkInsert is an abstract method in
      * ContentProvider. Rather than the bulk insert method, we are only going to implement
-     * {@link OcmProvider#insert}.
+     * {@link ChargingStationProvider#insert}.
      *
      * @param uri    The content:// URI of the insertion request.
      * @param values An array of sets of column_name/value pairs to add to the database.
