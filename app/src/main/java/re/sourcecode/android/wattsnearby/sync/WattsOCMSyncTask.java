@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.net.URL;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
+import re.sourcecode.android.wattsnearby.utilities.WattsDateUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsOCMNetworkUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsOCMJsonUtils;
 
@@ -66,6 +67,8 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
      */
     @Override
     protected Void doInBackground(Void... params) {
+        if(android.os.Debug.isDebuggerConnected())
+            android.os.Debug.waitForDebugger();
         syncStations(this.context, this.latitude, this.longitude, this.distance);
         return null;
     }
@@ -98,7 +101,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
             JSONArray ocmJsonArray = WattsOCMJsonUtils.getOCMJsonArray(jsonOcmResponse);
 
             /* iterate through each station and update the local cache database*/
-            for(int i = 0; i < ocmJsonArray.length(); i++) {
+            for (int i = 0; i < ocmJsonArray.length(); i++) {
                 cacheStation(ocmJsonArray.getJSONObject(i));
             }
 
@@ -126,34 +129,62 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
          * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
          */
             if (!currentStationCursor.moveToFirst()) {
+
                 ContentValues stationValues = WattsOCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
                 ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
+
                 /* new station data, insert it */
                 mWattsContentResolver.insert(
                         ChargingStationContract.StationEntry.CONTENT_URI,
                         stationValues
                 );
+
                 /* new connection data, insert it */
-                for(int i = 0; i < connectionsValues.length; i++) {
+                for (int i = 0; i < connectionsValues.length; i++) {
                     mWattsContentResolver.insert(ChargingStationContract.ConnectionEntry.CONTENT_URI,
                             connectionsValues[i]
                     );
                 }
             } else {
-            /* update if timestamp is newer */
-            //TODO
-                String date = currentStationCursor.getString(INDEX_TIME_UPDATED);
+            /* update only if timestamp is newer */
+
+                Long station_id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
+                Long db_entry_changed = WattsDateUtils.dateStringToEpoc(currentStationCursor.getString(INDEX_TIME_UPDATED));
+                Long json_entry_changed = WattsDateUtils.dateStringToEpoc(WattsOCMJsonUtils.getOCMLastChangedFromJson(jsonStation));
+
+                if (db_entry_changed < json_entry_changed) {
+                    /* delete the old data */
+                    mWattsContentResolver.delete(
+                            ChargingStationContract.ConnectionEntry.CONTENT_URI,
+                            ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "=?",
+                            new String[] {Long.toString(station_id)}
+                    );
+                    mWattsContentResolver.delete(
+                            ChargingStationContract.StationEntry.CONTENT_URI,
+                            ChargingStationContract.StationEntry.COLUMN_ID + "=?",
+                            new String[]{ Long.toString(station_id) }
+                    );
+                    ContentValues stationValues = WattsOCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
+                    ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
+
+                    /* new station data, insert it */
+                    mWattsContentResolver.insert(
+                            ChargingStationContract.StationEntry.CONTENT_URI,
+                            stationValues
+                    );
+
+                    /* new connection data, insert it */
+                    for (int i = 0; i < connectionsValues.length; i++) {
+                        mWattsContentResolver.insert(ChargingStationContract.ConnectionEntry.CONTENT_URI,
+                                connectionsValues[i]
+                        );
+                    }
+                }
+
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-
-
     }
-
-
 }

@@ -53,12 +53,6 @@ public class ChargingStationContract {
                 .appendPath(PATH_STATION)
                 .build();
 
-        // These are special type prefixes that specify if a URI returns a list or a specific item
-        public static final String CONTENT_TYPE =
-                "vnd.android.cursor.dir/" + CONTENT_URI  + "/" + PATH_STATION;
-        public static final String CONTENT_ITEM_TYPE =
-                "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_STATION;
-
 
         /* Used internally as the name of  table. */
         public static final String TABLE_NAME = "station";
@@ -111,12 +105,6 @@ public class ChargingStationContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_CONNECTION)
                 .build();
-
-        // These are special type prefixes that specify if a URI returns a list or a specific item
-        public static final String CONTENT_TYPE =
-                "vnd.android.cursor.dir/" + CONTENT_URI  + "/" + PATH_CONNECTION;
-        public static final String CONTENT_ITEM_TYPE =
-                "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_CONNECTION;
 
         /* Used internally as the name of table. */
         public static final String TABLE_NAME = "connection";

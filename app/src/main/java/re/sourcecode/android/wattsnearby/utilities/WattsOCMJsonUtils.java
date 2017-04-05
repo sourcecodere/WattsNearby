@@ -97,18 +97,32 @@ public class WattsOCMJsonUtils {
     }
 
     /**
+     * This method parses JSONobject and returns the OCM last changed date field
+     * <p/>
+     *
+     * @param jsonStation JSONObject
+     * @return Long of OCM station id
+     * @throws JSONException If JSON data cannot be properly parsed
+     */
+    public static String getOCMLastChangedFromJson(JSONObject jsonStation)
+            throws JSONException {
+        return jsonStation.getString(OCM_TIME_UPDATED);
+    }
+
+
+    /**
      * This method parses out the Station data as ContentValues
      * <p/>
      *
      * @param jsonStation JSONObject
-     *
      * @return ContentValues describing OCM data
-     *
      * @throws JSONException If JSON data cannot be properly parsed
      */
     public static ContentValues getOCMStationContentValuesFromJson(JSONObject jsonStation)
             throws JSONException {
 
+        if(android.os.Debug.isDebuggerConnected())
+            android.os.Debug.waitForDebugger();
 
         Long id;
 
@@ -181,7 +195,7 @@ public class WattsOCMJsonUtils {
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_ID, id);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_OPERATOR_TITLE, op_title);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_OPERATOR_WEBSITE, op_url);
-        if(pay_on_site) {
+        if (pay_on_site) {
             ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_PAY_ON_SITE, 1);
         } else {
             ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_PAY_ON_SITE, 0);
@@ -219,19 +233,22 @@ public class WattsOCMJsonUtils {
      * <p/>
      *
      * @param jsonStation JSON containing the JSONArray for each connection
-     *
      * @return Array of ContentValues
-     *
      * @throws JSONException If JSON data cannot be properly parsed
      */
     public static ContentValues[] getOCMConnectionsContentValuesFromJson(JSONObject jsonStation)
             throws JSONException {
+
+        Long foreign_key = getOCMStationIdFromJson(jsonStation); /* Charing station reference for current connections*/
+
+
         JSONArray connectionsJsonArray = jsonStation.getJSONArray(OCM_CONNECTIONS);
 
 
         ContentValues[] connectionsContentValues = new ContentValues[connectionsJsonArray.length()];
 
-        for(int i = 0; i < connectionsJsonArray.length(); i++) {
+        for (int i = 0; i < connectionsJsonArray.length(); i++) {
+
             Long con_id;
             String type_title;
             int type_id;
@@ -265,6 +282,7 @@ public class WattsOCMJsonUtils {
             current_title = connectionCurrentJson.getString(OCM_CONNECTIONS_CURRENT_TITLE);
 
             ContentValues connectionContentValues = new ContentValues();
+            connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID, foreign_key);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_ID, con_id);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_TITLE, type_title);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_TYPE_ID, type_id);
@@ -284,6 +302,6 @@ public class WattsOCMJsonUtils {
 
         }
 
-        return  connectionsContentValues;
+        return connectionsContentValues;
     }
 }

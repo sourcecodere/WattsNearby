@@ -91,7 +91,7 @@ public class ChargingStationDbHelper extends SQLiteOpenHelper {
                         ChargingStationContract.ConnectionEntry.COLUMN_CONN_CURRENT_TYPE_DESC + " TEXT, " +
                         ChargingStationContract.ConnectionEntry.COLUMN_CONN_CURRENT_TYPE_TITLE + " TEXT, " +
 
-                        ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + " INTEGER, " +
+                        ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + " INTEGER NOT NULL, " +
 
                         "FOREIGN KEY(" + ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + ") REFERENCES " +
                         ChargingStationContract.StationEntry.TABLE_NAME + "(" + ChargingStationContract.StationEntry.COLUMN_ID + ")" + ")";
