@@ -16,4 +16,8 @@
             </a>
         </div>
     </string>
+
+
+    <!-- markers -->
+    <string name="marker_current">That\'s you!</string>
 </resources>
