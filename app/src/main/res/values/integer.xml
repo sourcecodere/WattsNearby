@@ -4,6 +4,7 @@
     <integer name="zoom_default">11</integer>
     <integer name="prefered_location_interval">10000</integer>
     <integer name="fastest_location_interval">5000</integer>
+    <integer name="car_icon_add_to_size">20</integer>
 
 
 </resources>

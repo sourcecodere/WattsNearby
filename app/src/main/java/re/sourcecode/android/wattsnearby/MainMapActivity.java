@@ -58,7 +58,6 @@ public class MainMapActivity extends FragmentActivity implements
     LocationRequest mLocationRequest; // periodic location request object
 
 
-
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     /**
@@ -194,17 +193,15 @@ public class MainMapActivity extends FragmentActivity implements
     public void onConnected(@Nullable Bundle bundle) {
 
         // Handle locations of handset
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission()) ){
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
             // Create the car location marker bitmap
-            mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_electric_car_color_soft, ContextCompat.getColor(this, R.color.colorPrimary));
+            mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, ContextCompat.getColor(this, R.color.colorPrimary), getResources().getInteger(R.integer.car_icon_add_to_size));
             // Get the last location, and center the map
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
                 LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
+                MarkerOptions markerOptions = getCarMarkerOptions();
                 markerOptions.position(latLng);
-                markerOptions.title(getString(R.string.marker_current));
-                markerOptions.icon(mCurrentLocationMarkerIcon);
                 mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
                 // move the camera
@@ -240,7 +237,7 @@ public class MainMapActivity extends FragmentActivity implements
      */
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG ,"onLocationChanged entered");
+        Log.d(TAG, "onLocationChanged entered");
         mLastLocation = location;
         // remove the old marker
         if (mCurrentLocationMarker != null) {
@@ -249,10 +246,8 @@ public class MainMapActivity extends FragmentActivity implements
 
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
+        MarkerOptions markerOptions = getCarMarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title(getString(R.string.marker_current));
-        markerOptions.icon(mCurrentLocationMarkerIcon);
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
         //move map camera
@@ -400,4 +395,15 @@ public class MainMapActivity extends FragmentActivity implements
         }
     }
 
+    /**
+     *
+     * @return Common MarkerOptions for the car
+     */
+    private MarkerOptions getCarMarkerOptions() {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title(getString(R.string.marker_current));
+        markerOptions.icon(mCurrentLocationMarkerIcon);
+        markerOptions.anchor(0.38f, 0.6f);
+        return markerOptions;
+    }
 }
