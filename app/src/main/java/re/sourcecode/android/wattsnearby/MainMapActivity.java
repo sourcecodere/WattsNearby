@@ -3,6 +3,7 @@ package re.sourcecode.android.wattsnearby;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -25,11 +26,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
+
+import java.util.Map;
+
+import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
+import re.sourcecode.android.wattsnearby.utilities.WattsOCMJsonUtils;
+import re.sourcecode.android.wattsnearby.utilities.WattsPositionUtils;
 
 
 public class MainMapActivity extends FragmentActivity implements
@@ -45,7 +54,11 @@ public class MainMapActivity extends FragmentActivity implements
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation; // last known position on the phone
     Marker mCurrentLocationMarker; // car position
+    BitmapDescriptor mCurrentLocationMarkerIcon; // icon for the car
     LocationRequest mLocationRequest; // periodic location request object
+
+
+
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     /**
@@ -182,6 +195,8 @@ public class MainMapActivity extends FragmentActivity implements
 
         // Handle locations of handset
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission()) ){
+            // Create the car location marker bitmap
+            mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_electric_car_color_soft, ContextCompat.getColor(this, R.color.colorPrimary));
             // Get the last location, and center the map
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
@@ -189,7 +204,7 @@ public class MainMapActivity extends FragmentActivity implements
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title(getString(R.string.marker_current));
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                markerOptions.icon(mCurrentLocationMarkerIcon);
                 mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
                 // move the camera
@@ -237,7 +252,7 @@ public class MainMapActivity extends FragmentActivity implements
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(getString(R.string.marker_current));
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        markerOptions.icon(mCurrentLocationMarkerIcon);
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
         //move map camera
@@ -254,7 +269,16 @@ public class MainMapActivity extends FragmentActivity implements
     public void onCameraMove() {
         Log.d(TAG, "onCameraMove");
         // TODO: if CAMERA movement is bigger than x search for new stations... (not on zoom in)
-        // Get position from CameraPosition
+
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+
+        // Get position from CameraPositions visible region, to sync the content provider
+        Map<String, Double> latLngDistance = WattsPositionUtils.getLatLngDistFromVisibleRegion(visibleRegion);
+        Double latitude = latLngDistance.get(WattsPositionUtils.LATITUDE_KEY);
+        Double longitude = latLngDistance.get(WattsPositionUtils.LONGITUDE_KEY);
+        Double distance = latLngDistance.get(WattsPositionUtils.DISTANCE_KEY);
+
+
     }
 
     protected void createLocationRequest() {
