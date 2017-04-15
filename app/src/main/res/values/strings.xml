@@ -1,6 +1,8 @@
 <resources>
+    <!-- Name of the app -->
     <string name="app_name">WattsNearby</string>
 
+    <!-- Content provider -->
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
     <!-- Credits -->
@@ -17,7 +19,7 @@
         </div>
     </string>
 
-
-    <!-- markers -->
+    <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
+
 </resources>
