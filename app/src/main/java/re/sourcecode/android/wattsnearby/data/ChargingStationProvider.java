@@ -279,6 +279,7 @@ public class ChargingStationProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
             case CODE_STATION:
+
                 _id = db.insert(ChargingStationContract.StationEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
                     returnUri = ChargingStationContract.StationEntry.buildStationUri(_id);
@@ -297,9 +298,11 @@ public class ChargingStationProvider extends ContentProvider {
                 break;
 
             default:
+                db.close();
                 throw new UnsupportedOperationException("Unknown uri " + uri);
         }
 
+        db.close();
         // Use this on the URI passed into the function to notify any observers that the uri has
         // changed.
         getContext().getContentResolver().notifyChange(uri, null);

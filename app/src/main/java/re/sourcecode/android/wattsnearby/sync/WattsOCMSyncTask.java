@@ -110,7 +110,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private static void cacheStation(JSONObject jsonStation) {
+    synchronized private static void cacheStation(JSONObject jsonStation) {
         try {
         /* get the OCM id */
             Long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
@@ -130,6 +130,8 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
          */
             if (!currentStationCursor.moveToFirst()) {
 
+                currentStationCursor.close();
+
                 ContentValues stationValues = WattsOCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
                 ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
 
@@ -145,11 +147,13 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
                             connectionsValues[i]
                     );
                 }
+
+
             } else {
             /* update only if timestamp is newer */
 
                 Long station_id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
-                Long db_entry_changed = WattsDateUtils.dateStringToEpoc(currentStationCursor.getString(INDEX_TIME_UPDATED));
+                Long db_entry_changed = currentStationCursor.getLong(INDEX_TIME_UPDATED);
                 Long json_entry_changed = WattsDateUtils.dateStringToEpoc(WattsOCMJsonUtils.getOCMLastChangedFromJson(jsonStation));
 
                 if (db_entry_changed < json_entry_changed) {
@@ -179,8 +183,10 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
                                 connectionsValues[i]
                         );
                     }
-                }
 
+                }
+                //close db cursor
+                currentStationCursor.close();
             }
 
         } catch (Exception e) {

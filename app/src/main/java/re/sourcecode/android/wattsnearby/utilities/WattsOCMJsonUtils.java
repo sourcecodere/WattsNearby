@@ -1,10 +1,13 @@
 package re.sourcecode.android.wattsnearby.utilities;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 
@@ -121,94 +124,152 @@ public class WattsOCMJsonUtils {
     public static ContentValues getOCMStationContentValuesFromJson(JSONObject jsonStation)
             throws JSONException {
 
-        if(android.os.Debug.isDebuggerConnected())
+        if (android.os.Debug.isDebuggerConnected())
             android.os.Debug.waitForDebugger();
 
         Long id;
 
-        String op_title;
-        String op_url;
+        String op_title = null;
+        String op_url = null;
 
-        Boolean pay_on_site;
-        Boolean membership;
-        Boolean accesskey;
-        String usage_type_title;
+        Boolean pay_on_site = null;
+        Boolean membership = null;
+        Boolean accesskey = null;
+        String usage_type_title = null;
 
-        Double latitude;
-        Double longitude;
-        Double distance;
-        String addr_title;
-        String addr_line1;
-        String addr_line2;
-        String town;
-        String state;
-        String postcode;
+        Double latitude = null;
+        Double longitude = null;
+        Double distance = null;
+        String addr_title = null;
+        String addr_line1 = null;
+        String addr_line2 = null;
+        String town = null;
+        String state = null;
+        String postcode = null;
 
-        String country_title;
-        String country_iso;
+        String country_title = null;
+        String country_iso = null;
 
-        String comments;
+        String comments = null;
 
-        String lastupdated;
+        Long last_updated = null;
 
         /* Get the id as long. */
         id = jsonStation.getLong(OCM_ID);
 
         /* Get the operatorInfo object and data. */
-        JSONObject operator = jsonStation.getJSONObject(OCM_OPERATOR);
-        op_title = operator.getString(OCM_OPERATOR_TITLE);
-        op_url = operator.getString(OCM_OPERATOR_URL);
+        if (!jsonStation.isNull(OCM_OPERATOR)) {
+            JSONObject operator = jsonStation.getJSONObject(OCM_OPERATOR);
+            if (!operator.isNull(OCM_OPERATOR_TITLE)) {
+                op_title = operator.getString(OCM_OPERATOR_TITLE);
+            }
+            if (!operator.isNull(OCM_OPERATOR_URL)) {
+                op_url = operator.getString(OCM_OPERATOR_URL);
+            }
+
+        }
 
         /* Get the usage type object and data. */
-        JSONObject usage_type = jsonStation.getJSONObject(OCM_UT);
-        pay_on_site = usage_type.getBoolean(OCM_UT_PAY_ON_SITE);
-        membership = usage_type.getBoolean(OCM_UT_MEMBERSHIP);
-        accesskey = usage_type.getBoolean(OCM_UT_ACCESSKEY);
-        usage_type_title = usage_type.getString(OCM_UT_TITLE);
+        if (!jsonStation.isNull(OCM_UT)) {
+            JSONObject usage_type = jsonStation.getJSONObject(OCM_UT);
+            if (!usage_type.isNull(OCM_UT_PAY_ON_SITE)) {
+                pay_on_site = usage_type.getBoolean(OCM_UT_PAY_ON_SITE);
+            }
+            if (!usage_type.isNull(OCM_UT_MEMBERSHIP)) {
+                membership = usage_type.getBoolean(OCM_UT_MEMBERSHIP);
+            }
+            if (!usage_type.isNull(OCM_UT_ACCESSKEY)) {
+                accesskey = usage_type.getBoolean(OCM_UT_ACCESSKEY);
+            }
+            if (!usage_type.isNull(OCM_UT_TITLE)) {
+                usage_type_title = usage_type.getString(OCM_UT_TITLE);
+            }
+        }
 
         /* Get the address info and info. */
-        JSONObject addr = jsonStation.getJSONObject(OCM_ADDR);
-        latitude = addr.getDouble(OCM_ADDR_LATITUDE);
-        longitude = addr.getDouble(OCM_ADDR_LONGITUDE);
-        distance = addr.getDouble(OCM_ADDR_DISTANCE);
-        addr_title = addr.getString(OCM_ADDR_TITLE);
-        addr_line1 = addr.getString(OCM_ADDR_LINE1);
-        addr_line2 = addr.getString(OCM_ADDR_LINE2);
-        town = addr.getString(OCM_ADDR_TOWN);
-        state = addr.getString(OCM_ADDR_STATE);
-        postcode = addr.getString(OCM_ADDR_POSTCODE);
+        if (!jsonStation.isNull(OCM_ADDR)) {
+            JSONObject addr = jsonStation.getJSONObject(OCM_ADDR);
+            if (!addr.isNull(OCM_ADDR_LATITUDE)) {
+                latitude = addr.getDouble(OCM_ADDR_LATITUDE);
+            }
+            if (!addr.isNull(OCM_ADDR_LONGITUDE)) {
+                longitude = addr.getDouble(OCM_ADDR_LONGITUDE);
+            }
+            if (!addr.isNull(OCM_ADDR_DISTANCE)) {
+                distance = addr.getDouble(OCM_ADDR_DISTANCE);
+            }
+            if (!addr.isNull(OCM_ADDR_TITLE)) {
+                addr_title = addr.getString(OCM_ADDR_TITLE);
+            }
+            if (!addr.isNull(OCM_ADDR_LINE1)) {
+                addr_line1 = addr.getString(OCM_ADDR_LINE1);
+            }
+            if (!addr.isNull(OCM_ADDR_LINE2)) {
+                addr_line2 = addr.getString(OCM_ADDR_LINE2);
+            }
+            if (!addr.isNull(OCM_ADDR_TOWN)) {
+                town = addr.getString(OCM_ADDR_TOWN);
+            }
+            if (!addr.isNull(OCM_ADDR_STATE)) {
+                state = addr.getString(OCM_ADDR_STATE);
+            }
+            if (!addr.isNull(OCM_ADDR_POSTCODE)) {
+                postcode = addr.getString(OCM_ADDR_POSTCODE);
+            }
 
         /* Get the country info and data. */
-        JSONObject country = addr.getJSONObject(OCM_ADDR_COUNTRY);
-        country_iso = country.getString(OCM_ADDR_COUNTRY_ISO);
-        country_title = country.getString(OCM_ADDR_COUNTRY_TITLE);
+            if (!addr.isNull(OCM_ADDR_COUNTRY)) {
+                JSONObject country = addr.getJSONObject(OCM_ADDR_COUNTRY);
+                if (!country.isNull(OCM_ADDR_COUNTRY_ISO)) {
+                    country_iso = country.getString(OCM_ADDR_COUNTRY_ISO);
+                }
+                if (!country.isNull(OCM_ADDR_COUNTRY_TITLE)) {
+                    country_title = country.getString(OCM_ADDR_COUNTRY_TITLE);
+                }
+            }
+        }
 
         /* get the general comments. */
-        comments = jsonStation.getString(OCM_COMMENTS);
+        if (!jsonStation.isNull(OCM_COMMENTS)) {
+            comments = jsonStation.getString(OCM_COMMENTS);
+        }
 
         /* get the last time updated. */
         // TODO: change to time object
-        lastupdated = jsonStation.getString(OCM_TIME_UPDATED);
+        if (!jsonStation.isNull(OCM_TIME_UPDATED)) {
+            try {
+                last_updated = WattsDateUtils.dateStringToEpoc(jsonStation.getString(OCM_TIME_UPDATED));
+            } catch (ParseException e) {
+                Log.e(TAG, e.getMessage());
+                last_updated = 0L;
+            }
+        }
 
         ContentValues ocmStationContentValues = new ContentValues();
 
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_ID, id);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_OPERATOR_TITLE, op_title);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_OPERATOR_WEBSITE, op_url);
-        if (pay_on_site) {
-            ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_PAY_ON_SITE, 1);
-        } else {
-            ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_PAY_ON_SITE, 0);
+        if (pay_on_site != null) {
+            if (pay_on_site) {
+                ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_PAY_ON_SITE, 1);
+            } else {
+                ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_PAY_ON_SITE, 0);
+            }
         }
-        if (membership) {
-            ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_MEMBERSHIP, 1);
-        } else {
-            ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_MEMBERSHIP, 0);
+        if (membership != null) {
+            if (membership) {
+                ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_MEMBERSHIP, 1);
+            } else {
+                ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_MEMBERSHIP, 0);
+            }
         }
-        if (accesskey) {
-            ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_ACCESSKEY, 1);
-        } else {
-            ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_ACCESSKEY, 0);
+        if (accesskey != null) {
+            if (accesskey) {
+                ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_ACCESSKEY, 1);
+            } else {
+                ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_ACCESSKEY, 0);
+            }
         }
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_UT_TITLE, usage_type_title);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_LAT, latitude);
@@ -223,7 +284,7 @@ public class WattsOCMJsonUtils {
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_ADDR_COUNTRY_ISO, country_iso);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_ADDR_COUNTRY_TITLE, country_title);
         ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_COMMENTS, comments);
-        ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED, lastupdated);
+        ocmStationContentValues.put(ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED, last_updated);
 
         return ocmStationContentValues;
     }
@@ -250,46 +311,74 @@ public class WattsOCMJsonUtils {
         for (int i = 0; i < connectionsJsonArray.length(); i++) {
 
             Long con_id;
-            String type_title;
-            int type_id;
-            Boolean fast;
-            String level_title;
-            Double amp;
-            Double volt;
-            Double kw;
-            String current_desc;
-            String current_title;
+            String type_title = null;
+            Integer type_id = null;
+            Boolean fast = null;
+            String level_title = null;
+            Double amp = null;
+            Double volt = null;
+            Double kw = null;
+            String current_desc = null;
+            String current_title = null;
 
 
             JSONObject connectionJson = connectionsJsonArray.getJSONObject(i);
 
+
             con_id = connectionJson.getLong(OCM_CONNECTION_ID);
 
-            JSONObject connectionTypeJson = connectionJson.getJSONObject(OCM_CONNECTIONS_TYPE);
-            type_title = connectionTypeJson.getString(OCM_CONNECTIONS_TYPE_TITLE);
-            type_id = connectionTypeJson.getInt(OCM_CONNECTIONS_TYPE_ID);
+            if (!connectionJson.isNull(OCM_CONNECTIONS_TYPE)) {
+                JSONObject connectionTypeJson = connectionJson.getJSONObject(OCM_CONNECTIONS_TYPE);
+                if (!connectionTypeJson.isNull(OCM_CONNECTIONS_TYPE_TITLE)) {
+                    type_title = connectionTypeJson.getString(OCM_CONNECTIONS_TYPE_TITLE);
+                }
+                if (!connectionTypeJson.isNull(OCM_CONNECTIONS_TYPE_ID)) {
+                    type_id = connectionTypeJson.getInt(OCM_CONNECTIONS_TYPE_ID);
+                }
 
-            JSONObject connectionLevelJson = connectionJson.getJSONObject(OCM_CONNECTIONS_LEVEL);
-            fast = connectionLevelJson.getBoolean(OCM_CONNECTIONS_LEVEL_FAST);
-            level_title = connectionLevelJson.getString(OCM_CONNECTIONS_LEVEL_TITLE);
+            }
+            if (!connectionJson.isNull(OCM_CONNECTIONS_LEVEL)) {
+                JSONObject connectionLevelJson = connectionJson.getJSONObject(OCM_CONNECTIONS_LEVEL);
+                if (!connectionLevelJson.isNull(OCM_CONNECTIONS_LEVEL_FAST)) {
+                    fast = connectionLevelJson.getBoolean(OCM_CONNECTIONS_LEVEL_FAST);
+                }
+                if (!connectionLevelJson.isNull(OCM_CONNECTIONS_LEVEL_TITLE)) {
+                    level_title = connectionLevelJson.getString(OCM_CONNECTIONS_LEVEL_TITLE);
+                }
+            }
 
-            amp = connectionJson.getDouble(OCM_CONNECTIONS_AMP);
-            volt = connectionJson.getDouble(OCM_CONNECTIONS_VOLT);
-            kw = connectionJson.getDouble(OCM_CONNECTIONS_KW);
+            if (!connectionJson.isNull(OCM_CONNECTIONS_AMP)) {
+                amp = connectionJson.getDouble(OCM_CONNECTIONS_AMP);
+            }
+            if (!connectionJson.isNull(OCM_CONNECTIONS_VOLT)) {
+                volt = connectionJson.getDouble(OCM_CONNECTIONS_VOLT);
+            }
+            if (!connectionJson.isNull(OCM_CONNECTIONS_KW)) {
+                kw = connectionJson.getDouble(OCM_CONNECTIONS_KW);
+            }
 
-            JSONObject connectionCurrentJson = connectionJson.getJSONObject(OCM_CONNECTIONS_CURRENT);
-            current_desc = connectionCurrentJson.getString(OCM_CONNECTIONS_CURRENT_DESC);
-            current_title = connectionCurrentJson.getString(OCM_CONNECTIONS_CURRENT_TITLE);
+            if (!connectionJson.isNull(OCM_CONNECTIONS_CURRENT)) {
+                JSONObject connectionCurrentJson = connectionJson.getJSONObject(OCM_CONNECTIONS_CURRENT);
+                if (!connectionCurrentJson.isNull(OCM_CONNECTIONS_CURRENT_DESC)) {
+                    current_desc = connectionCurrentJson.getString(OCM_CONNECTIONS_CURRENT_DESC);
+                }
+                if (!connectionCurrentJson.isNull(OCM_CONNECTIONS_CURRENT_TITLE)) {
+                    current_title = connectionCurrentJson.getString(OCM_CONNECTIONS_CURRENT_TITLE);
+                }
+            }
+
 
             ContentValues connectionContentValues = new ContentValues();
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID, foreign_key);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_ID, con_id);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_TITLE, type_title);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_TYPE_ID, type_id);
-            if (fast) {
-                connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST, 1);
-            } else {
-                connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST, 0);
+            if (fast != null) {
+                if (fast) {
+                    connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST, 1);
+                } else {
+                    connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST, 0);
+                }
             }
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_TITLE, level_title);
             connectionContentValues.put(ChargingStationContract.ConnectionEntry.COLUMN_CONN_AMP, amp);
