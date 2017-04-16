@@ -41,7 +41,8 @@ public class MainMapActivity extends FragmentActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         OnMapReadyCallback,
-        GoogleMap.OnCameraMoveListener {
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraIdleListener {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -183,6 +184,8 @@ public class MainMapActivity extends FragmentActivity implements
         }
         // setup callback for camera movement (onCameraMove)
         mMap.setOnCameraMoveListener(this);
+        // setup callback for when camera has stopped moving (onCameraIdle)
+        mMap.setOnCameraIdleListener(this);
 
     }
 
@@ -217,7 +220,7 @@ public class MainMapActivity extends FragmentActivity implements
                 // OCM camera center is the same as last camera center at this point.
                 mLastOCMCameraCenter = mLastCameraCenter;
 
-                //TODO: sync the first stations to contentprovider
+                //TODO: sync the first stations to content provider
 
 
             }
@@ -275,7 +278,7 @@ public class MainMapActivity extends FragmentActivity implements
         markerOptions.position(latLng);
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
         //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         //mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
 
 
@@ -292,16 +295,25 @@ public class MainMapActivity extends FragmentActivity implements
 
     }
 
+    /**
+     * GoogleMap.onCameraMove callback. Updates the center of the map
+     */
     @Override
     public void onCameraMove() {
-
-        // TODO: if CAMERA movement is bigger than x search for new stations... (not on zoom in)
 
         // Get the current visible region of the map
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
         // Get the center of current map view
         mLastCameraCenter = visibleRegion.latLngBounds.getCenter();
 
+
+    }
+
+    /**
+     * GoogleMap.onCameraIdle callback. Checks if the new idle position of the map camera should initiate a OCM sync
+     */
+    @Override
+    public void onCameraIdle() {
 
         float[] results = new float[3];
         Location.distanceBetween(
@@ -320,7 +332,6 @@ public class MainMapActivity extends FragmentActivity implements
             executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
 
         }
-
     }
 
     /**

@@ -275,14 +275,15 @@ public class ChargingStationProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long _id;
         Uri returnUri;
+        db.beginTransaction(); // EXLUSIVE
 
         switch (sUriMatcher.match(uri)) {
 
             case CODE_STATION:
-
                 _id = db.insert(ChargingStationContract.StationEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
                     returnUri = ChargingStationContract.StationEntry.buildStationUri(_id);
+                    db.setTransactionSuccessful();
                 } else {
                     throw new UnsupportedOperationException("Unable to insert row into: " + uri);
                 }
@@ -292,17 +293,16 @@ public class ChargingStationProvider extends ContentProvider {
                 _id = db.insert(ChargingStationContract.ConnectionEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
                     returnUri = ChargingStationContract.ConnectionEntry.buildStationUri(_id);
+                    db.setTransactionSuccessful();
                 } else {
                     throw new UnsupportedOperationException("Unable to insert row into: " + uri);
                 }
                 break;
 
             default:
-                db.close();
                 throw new UnsupportedOperationException("Unknown uri " + uri);
         }
-
-        db.close();
+        db.endTransaction();
         // Use this on the URI passed into the function to notify any observers that the uri has
         // changed.
         getContext().getContentResolver().notifyChange(uri, null);

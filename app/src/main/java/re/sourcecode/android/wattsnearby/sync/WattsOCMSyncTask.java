@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -112,12 +113,13 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
 
     synchronized private static void cacheStation(JSONObject jsonStation) {
         try {
-        /* get the OCM id */
+            /* get the OCM id */
             Long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
 
-        /* query the cache for the current id */
+            /* query the cache for the current id */
             Uri stationByIdUri = ChargingStationContract.StationEntry.buildStationUri(id);
-        /* */
+
+            /* */
             Cursor currentStationCursor = mWattsContentResolver.query(
                     stationByIdUri,
                     STATION_LAST_CHANGED_PROJECTION,
@@ -125,10 +127,13 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
                     null,
                     null);
 
-        /*
-         * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
-         */
-            if (!currentStationCursor.moveToFirst()) {
+            Boolean bool = currentStationCursor.moveToFirst();
+
+            Log.d(TAG, stationByIdUri.toString() + " " + bool.toString());
+            /*
+            * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
+            */
+            if (!bool) {
 
                 currentStationCursor.close();
 
@@ -136,6 +141,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
                 ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
 
                 /* new station data, insert it */
+
                 mWattsContentResolver.insert(
                         ChargingStationContract.StationEntry.CONTENT_URI,
                         stationValues

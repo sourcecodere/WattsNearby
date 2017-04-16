@@ -69,9 +69,9 @@ public class ChargingStationDbHelper extends SQLiteOpenHelper {
 
                         ChargingStationContract.StationEntry.COLUMN_COMMENTS + " TEXT, " +
 
-                        ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED + " INTEGER NOT NULL, " +
-
-                        " UNIQUE (" + ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED + ") ON CONFLICT REPLACE);";
+                        ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED + " INTEGER NOT NULL " +
+                        
+                         ");";
 
 
         final String SQL_CREATE_OCM_CONNECTION_TABLE =
