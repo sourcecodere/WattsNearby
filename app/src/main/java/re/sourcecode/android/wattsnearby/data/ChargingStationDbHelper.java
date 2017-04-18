@@ -70,7 +70,7 @@ public class ChargingStationDbHelper extends SQLiteOpenHelper {
                         ChargingStationContract.StationEntry.COLUMN_COMMENTS + " TEXT, " +
 
                         ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED + " INTEGER NOT NULL " +
-                        
+
                          ");";
 
 

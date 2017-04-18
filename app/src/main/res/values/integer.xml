@@ -17,7 +17,7 @@
     <!-- Triggers for calling the AsyncTask to sync with OpenChargeMap.io. -->
     <!-- In meters. -->
     <integer name="delta_trigger_location_significantly_changed">500</integer>
-    <integer name="delta_trigger_camera_significantly_changed">500</integer>
+    <integer name="delta_trigger_camera_significantly_changed">1000</integer>
 
 
     <!-- OpenChargeMap values -->

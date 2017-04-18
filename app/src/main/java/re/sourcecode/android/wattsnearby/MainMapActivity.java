@@ -49,7 +49,6 @@ public class MainMapActivity extends FragmentActivity implements
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation; // last known position on the phone
-    Location mLastOCMLocation; // last location for OCM api sync against content provider
 
     LatLng mLastCameraCenter; // lat and lon of last camera center
     LatLng mLastOCMCameraCenter; // lat and lon of last camera center where the OCM api was synced against the content provider
@@ -138,8 +137,6 @@ public class MainMapActivity extends FragmentActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        //WattsOCMSyncTask wattsOCMSyncTask = new WattsOCMSyncTask(this, 60.029265, 11.0952163, 2.0);
-        //wattsOCMSyncTask.execute();
 
     }
 
@@ -182,9 +179,9 @@ public class MainMapActivity extends FragmentActivity implements
         } else {
             mMap.setMyLocationEnabled(true);
         }
-        // setup callback for camera movement (onCameraMove)
+        // Setup callback for camera movement (onCameraMove).
         mMap.setOnCameraMoveListener(this);
-        // setup callback for when camera has stopped moving (onCameraIdle)
+        // Setup callback for when camera has stopped moving (onCameraIdle).
         mMap.setOnCameraIdleListener(this);
 
     }
@@ -201,33 +198,32 @@ public class MainMapActivity extends FragmentActivity implements
             mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, ContextCompat.getColor(this, R.color.colorPrimary), getResources().getInteger(R.integer.car_icon_add_to_size));
             // Get the last location, and center the map
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            // OCMLocation is mLastLocation at this point.
-            mLastOCMLocation = mLastLocation;
 
 
-            if (mLastLocation != null) {
-                LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                MarkerOptions markerOptions = getCarMarkerOptions();
-                markerOptions.position(latLng);
-                mCurrentLocationMarker = mMap.addMarker(markerOptions);
+            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            MarkerOptions markerOptions = getCarMarkerOptions();
+            markerOptions.position(latLng);
+            mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
-                // move the camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
+            // move the camera
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
 
-                // save camera center
-                mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-                // OCM camera center is the same as last camera center at this point.
-                mLastOCMCameraCenter = mLastCameraCenter;
+            // save camera center
+            mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
 
-                //TODO: sync the first stations to content provider
+            // OCM camera center is the same as last camera center at this point.
+            mLastOCMCameraCenter = mLastCameraCenter;
 
 
-            }
+            //TODO: sync the first stations to content provider
+
 
             //setup periodic location requests
             createLocationRequest();
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        } else {
+            Log.d(TAG, "onConnected no position");
         }
     }
 
@@ -254,44 +250,21 @@ public class MainMapActivity extends FragmentActivity implements
     @Override
     public void onLocationChanged(Location location) {
 
-        // get the location delta for ocm updates
-        float ocmLocationDelta;
-        if (mLastOCMLocation != null) {
-            ocmLocationDelta = mLastOCMLocation.distanceTo(location); //meters
-        } else {
-            ocmLocationDelta = mLastLocation.distanceTo(location); //meters
-        }
-
-        Log.d(TAG, "onLocationChanged locationDelta: " + ocmLocationDelta);
 
         // Update last location the the new location
         mLastLocation = location;
 
-        // Remove the old marker
+        // Remove the old car marker
         if (mCurrentLocationMarker != null) {
             mCurrentLocationMarker.remove();
         }
 
-        // Place current location marker.
+        // Place current location car marker.
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = getCarMarkerOptions();
         markerOptions.position(latLng);
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
-        //move map camera
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
 
-
-//        //If location movement bigger than default 500 meters search and update content provider for more stations..
-//        if (ocmLocationDelta > (float) getResources().getInteger(R.integer.delta_trigger_location_significantly_changed)) {
-//            Log.d(TAG, "onLocationChanged: position movement triggered OpenChargeMap update");
-//
-//            mLastOCMLocation = location;
-//
-//            double latitude = mLastLocation.getLatitude();
-//            double longitude = mLastLocation.getLongitude();
-//            executeOCMSync(latitude, longitude);
-//        }
 
     }
 
@@ -324,7 +297,8 @@ public class MainMapActivity extends FragmentActivity implements
                 results);
 
         float ocmCameraDelta = results[0]; //
-
+        Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
+        // update content provider if significant movement
         if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed)) {
 
             mLastOCMCameraCenter = mLastCameraCenter;
@@ -336,7 +310,6 @@ public class MainMapActivity extends FragmentActivity implements
 
     /**
      * Set up the location requests
-     *
      */
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -444,7 +417,6 @@ public class MainMapActivity extends FragmentActivity implements
 
     /**
      * Setup the GoogleApiClient for play services (maps)
-     *
      */
     protected synchronized void buildGoogleApiClient() {
         if (mGoogleApiClient == null) {
@@ -459,7 +431,6 @@ public class MainMapActivity extends FragmentActivity implements
 
     /**
      * @return MarkerOptions for the car (not LatLng)
-     *
      */
     private MarkerOptions getCarMarkerOptions() {
         MarkerOptions markerOptions = new MarkerOptions();
@@ -471,7 +442,6 @@ public class MainMapActivity extends FragmentActivity implements
 
     /**
      * Trigger the async task for OCM updates
-     *
      */
     protected synchronized void executeOCMSync(Double latitude, Double longitude) {
         // TODO: add some rate limiting
