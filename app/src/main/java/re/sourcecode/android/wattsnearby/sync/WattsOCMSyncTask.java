@@ -26,10 +26,10 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = WattsOCMSyncTask.class.getSimpleName();
 
-    private Context context;
-    private Double latitude;
-    private Double longitude;
-    private Double distance;
+    private Context mContext;
+    private Double mLatitude;
+    private Double mLongitude;
+    private Double mDistance;
 
     /* ContentResolver for query, updates and inserts */
     private static ContentResolver mWattsContentResolver;
@@ -45,11 +45,19 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
      */
     public static final int INDEX_TIME_UPDATED = 0;
 
-    public WattsOCMSyncTask(Context context, Double latitude, Double longitude, Double distance) {
-        this.context = context;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.distance = distance;
+    private WattsOCMSyncTaskListener mCallback;
+    public Exception mException;
+
+
+
+
+    public WattsOCMSyncTask(Context context, Double latitude, Double longitude, Double distance, WattsOCMSyncTaskListener callback) {
+        this.mContext = context;
+        this.mLatitude = latitude;
+        this.mLongitude = longitude;
+        this.mDistance = distance;
+        this.mCallback = callback;
+
     }
 
     /**
@@ -68,10 +76,35 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
      */
     @Override
     protected Void doInBackground(Void... params) {
-        if(android.os.Debug.isDebuggerConnected())
-            android.os.Debug.waitForDebugger();
-        syncStations(this.context, this.latitude, this.longitude, this.distance);
+        try {
+            if (android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+            syncStations(this.mContext, this.mLatitude, this.mLongitude, this.mDistance);
+        } catch (Exception e) {
+            mException = e;
+        }
         return null;
+    }
+
+    /**
+     * <p>Runs on the UI thread after {@link #doInBackground}. The
+     * specified result is the value returned by {@link #doInBackground}.</p>
+     * <p>
+     * <p>This method won't be invoked if the task was cancelled.</p>
+     *
+     * @param aVoid The result of the operation computed by {@link #doInBackground}.
+     * @see #onPreExecute
+     * @see #doInBackground
+     * @see #onCancelled(Object)
+     */
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        if (mCallback != null) {
+            mCallback.onOCMSyncSuccess(aVoid);
+        } else {
+            mCallback.onOCMSyncFailure(mException);
+        }
+        super.onPostExecute(aVoid);
     }
 
     /**
@@ -127,13 +160,13 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
                     null,
                     null);
 
-            Boolean bool = currentStationCursor.moveToFirst();
+            Boolean stationInDB = currentStationCursor.moveToFirst();
 
-            Log.d(TAG, stationByIdUri.toString() + " " + bool.toString());
+            Log.d(TAG, stationByIdUri.toString() + " " + stationInDB.toString());
             /*
             * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
             */
-            if (!bool) {
+            if (!stationInDB) {
 
                 currentStationCursor.close();
 

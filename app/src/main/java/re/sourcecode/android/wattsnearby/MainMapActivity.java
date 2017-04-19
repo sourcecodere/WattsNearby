@@ -32,7 +32,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
+import java.util.HashMap;
+
 import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTask;
+import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
 
@@ -58,6 +61,7 @@ public class MainMapActivity extends FragmentActivity implements
     BitmapDescriptor mCurrentLocationMarkerIcon; // icon for the car
     LocationRequest mLocationRequest; // periodic location request object
 
+    HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
@@ -139,6 +143,8 @@ public class MainMapActivity extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //init the
+
     }
 
 
@@ -202,8 +208,12 @@ public class MainMapActivity extends FragmentActivity implements
 
 
             LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(mCurrentLocationMarkerIcon, getString(R.string.marker_current));
-            markerOptions.position(latLng);
+            MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(
+                    latLng,
+                    getString(R.string.marker_current),
+                    mCurrentLocationMarkerIcon
+            );
+
             mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
             // move the camera
@@ -218,7 +228,6 @@ public class MainMapActivity extends FragmentActivity implements
 
 
             //TODO: sync the first stations to content provider
-
 
             //setup periodic location requests
             createLocationRequest();
@@ -262,8 +271,11 @@ public class MainMapActivity extends FragmentActivity implements
 
         // Place current location car marker.
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(mCurrentLocationMarkerIcon, getString(R.string.marker_current));
-        markerOptions.position(latLng);
+        MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(
+                latLng,
+                getString(R.string.marker_current),
+                mCurrentLocationMarkerIcon
+        );
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
 
@@ -289,6 +301,7 @@ public class MainMapActivity extends FragmentActivity implements
     @Override
     public void onCameraIdle() {
 
+        // Init sync from OCM
         float[] results = new float[3];
         Location.distanceBetween(
                 mLastCameraCenter.latitude,
@@ -307,7 +320,14 @@ public class MainMapActivity extends FragmentActivity implements
             executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
 
         }
+
+        //TODO: delete markers outside of current area...
+
+        // Add and update markers for stations in the current visible area
+        WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers);
+
     }
+
 
     /**
      * Set up the location requests
@@ -435,6 +455,27 @@ public class MainMapActivity extends FragmentActivity implements
      */
     protected synchronized void executeOCMSync(Double latitude, Double longitude) {
         // TODO: add some more rate limiting?
-        new WattsOCMSyncTask(this, latitude, longitude, (double) getResources().getInteger(R.integer.ocm_radius_km)).execute();
+        WattsOCMSyncTask wattsOCMSyncTask = new WattsOCMSyncTask(this,
+                latitude,
+                longitude,
+                (double) getResources().getInteger(R.integer.ocm_radius_km),
+                new WattsOCMSyncTaskListener() {
+                    @Override
+                    public void onOCMSyncSuccess(Object object) {
+
+                        // Also Add and update markers for stations in the current visible area
+                        // every time an ocm sync if finished in case of slow updates
+                        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers);
+                    }
+
+                    @Override
+                    public void onOCMSyncFailure(Exception exception) {
+                        Toast.makeText(getApplicationContext(), "ERROR: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+        );
+
+        wattsOCMSyncTask.execute();
     }
 }

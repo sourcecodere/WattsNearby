@@ -88,6 +88,8 @@ public class ChargingStationContract {
         /* Status */
         public static final String COLUMN_TIME_UPDATED = "time_updated";
 
+
+
         /* Define a function to build a URI to find a specific station by it's identifier */
         public static Uri buildStationUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
