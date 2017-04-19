@@ -93,7 +93,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
             * nearby charging stations. It will create a URL based off of the latitude,
             * longitude and distance (the current map zoom level)
             */
-            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(context, latitude, longitude, distance);
+            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(latitude, longitude, distance);
 
             /* Use the URL to retrieve the JSON */
             String jsonOcmResponse = WattsOCMNetworkUtils.getResponseFromHttpUrl(ocmRequestUrl);

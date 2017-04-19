@@ -44,13 +44,12 @@ public final class WattsOCMNetworkUtils {
     /**
      * Retrieves the proper URL to query for the OCM data.
      *
-     * @param context used to access other Utility methods
      * @param latitude  The latitude of the location
      * @param longitude The longitude of the location
      * @param distance The distance/zoom level of the current location
      * @return URL to query ocm service
      */
-    public static URL getUrl(Context context, Double latitude, Double longitude, Double distance) {
+    public static URL getUrl(Double latitude, Double longitude, Double distance) {
             Uri ocmQueryUri = Uri.parse(OCM_BASE_URL).buildUpon()
                     .appendQueryParameter(LAT_PARAM, String.valueOf(latitude))
                     .appendQueryParameter(LON_PARAM, String.valueOf(longitude))

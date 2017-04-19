@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.VisibleRegion;
 
 import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTask;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
+import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
 
 
 public class MainMapActivity extends FragmentActivity implements
@@ -201,7 +202,7 @@ public class MainMapActivity extends FragmentActivity implements
 
 
             LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            MarkerOptions markerOptions = getCarMarkerOptions();
+            MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(mCurrentLocationMarkerIcon, getString(R.string.marker_current));
             markerOptions.position(latLng);
             mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
@@ -261,7 +262,7 @@ public class MainMapActivity extends FragmentActivity implements
 
         // Place current location car marker.
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = getCarMarkerOptions();
+        MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(mCurrentLocationMarkerIcon, getString(R.string.marker_current));
         markerOptions.position(latLng);
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
@@ -430,21 +431,10 @@ public class MainMapActivity extends FragmentActivity implements
     }
 
     /**
-     * @return MarkerOptions for the car (not LatLng)
-     */
-    private MarkerOptions getCarMarkerOptions() {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(getString(R.string.marker_current));
-        markerOptions.icon(mCurrentLocationMarkerIcon);
-        markerOptions.anchor(0.38f, 0.6f);
-        return markerOptions;
-    }
-
-    /**
      * Trigger the async task for OCM updates
      */
     protected synchronized void executeOCMSync(Double latitude, Double longitude) {
-        // TODO: add some rate limiting
+        // TODO: add some more rate limiting?
         new WattsOCMSyncTask(this, latitude, longitude, (double) getResources().getInteger(R.integer.ocm_radius_km)).execute();
     }
 }
