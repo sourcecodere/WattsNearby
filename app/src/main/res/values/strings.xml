@@ -22,4 +22,11 @@
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
 
+    <!-- Permission strings -->
+    <string name="permission_denied_toast">Sorry this app does not work without location permissions, please allow location permissions</string>
+    <string name="permission_explanation_snackbar">Location access is required to use this app.</string>
+    <string name="permission_explanation_snackbar_button">OK</string>
+
+    <!-- Error strings -->
+    <string name="error_OCM_sync_failure">Error in syncing data from openchargmap.org, please try again later. Error: </string>
 </resources>

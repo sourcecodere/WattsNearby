@@ -10,8 +10,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.design.widget.Snackbar;
+
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -46,7 +49,8 @@ public class MainMapActivity extends FragmentActivity implements
         LocationListener,
         OnMapReadyCallback,
         GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraIdleListener {
+        GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnMyLocationButtonClickListener{
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -63,7 +67,7 @@ public class MainMapActivity extends FragmentActivity implements
 
     HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static final int PERMISSIONS_REQUEST_LOCATION = 0;
 
     /**
      * Dispatch onStart() to all fragments.  Ensure any created loaders are
@@ -143,8 +147,6 @@ public class MainMapActivity extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //init the
-
     }
 
 
@@ -186,6 +188,8 @@ public class MainMapActivity extends FragmentActivity implements
         } else {
             mMap.setMyLocationEnabled(true);
         }
+        // Setup callback for my location button (zoom to my location)
+        mMap.setOnMyLocationButtonClickListener(this);
         // Setup callback for camera movement (onCameraMove).
         mMap.setOnCameraMoveListener(this);
         // Setup callback for when camera has stopped moving (onCameraIdle).
@@ -199,42 +203,12 @@ public class MainMapActivity extends FragmentActivity implements
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
-        // Handle locations of handset
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
-            // Create the car location marker bitmap
-            mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, ContextCompat.getColor(this, R.color.colorPrimary), getResources().getInteger(R.integer.car_icon_add_to_size));
-            // Get the last location, and center the map
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        // Create location requests and setup location services.
+        setupLocationServices();
 
+        // Try to set last location, create car marker, and zoom to location
+        centerOnCurrentLocation();
 
-            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(
-                    latLng,
-                    getString(R.string.marker_current),
-                    mCurrentLocationMarkerIcon
-            );
-
-            mCurrentLocationMarker = mMap.addMarker(markerOptions);
-
-            // move the camera
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
-
-            // save camera center
-            mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-
-            // OCM camera center is the same as last camera center at this point.
-            mLastOCMCameraCenter = mLastCameraCenter;
-
-
-            //TODO: sync the first stations to content provider
-
-            //setup periodic location requests
-            createLocationRequest();
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        } else {
-            Log.d(TAG, "onConnected no position");
-        }
     }
 
     /**
@@ -282,6 +256,21 @@ public class MainMapActivity extends FragmentActivity implements
     }
 
     /**
+     * GoogleMap.onMyLocationButtonClick callback
+     *
+     * @return true or false
+     */
+    @Override
+    public boolean onMyLocationButtonClick() {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+            // Try to set last location, create car marker, and zoom to location
+            centerOnCurrentLocation();
+            
+        }
+        return false;
+    }
+
+    /**
      * GoogleMap.onCameraMove callback. Updates the center of the map
      */
     @Override
@@ -291,7 +280,6 @@ public class MainMapActivity extends FragmentActivity implements
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
         // Get the center of current map view
         mLastCameraCenter = visibleRegion.latLngBounds.getCenter();
-
 
     }
 
@@ -303,31 +291,60 @@ public class MainMapActivity extends FragmentActivity implements
 
         // Init sync from OCM
         float[] results = new float[3];
-        Location.distanceBetween(
-                mLastCameraCenter.latitude,
-                mLastCameraCenter.longitude,
-                mLastOCMCameraCenter.latitude,
-                mLastOCMCameraCenter.longitude,
-                results);
+        if ((mLastCameraCenter != null) && (mLastOCMCameraCenter != null)) {
+            Location.distanceBetween(
+                    mLastCameraCenter.latitude,
+                    mLastCameraCenter.longitude,
+                    mLastOCMCameraCenter.latitude,
+                    mLastOCMCameraCenter.longitude,
+                    results);
 
-        float ocmCameraDelta = results[0]; //
-        Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
-        // update content provider if significant movement
-        if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed)) {
+            float ocmCameraDelta = results[0]; //
+            Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
+            // update content provider if significant movement
+            if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed)) {
 
-            mLastOCMCameraCenter = mLastCameraCenter;
+                mLastOCMCameraCenter = mLastCameraCenter;
 
-            executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
+                executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
 
+            }
+
+            //TODO: delete markers outside of current area...
+
+            // Add and update markers for stations in the current visible area
+            WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers);
         }
-
-        //TODO: delete markers outside of current area...
-
-        // Add and update markers for stations in the current visible area
-        WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers);
-
     }
 
+    /**
+     * Trigger the async task for OCM updates
+     */
+    protected synchronized void executeOCMSync(Double latitude, Double longitude) {
+        // TODO: add some more rate limiting?
+        WattsOCMSyncTask wattsOCMSyncTask = new WattsOCMSyncTask(this,
+                latitude,
+                longitude,
+                (double) getResources().getInteger(R.integer.ocm_radius_km),
+                new WattsOCMSyncTaskListener() {
+                    @Override
+                    public void onOCMSyncSuccess(Object object) {
+
+                        // Also Add and update markers for stations in the current visible area
+                        // every time an ocm sync if finished in case of slow updates
+                        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers);
+                    }
+
+                    @Override
+                    public void onOCMSyncFailure(Exception exception) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.error_OCM_sync_failure) + exception.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+        );
+
+        wattsOCMSyncTask.execute();
+    }
 
     /**
      * Set up the location requests
@@ -339,6 +356,65 @@ public class MainMapActivity extends FragmentActivity implements
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // highest accuracy
     }
 
+    protected void setupLocationServices() {
+        // Handle locations of handset
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+
+            //setup periodic location requests
+            if (mLocationRequest == null) {
+                createLocationRequest();
+            }
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        } else {
+            Log.d(TAG, "Could not setup location services");
+        }
+    }
+    protected void centerOnCurrentLocation() {
+        // Handle locations of handset
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+
+            if (mGoogleApiClient != null) {
+                // Get the last location, and center the map
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+                if (mLastLocation != null) {
+                    // Create the car location marker bitmap
+                    mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, ContextCompat.getColor(this, R.color.colorPrimary), getResources().getInteger(R.integer.car_icon_add_to_size));
+
+
+                    LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(
+                            latLng,
+                            getString(R.string.marker_current),
+                            mCurrentLocationMarkerIcon
+                    );
+                    // Remove the old car marker
+                    if (mCurrentLocationMarker != null) {
+                        mCurrentLocationMarker.remove();
+                    }
+                    mCurrentLocationMarker = mMap.addMarker(markerOptions);
+
+                    // move the camera
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
+
+                    // save camera center
+                    mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+
+                    // OCM camera center is the same as last camera center at this point.
+                    mLastOCMCameraCenter = mLastCameraCenter;
+                }
+            } else {
+                Log.d(TAG, "GoogleApiClient not connected");
+            }
+            //TODO: sync the first stations to content provider
+
+
+        } else {
+            Log.d(TAG, "No permissions");
+        }
+    }
 
     /**
      * Check if the user allows location (fine)
@@ -357,18 +433,33 @@ public class MainMapActivity extends FragmentActivity implements
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
+                Snackbar.make(
+                        MainMapActivity.this.findViewById(R.id.main_layout),
+                        getString(R.string.permission_explanation_snackbar),
+                        Snackbar.LENGTH_INDEFINITE)
+                        .setAction(
+                                getString(R.string.permission_explanation_snackbar_button),
+                                new View.OnClickListener() {
+                                    /**
+                                     * Called when a view has been clicked.
+                                     *
+                                     * @param v The view that was clicked.
+                                     */
+                                    @Override
+                                    public void onClick(View v) {
+                                        //Prompt the user once explanation has been shown
+                                        ActivityCompat.requestPermissions(MainMapActivity.this,
+                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                                PERMISSIONS_REQUEST_LOCATION);
+                                    }
+                                }).show();
 
 
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
+                        PERMISSIONS_REQUEST_LOCATION);
             }
             return false;
         } else {
@@ -388,7 +479,7 @@ public class MainMapActivity extends FragmentActivity implements
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
+            case PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -406,9 +497,9 @@ public class MainMapActivity extends FragmentActivity implements
                     }
 
                 } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    // Permission denied, exit the app and show explanation toast.
+                    Toast.makeText(this, getString(R.string.permission_denied_toast), Toast.LENGTH_LONG).show();
+                    finish();
                 }
                 return;
             }
@@ -450,32 +541,4 @@ public class MainMapActivity extends FragmentActivity implements
         }
     }
 
-    /**
-     * Trigger the async task for OCM updates
-     */
-    protected synchronized void executeOCMSync(Double latitude, Double longitude) {
-        // TODO: add some more rate limiting?
-        WattsOCMSyncTask wattsOCMSyncTask = new WattsOCMSyncTask(this,
-                latitude,
-                longitude,
-                (double) getResources().getInteger(R.integer.ocm_radius_km),
-                new WattsOCMSyncTaskListener() {
-                    @Override
-                    public void onOCMSyncSuccess(Object object) {
-
-                        // Also Add and update markers for stations in the current visible area
-                        // every time an ocm sync if finished in case of slow updates
-                        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers);
-                    }
-
-                    @Override
-                    public void onOCMSyncFailure(Exception exception) {
-                        Toast.makeText(getApplicationContext(), "ERROR: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-        );
-
-        wattsOCMSyncTask.execute();
-    }
 }
