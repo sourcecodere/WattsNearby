@@ -156,43 +156,6 @@ public class ChargingStationProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
             /*
-             * When sUriMatcher's match method is called with a URI that looks something like this
-             *
-             *      content://re.sourcecode.wattsnearby/stations/nearby?lat=40.123213&lon=10.123123&distance=2
-             *
-             * sUriMatcher's match method will return the code that indicates to us that we need
-             * to return the stations for a particular position. The position in this code is encoded in
-             * milliseconds and is at the very end of the URI (1472214172) and can be accessed
-             * programmatically using Uri's getLastPathSegment method.
-             *
-             * In this case, we want to return a cursor that contains one row of weather data for
-             * a particular date.
-             */
-            //case CODE_STATIONS_NEARBY: {
-
-                /*
-                 * In order to determine the position with this URI, we look at the last
-                 * path segment. In the comment above, the last path segment is 1472214172 and
-                 * represents the number of seconds since the epoch, or UTC time.
-                 */
-            //String lat  = uri.getQueryParameter(ChargingStationContract.StationEntry.COLUMN_LAT);
-            //String lon  = uri.getQueryParameter(ChargingStationContract.StationEntry.COLUMN_LON);
-            //String distance  = uri.getQueryParameter(ChargingStationContract.StationEntry.COLUMN_DISTANCE);
-
-                /*
-                 * The query method accepts a string array of arguments, as there may be more
-                 * than one "?" in the selection statement. Even though in our case, we only have
-                 * one "?", we have to create a string array that only contains one element
-                 * because this method signature accepts a string array.
-                 */
-
-
-            // TODO: make query for specific area in map
-
-            //break;
-            //}
-
-            /*
              * When sUriMatcher's match method is called with a URI that looks EXACTLY like this
              *
              *      content://re.sourcecode.wattsnearby/station/

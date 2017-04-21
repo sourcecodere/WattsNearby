@@ -10,9 +10,9 @@
     <integer name="preferred_location_interval">10000</integer>
     <integer name="fastest_location_interval">5000</integer>
 
-    <!-- Size of car icon in map. -->
+    <!-- Size of icons in map. -->
     <integer name="car_icon_add_to_size">20</integer>
-
+    <integer name="station_icon_add_to_size">0</integer>
 
     <!-- Triggers for calling the AsyncTask to sync with OpenChargeMap.io. -->
     <!-- In meters. -->

@@ -62,7 +62,9 @@ public class MainMapActivity extends FragmentActivity implements
     LatLng mLastOCMCameraCenter; // lat and lon of last camera center where the OCM api was synced against the content provider
 
     Marker mCurrentLocationMarker; // car position
-    BitmapDescriptor mCurrentLocationMarkerIcon; // icon for the car
+    BitmapDescriptor mMarkerIconCar; // icon for the car
+    BitmapDescriptor mMarkerIconStation; // icon for charing station
+    BitmapDescriptor mMarkerIconStationFast; // icon for fast charging station
     LocationRequest mLocationRequest; // periodic location request object
 
     HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
@@ -147,6 +149,12 @@ public class MainMapActivity extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Create the car location marker bitmap
+        mMarkerIconCar = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, getResources().getInteger(R.integer.car_icon_add_to_size));
+        // Create the charging station marker bitmap
+        mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
+        // Create the charging station marker bitmap
+        mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station_fast, getResources().getInteger(R.integer.station_icon_add_to_size));
     }
 
 
@@ -245,10 +253,10 @@ public class MainMapActivity extends FragmentActivity implements
 
         // Place current location car marker.
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(
+        MarkerOptions markerOptions = WattsImageUtils.getCarMarkerOptions(
                 latLng,
                 getString(R.string.marker_current),
-                mCurrentLocationMarkerIcon
+                mMarkerIconCar
         );
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
@@ -265,7 +273,7 @@ public class MainMapActivity extends FragmentActivity implements
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
             // Try to set last location, create car marker, and zoom to location
             centerOnCurrentLocation();
-            
+
         }
         return false;
     }
@@ -313,7 +321,7 @@ public class MainMapActivity extends FragmentActivity implements
             //TODO: delete markers outside of current area...
 
             // Add and update markers for stations in the current visible area
-            WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers);
+            WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
         }
     }
 
@@ -332,7 +340,7 @@ public class MainMapActivity extends FragmentActivity implements
 
                         // Also Add and update markers for stations in the current visible area
                         // every time an ocm sync if finished in case of slow updates
-                        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers);
+                        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
                     }
 
                     @Override
@@ -379,15 +387,14 @@ public class MainMapActivity extends FragmentActivity implements
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
                 if (mLastLocation != null) {
-                    // Create the car location marker bitmap
-                    mCurrentLocationMarkerIcon = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, ContextCompat.getColor(this, R.color.colorPrimary), getResources().getInteger(R.integer.car_icon_add_to_size));
+
 
 
                     LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                    MarkerOptions markerOptions = WattsMapUtils.getCarMarkerOptions(
+                    MarkerOptions markerOptions = WattsImageUtils.getCarMarkerOptions(
                             latLng,
                             getString(R.string.marker_current),
-                            mCurrentLocationMarkerIcon
+                            mMarkerIconCar
                     );
                     // Remove the old car marker
                     if (mCurrentLocationMarker != null) {

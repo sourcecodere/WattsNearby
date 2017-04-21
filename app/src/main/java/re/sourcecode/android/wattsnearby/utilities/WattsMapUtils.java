@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -25,13 +26,10 @@ public class WattsMapUtils {
 
     private static final String TAG = WattsMapUtils.class.getSimpleName();
 
-    /* ContentResolver for query, updates and inserts */
-    private static ContentResolver mWattsContentResolver;
-
     /* The data we need to get for each marker */
     public static final String[] STATION_MARKER_PROJECTION = {
             ChargingStationContract.StationEntry.COLUMN_ID,
-            ChargingStationContract.StationEntry.COLUMN_OPERATOR_TITLE,
+            ChargingStationContract.StationEntry.COLUMN_ADDR_TITLE,
             ChargingStationContract.StationEntry.COLUMN_LAT,
             ChargingStationContract.StationEntry.COLUMN_LON,
     };
@@ -41,31 +39,16 @@ public class WattsMapUtils {
      * indices must be adjusted to match the order of the Strings.
      */
     public static final int INDEX_ID = 0;
-    public static final int INDEX_OPERATOR_TITLE = 1;
+    public static final int INDEX_ADDRESS_TITLE = 1;
     public static final int INDEX_LAT = 2;
     public static final int INDEX_LON = 3;
 
-    /**
-     * @return MarkerOptions for the car
-     */
-    public static MarkerOptions getCarMarkerOptions(LatLng position, String title, BitmapDescriptor markerIcon) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(title);
-        markerOptions.icon(markerIcon);
-        markerOptions.anchor(0.38f, 0.6f);
-        markerOptions.position(position);
-        return markerOptions;
-    }
+    /* The data we need to check for fast charging capacity */
+    private static final String[] CONNECTIO_CAPACITY_PROJECTION = {
+            ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST
+    };
+    private static final int INDEX_STATION_FAST = 0;
 
-    /**
-     * @return MarkerOptions for the stations
-     */
-    public static MarkerOptions getStationMarkerOptions(LatLng position, String title) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(title);
-        markerOptions.position(position);
-        return markerOptions;
-    }
 
     /**
      * Adds the station markers for the current visible region from the content provider.
@@ -74,7 +57,11 @@ public class WattsMapUtils {
      * @param context current app context
      * @param map     is the current map shown in the app
      */
-    public static void updateStationMarkers(Context context, GoogleMap map, HashMap<Long, Marker> visibleStationMarkers) {
+    public static void updateStationMarkers(Context context,
+                                            GoogleMap map,
+                                            HashMap<Long, Marker> visibleStationMarkers,
+                                            BitmapDescriptor iconStation,
+                                            BitmapDescriptor iconStationFast) {
 
         LatLngBounds visibleBounds = map.getProjection().getVisibleRegion().latLngBounds;
 
@@ -96,16 +83,24 @@ public class WattsMapUtils {
                 LatLng stationPosition = new LatLng(
                         getStationsCursor.getDouble(INDEX_LAT),
                         getStationsCursor.getDouble(INDEX_LON));
-                String stationTitle = getStationsCursor.getString(INDEX_OPERATOR_TITLE);
+                String stationTitle = getStationsCursor.getString(INDEX_ADDRESS_TITLE);
 
 
                 if (visibleBounds.contains(stationPosition)) {
-                    //Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " within bounds");
+                    Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " within bounds");
                     if (!visibleStationMarkers.containsKey(stationId)) {
-                        visibleStationMarkers.put(
-                                stationId,
-                                map.addMarker(getStationMarkerOptions(stationPosition, stationTitle))
-                        );
+
+                        if (checkForFastCharging(wattsContentResolver, stationId)) {
+                            visibleStationMarkers.put(
+                                    stationId,
+                                    map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStationFast))
+                            );
+                        } else {
+                            visibleStationMarkers.put(
+                                    stationId,
+                                    map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStation))
+                            );
+                        }
                     }
 
                 } else {
@@ -114,16 +109,50 @@ public class WattsMapUtils {
                         // Remove the marker from the map (value)
                         visibleStationMarkers.get(stationId).remove();
                         // Remove the reference in the hashmap (key)
+
                         visibleStationMarkers.remove(stationId);
                     }
-                    // Remove the marker from the map
-
                 }
             }
 
-        } finally {
+        } finally
+
+        {
             getStationsCursor.close();
         }
+
+    }
+
+    /**
+     * Checks database for fast charging capacity at certain station
+     *
+     * @param stationId
+     * @return true or false
+     */
+    private static Boolean checkForFastCharging(ContentResolver wattsContentResolver, Long stationId) {
+
+        Uri getConnectionUri = ChargingStationContract.ConnectionEntry.CONTENT_URI;
+
+        Cursor getConnectionsCursor = wattsContentResolver.query(
+                getConnectionUri,
+                CONNECTIO_CAPACITY_PROJECTION,
+                ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "=?",
+                new String[]{Long.toString(stationId)},
+                null
+        );
+
+        try {
+            while (getConnectionsCursor.moveToNext()) {
+                int bool = getConnectionsCursor.getInt(INDEX_STATION_FAST);
+                if (getConnectionsCursor.getInt(INDEX_STATION_FAST) > 0) {
+                    return true;
+                }
+            }
+        } finally {
+            getConnectionsCursor.close();
+        }
+
+        return false;
 
     }
 }
