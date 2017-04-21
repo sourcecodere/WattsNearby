@@ -214,8 +214,8 @@ public class MainMapActivity extends FragmentActivity implements
         // Create location requests and setup location services.
         setupLocationServices();
 
-        // Try to set last location, create car marker, and zoom to location
-        centerOnCurrentLocation();
+        // Try to set last location, update car marker, and do not zoom to location
+        updateCurrentLocation(false);
 
     }
 
@@ -271,8 +271,8 @@ public class MainMapActivity extends FragmentActivity implements
     @Override
     public boolean onMyLocationButtonClick() {
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
-            // Try to set last location, create car marker, and zoom to location
-            centerOnCurrentLocation();
+            // Try to set last location, update car marker, and zoom to location
+            updateCurrentLocation(true);
 
         }
         return false;
@@ -378,7 +378,7 @@ public class MainMapActivity extends FragmentActivity implements
             Log.d(TAG, "Could not setup location services");
         }
     }
-    protected void centerOnCurrentLocation() {
+    protected void updateCurrentLocation(Boolean moveCamera) {
         // Handle locations of handset
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
 
@@ -387,8 +387,6 @@ public class MainMapActivity extends FragmentActivity implements
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
                 if (mLastLocation != null) {
-
-
 
                     LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     MarkerOptions markerOptions = WattsImageUtils.getCarMarkerOptions(
@@ -402,10 +400,11 @@ public class MainMapActivity extends FragmentActivity implements
                     }
                     mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
-                    // move the camera
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
-
+                    if (moveCamera) {
+                        // move the camera
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
+                    }
                     // save camera center
                     mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
 

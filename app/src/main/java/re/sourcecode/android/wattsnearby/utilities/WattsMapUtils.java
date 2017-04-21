@@ -12,7 +12,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 
@@ -87,7 +86,7 @@ public class WattsMapUtils {
 
 
                 if (visibleBounds.contains(stationPosition)) {
-                    Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " within bounds");
+                    //Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " within bounds");
                     if (!visibleStationMarkers.containsKey(stationId)) {
 
                         if (checkForFastCharging(wattsContentResolver, stationId)) {
