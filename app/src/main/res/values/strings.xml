@@ -29,4 +29,7 @@
 
     <!-- Error strings -->
     <string name="error_OCM_sync_failure">Error in syncing data from openchargmap.org, please try again later. Error: </string>
+
+    <!-- String transitions -->
+    <string name="transition_name_my_location" translatable="false">MYLOCATION</string>
 </resources>

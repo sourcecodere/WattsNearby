@@ -50,84 +50,36 @@ public class MainMapActivity extends FragmentActivity implements
         OnMapReadyCallback,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnMyLocationButtonClickListener{
+        GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
-    private GoogleMap mMap;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation; // last known position on the phone
+    private GoogleApiClient mGoogleApiClient; // The google services connection.
+    private LocationRequest mLocationRequest; // Periodic location request object.
 
-    LatLng mLastCameraCenter; // lat and lon of last camera center
-    LatLng mLastOCMCameraCenter; // lat and lon of last camera center where the OCM api was synced against the content provider
+    private GoogleMap mMap; // The map object.
 
-    Marker mCurrentLocationMarker; // car position
-    BitmapDescriptor mMarkerIconCar; // icon for the car
-    BitmapDescriptor mMarkerIconStation; // icon for charing station
-    BitmapDescriptor mMarkerIconStationFast; // icon for fast charging station
-    LocationRequest mLocationRequest; // periodic location request object
+    private Location mLastLocation; // Last known position on the phone/car.
 
-    HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
+    private LatLng mLastCameraCenter; // Latitude and longitude of last camera center.
+    private LatLng mLastOCMCameraCenter; // Latitude and longitude of last camera center where the OCM api was synced against the content provider.
 
-    public static final int PERMISSIONS_REQUEST_LOCATION = 0;
+    private BitmapDescriptor mMarkerIconCar; // Icon for the car.
+    private BitmapDescriptor mMarkerIconStation; // Icon for charging stations.
+    private BitmapDescriptor mMarkerIconStationFast; // Icon for fast charging stations.
 
-    /**
-     * Dispatch onStart() to all fragments.  Ensure any created loaders are
-     * now started.
-     */
-    @Override
-    protected void onStart() {
-        buildGoogleApiClient();
-        super.onStart();
+    private Marker mCurrentLocationMarker; // car marker with position
+    private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
 
-    }
+    public static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
+
 
     /**
-     * Dispatch onStop() to all fragments.  Ensure all loaders are stopped.
-     */
-    @Override
-    protected void onStop() {
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-        super.onStop();
-    }
-
-    /**
-     * Dispatch onPause() to fragments.
-     */
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
-    /**
-     * Save all appropriate fragment state.
+     * First call in the lifecycle. This is followed by onStart().
      *
-     * @param savedInstanceState
+     * @param savedInstanceState contains the activity previous frozen state.
      */
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Dispatch onResume() to fragments.  Note that for better inter-operation
-     * with older versions of the platform, at the point of this call the
-     * fragments attached to the activity are <em>not</em> resumed.  This means
-     * that in some cases the previous state may still be saved, not allowing
-     * fragment transactions that modify the state.  To correctly interact
-     * with fragments in their proper state, you should instead override
-     * {@link #onResumeFragments()}.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +109,61 @@ public class MainMapActivity extends FragmentActivity implements
         mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station_fast, getResources().getInteger(R.integer.station_icon_add_to_size));
     }
 
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    /**
+     * Dispatch onStart() to all fragments.  Ensure any created loaders are
+     * now started.
+     */
+    @Override
+    protected void onStart() {
+        buildGoogleApiClient(); // Get connection to google services.
+        super.onStart();
+
+    }
+
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    /**
+     * Dispatch onStop() to all fragments.  Ensure all loaders are stopped.
+     */
+    @Override
+    protected void onStop() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
+    }
+
+    /**
+     * Save all appropriate fragment state.
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
     /**
      * OnMapReadyCallback
@@ -202,6 +209,8 @@ public class MainMapActivity extends FragmentActivity implements
         mMap.setOnCameraMoveListener(this);
         // Setup callback for when camera has stopped moving (onCameraIdle).
         mMap.setOnCameraIdleListener(this);
+        // Setup callback for when user clicks on marker
+        mMap.setOnMarkerClickListener(this);
 
     }
 
@@ -226,7 +235,6 @@ public class MainMapActivity extends FragmentActivity implements
     public void onConnectionSuspended(int i) {
 
     }
-
 
     /**
      * GoogleApiClient.OnConnectionFailedListener
@@ -261,6 +269,22 @@ public class MainMapActivity extends FragmentActivity implements
         mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
 
+    }
+
+    /**
+     * GoogleMap.onMarkerClick
+     *
+     * @param marker clicked
+     */
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+
+        //TODO: show bottom sheet
+        Toast.makeText(getApplicationContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+
+        return false;
     }
 
     /**
@@ -317,8 +341,6 @@ public class MainMapActivity extends FragmentActivity implements
                 executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
 
             }
-
-            //TODO: delete markers outside of current area...
 
             // Add and update markers for stations in the current visible area
             WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
@@ -378,6 +400,7 @@ public class MainMapActivity extends FragmentActivity implements
             Log.d(TAG, "Could not setup location services");
         }
     }
+
     protected void updateCurrentLocation(Boolean moveCamera) {
         // Handle locations of handset
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
@@ -414,8 +437,6 @@ public class MainMapActivity extends FragmentActivity implements
             } else {
                 Log.d(TAG, "GoogleApiClient not connected");
             }
-            //TODO: sync the first stations to content provider
-
 
         } else {
             Log.d(TAG, "No permissions");
@@ -472,7 +493,6 @@ public class MainMapActivity extends FragmentActivity implements
             return true;
         }
     }
-
 
     /**
      * Callback for result of permission request.
