@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -74,6 +75,7 @@ public class MainMapActivity extends FragmentActivity implements
 
     public static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
 
+    public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet dialog fragment
 
     /**
      * First call in the lifecycle. This is followed by onStart().
@@ -272,7 +274,7 @@ public class MainMapActivity extends FragmentActivity implements
     }
 
     /**
-     * GoogleMap.onMarkerClick
+     * GoogleMap.onMarkerClick called when marker is clicked
      *
      * @param marker clicked
      */
@@ -280,9 +282,19 @@ public class MainMapActivity extends FragmentActivity implements
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
+        //TODO: move the map center up a bit?
 
-        //TODO: show bottom sheet
-        Toast.makeText(getApplicationContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+        BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragment();
+        Long stationId = (Long) marker.getTag();
+
+        if (stationId != null) { //every station marker should have data (stationId), only the car does not
+            Bundle args = new Bundle();
+            args.putLong(ARG_DETAIL_SHEET_STATION_ID ,stationId);
+            bottomSheetDialogFragment.setArguments(args);
+        }
+
+        bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
 
         return false;
     }

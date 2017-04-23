@@ -88,18 +88,14 @@ public class WattsMapUtils {
                 if (visibleBounds.contains(stationPosition)) {
                     //Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " within bounds");
                     if (!visibleStationMarkers.containsKey(stationId)) {
-
+                        Marker tmpMarker;
                         if (checkForFastCharging(wattsContentResolver, stationId)) {
-                            visibleStationMarkers.put(
-                                    stationId,
-                                    map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStationFast))
-                            );
+                            tmpMarker = map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStationFast));
                         } else {
-                            visibleStationMarkers.put(
-                                    stationId,
-                                    map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStation))
-                            );
+                            tmpMarker = map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStation));
                         }
+                        tmpMarker.setTag(stationId); // save the station id directly on the marker as a tag.
+                        visibleStationMarkers.put(stationId, tmpMarker); // save the stationId and marker in hashTable for house cleaning
                     }
 
                 } else {
