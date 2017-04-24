@@ -11,13 +11,11 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.design.widget.Snackbar;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -119,13 +117,6 @@ public class MainMapActivity extends AppCompatActivity implements
                 .findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
 
-        // Retrieve the PlaceAutocompleteFragment.
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        // Register a listener to receive callbacks when a place has been selected or an error has
-        // occurred.
-        autocompleteFragment.setOnPlaceSelectedListener(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -227,6 +218,30 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Dispatch incoming result to the correct fragment. startActivityForResult
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == INTENT_PLACE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                this.onPlaceSelected(place);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                this.onError(status);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
     /**
      * OnMapReadyCallback
      * <p>
@@ -300,7 +315,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.d(TAG, "GoogleApiClient onConnectionFailed");
     }
 
     /**
@@ -410,7 +425,10 @@ public class MainMapActivity extends AppCompatActivity implements
     public void onPlaceSelected(Place place) {
         Log.d(TAG, "Place Selected: " + place.getName());
         LatLng placeLatLng = place.getLatLng();
-        //TODO: move camera
+
+        // move the camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_places_search)));
     }
 
     /**
