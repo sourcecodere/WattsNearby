@@ -8,20 +8,32 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!-- Custom style the bottom sheet.
-        Credits to: https://stackoverflow.com/a/35634293 -->
+        <!-- Custom style for the bottom sheet fragment. -->
+        <!-- Credits to: https://stackoverflow.com/a/35634293 -->
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
+    <!-- App bar with search. -->
+    <style name="AppTheme.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+    <!-- Custom style for the bottom sheet fragment. -->
+    <!-- Credits to: https://stackoverflow.com/a/35634293 -->
     <style name="AppBottomSheetDialogTheme"
         parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
+    <!-- Custom style for the bottom sheet fragment. -->
+    <!-- Credits to: https://stackoverflow.com/a/35634293 -->
     <style name="AppModalStyle"
         parent="Widget.Design.BottomSheet.Modal">
         <item name="behavior_peekHeight">@dimen/bottom_sheet_peek_height</item>
+    </style>
+
+    <!-- My location fab -->
+    <style name="FloatingButton" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
 </resources>

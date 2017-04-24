@@ -35,9 +35,9 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     public void setupDialog(Dialog dialog, int style) {
         //super.setupDialog(dialog, style);
         View contentView;
-        Long stationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
-
-        if (stationId != null) { //user pushed a station
+        Bundle args = getArguments();
+        if ((args != null) && (getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID))) { //user pushed a station
+            Long stationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
             contentView = View.inflate(getContext(), R.layout.fragment_bottom_sheet_station, null);
             TextView title = (TextView) contentView.findViewById(R.id.station_sheet_title);
             TextView text = (TextView) contentView.findViewById(R.id.station_sheet_text);

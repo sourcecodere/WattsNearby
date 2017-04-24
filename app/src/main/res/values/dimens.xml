@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Bottom details sheet fragment -->
+    <dimen name="bottom_sheet_peek_height">200dp</dimen>
+
+    <!-- Define standard dimensions -->
+    <dimen name="margin_tiny">4dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">32dp</dimen>
+    <dimen name="margin_huge">64dp</dimen>
+
+    <!-- Floating action button -->
+    <dimen name="fab_margin">16dp</dimen>
+</resources>

@@ -32,4 +32,8 @@
 
     <!-- String transitions -->
     <string name="transition_name_my_location" translatable="false">MYLOCATION</string>
+
+    <!-- Strings for places search -->
+    <string name="selected_place">Last Selected Place:</string>
+    <string name="search_action">Search</string>
 </resources>

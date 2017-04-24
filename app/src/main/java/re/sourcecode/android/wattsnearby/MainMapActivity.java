@@ -1,6 +1,7 @@
 package re.sourcecode.android.wattsnearby;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
@@ -8,23 +9,36 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.design.widget.Snackbar;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,15 +58,15 @@ import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
 
 
-public class MainMapActivity extends FragmentActivity implements
+public class MainMapActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         OnMapReadyCallback,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnMyLocationButtonClickListener,
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener,
+        PlaceSelectionListener {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -74,6 +88,7 @@ public class MainMapActivity extends FragmentActivity implements
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
 
     public static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
+    private static final int INTENT_PLACE = 1; // For places search
 
     public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet dialog fragment
 
@@ -98,10 +113,31 @@ public class MainMapActivity extends FragmentActivity implements
             Log.d("onCreate", "Google Play Services available.");
         }
 
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
+
+        // Retrieve the PlaceAutocompleteFragment.
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        // Register a listener to receive callbacks when a place has been selected or an error has
+        // occurred.
+        autocompleteFragment.setOnPlaceSelectedListener(this);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ((ContextCompat.checkSelfPermission(MainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+                    // Try to set last location, update car marker, and zoom to location
+                    updateCurrentLocation(true);
+                }
+
+            }
+        });
 
         // Create the car location marker bitmap
         mMarkerIconCar = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, getResources().getInteger(R.integer.car_icon_add_to_size));
@@ -167,6 +203,30 @@ public class MainMapActivity extends FragmentActivity implements
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            try {
+                Intent intent = new PlaceAutocomplete.IntentBuilder
+                        (PlaceAutocomplete.MODE_OVERLAY)
+                        .setBoundsBias(mMap.getProjection().getVisibleRegion().latLngBounds)
+                        .build(MainMapActivity.this);
+                startActivityForResult(intent, INTENT_PLACE);
+            } catch (GooglePlayServicesRepairableException |
+                    GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     /**
      * OnMapReadyCallback
      * <p>
@@ -200,13 +260,11 @@ public class MainMapActivity extends FragmentActivity implements
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
+                mMap.setMyLocationEnabled(false);
             }
         } else {
-            mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(false);
         }
-        // Setup callback for my location button (zoom to my location)
-        mMap.setOnMyLocationButtonClickListener(this);
         // Setup callback for camera movement (onCameraMove).
         mMap.setOnCameraMoveListener(this);
         // Setup callback for when camera has stopped moving (onCameraIdle).
@@ -227,7 +285,6 @@ public class MainMapActivity extends FragmentActivity implements
 
         // Try to set last location, update car marker, and do not zoom to location
         updateCurrentLocation(false);
-
     }
 
     /**
@@ -278,7 +335,6 @@ public class MainMapActivity extends FragmentActivity implements
      *
      * @param marker clicked
      */
-
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
@@ -300,21 +356,6 @@ public class MainMapActivity extends FragmentActivity implements
     }
 
     /**
-     * GoogleMap.onMyLocationButtonClick callback
-     *
-     * @return true or false
-     */
-    @Override
-    public boolean onMyLocationButtonClick() {
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
-            // Try to set last location, update car marker, and zoom to location
-            updateCurrentLocation(true);
-
-        }
-        return false;
-    }
-
-    /**
      * GoogleMap.onCameraMove callback. Updates the center of the map
      */
     @Override
@@ -328,7 +369,9 @@ public class MainMapActivity extends FragmentActivity implements
     }
 
     /**
-     * GoogleMap.onCameraIdle callback. Checks if the new idle position of the map camera should initiate a OCM sync
+     * GoogleMap.onCameraIdle
+     *
+     * Callback. Checks if the new idle position of the map camera should initiate a OCM sync
      */
     @Override
     public void onCameraIdle() {
@@ -358,6 +401,31 @@ public class MainMapActivity extends FragmentActivity implements
             WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
         }
     }
+    /**
+     * Places API
+     *
+     * Callback invoked when a place has been selected from the PlaceAutocompleteFragment.
+     */
+    @Override
+    public void onPlaceSelected(Place place) {
+        Log.d(TAG, "Place Selected: " + place.getName());
+        LatLng placeLatLng = place.getLatLng();
+        //TODO: move camera
+    }
+
+    /**
+     * Places API
+     *
+     * Callback invoked when PlaceAutocompleteFragment encounters an error.
+     */
+    @Override
+    public void onError(Status status) {
+        Log.e(TAG, "onError: Status = " + status.toString());
+
+        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
+                Toast.LENGTH_SHORT).show();
+    }
+
 
     /**
      * Trigger the async task for OCM updates
@@ -574,6 +642,8 @@ public class MainMapActivity extends FragmentActivity implements
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
+                    .addApi(Places.GEO_DATA_API)
+                    .addApi(Places.PLACE_DETECTION_API)
                     .build();
             mGoogleApiClient.connect();
         }
