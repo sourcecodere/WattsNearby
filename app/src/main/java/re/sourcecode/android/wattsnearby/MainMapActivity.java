@@ -106,8 +106,8 @@ public class MainMapActivity extends AppCompatActivity implements
             checkLocationPermission();
         }
         //Check if Google Play Services Available or not
-        if (!CheckGooglePlayServices()) {
-            Log.d("onCreate", "Finishing test case since Google Play Services are not available");
+        if (!checkGooglePlayServices()) {
+            Log.d("onCreate", "Google Play Services are not available");
             finish();
         } else {
             Log.d("onCreate", "Google Play Services available.");
@@ -620,18 +620,19 @@ public class MainMapActivity extends AppCompatActivity implements
      *
      * @return True or False
      */
-    private boolean CheckGooglePlayServices() {
+    private boolean checkGooglePlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
         if (result != ConnectionResult.SUCCESS) {
             if (googleAPI.isUserResolvableError(result)) {
                 googleAPI.getErrorDialog(this, result,
-                        0).show();
+                        1234).show();
             }
             return false;
         }
         return true;
     }
+
 
     /**
      * Setup the GoogleApiClient for play services (maps)
