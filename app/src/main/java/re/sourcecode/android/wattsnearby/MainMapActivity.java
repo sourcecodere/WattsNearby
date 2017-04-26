@@ -274,10 +274,20 @@ public class MainMapActivity extends AppCompatActivity implements
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
+                // Disable my location button, using own fab for this
                 mMap.setMyLocationEnabled(false);
+                // Disable Map Toolbar
+                mMap.getUiSettings().setMapToolbarEnabled(false);
+                // Enable zoom control
+                mMap.getUiSettings().setZoomControlsEnabled(true);
             }
         } else {
+            // Disable my location button, using own fab for this
             mMap.setMyLocationEnabled(false);
+            // Disable Map Toolbar
+            mMap.getUiSettings().setMapToolbarEnabled(false);
+            // Enable zoom control
+            mMap.getUiSettings().setZoomControlsEnabled(true);
         }
         // Setup callback for camera movement (onCameraMove).
         mMap.setOnCameraMoveListener(this);
