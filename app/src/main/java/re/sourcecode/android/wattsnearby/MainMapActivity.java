@@ -35,7 +35,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -85,7 +84,7 @@ public class MainMapActivity extends AppCompatActivity implements
     private Marker mCurrentLocationMarker; // car marker with position
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
 
-    public static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
+    private static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
     private static final int INTENT_PLACE = 1; // For places search
 
     public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet dialog fragment

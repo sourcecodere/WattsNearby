@@ -1,26 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <TextView
         android:id="@+id/station_sheet_title"
-        android:textColor="@color/colorBlack"
-        android:textSize="16sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
         android:padding="16dp"
-        android:background="@color/colorPrimaryDark"/>
+        android:textColor="@color/colorBlack"
+        android:textSize="16sp" />
 
 
     <TextView
         android:id="@+id/station_sheet_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:padding="16dp"
         android:text="This is a test dialog fragment"
         android:textColor="@color/colorBlack"
-        android:textSize="16sp"
-        android:padding="16dp"
-        android:background="@color/colorWhite"/>
+        android:textSize="16sp" />
 
 </LinearLayout>
