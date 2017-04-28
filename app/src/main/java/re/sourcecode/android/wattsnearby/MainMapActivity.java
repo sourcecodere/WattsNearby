@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -116,8 +118,8 @@ public class MainMapActivity extends AppCompatActivity implements
                 .findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        // Fab for the my location. With onClickListener
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_my_location);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,6 +130,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
             }
         });
+
 
         // Create the car location marker bitmap
         mMarkerIconCar = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, getResources().getInteger(R.integer.car_icon_add_to_size));
@@ -364,6 +367,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         //TODO: move the map center up a bit?
 
+
         BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragment();
         Long stationId = (Long) marker.getTag();
 
@@ -373,8 +377,9 @@ public class MainMapActivity extends AppCompatActivity implements
             bottomSheetDialogFragment.setArguments(args);
         }
 
-        bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 
+        bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+        // TODO anchor the fab buttons.
 
         return false;
     }
