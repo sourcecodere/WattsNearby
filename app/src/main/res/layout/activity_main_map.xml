@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_menu_mylocation"
+        android:src="@drawable/ic_my_location_white"
         android:theme="@style/FloatingButton"
         app:fabSize="mini"
         app:rippleColor="@color/accent" />

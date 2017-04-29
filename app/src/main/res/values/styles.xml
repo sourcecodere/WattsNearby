@@ -13,9 +13,12 @@
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
+
+
     <!-- App bar with search. -->
     <style name="AppTheme.AppBarOverlay"
         parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
 
     <!-- Custom style for the bottom sheet fragment. -->
     <!-- Credits to: https://stackoverflow.com/a/35634293 -->
