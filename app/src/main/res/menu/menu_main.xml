@@ -3,12 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="re.sourcecode.android.wattsnearby.MainMapActivity">
+
     <item
         android:id="@+id/action_search"
         android:actionViewClass="android.support.v7.widget.SearchView"
-        android:orderInCategory="100"
         android:icon="@drawable/ic_search_white"
-        android:title="@string/search_action"
+        android:orderInCategory="100"
+        android:title="@string/action_search"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
 
 </menu>

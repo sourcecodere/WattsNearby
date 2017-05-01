@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:defaultValue="@bool/enable_only_fast_chargers"
+        android:key="@string/pref_enable_only_fast_chargers_key"
+        android:summaryOff="@string/pref_enable_only_fast_chargers_false"
+        android:summaryOn="@string/pref_enable_only_fast_chargers_true"
+        android:title="@string/pref_enable_only_fast_chargers_label" />
+
+    <PreferenceCategory android:title="@string/charger_types">
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_type2_mennekes"
+            android:icon="@drawable/ic_type2_mennekes"
+            android:key="@string/pref_enable_type2_mennekes_key"
+            android:summaryOff="@string/pref_enable_type2_mennekes_false"
+            android:summaryOn="@string/pref_enable_type2_mennekes_true"
+            android:title="@string/pref_enable_type2_mennekes_label" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_combo_ccs_eu"
+            android:icon="@drawable/ic_combo_ccs_eu"
+            android:key="@string/pref_enable_combo_ccs_eu_key"
+            android:summaryOff="@string/pref_enable_combo_ccs_eu_false"
+            android:summaryOn="@string/pref_enable_combo_ccs_eu_true"
+            android:title="@string/pref_enable_combo_ccs_eu_label" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_type1_j1772"
+            android:icon="@drawable/ic_type1_j1772"
+            android:key="@string/pref_enable_type1_j1772_key"
+            android:summaryOff="@string/pref_enable_type1_j1772_false"
+            android:summaryOn="@string/pref_enable_type1_j1772_true"
+            android:title="@string/pref_enable_type1_j1772_label" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_type1_ccs"
+            android:icon="@drawable/ic_type1_ccs"
+            android:key="@string/pref_enable_type1_ccs_key"
+            android:summaryOff="@string/pref_enable_type1_ccs_false"
+            android:summaryOn="@string/pref_enable_type1_ccs_true"
+            android:title="@string/pref_enable_type1_ccs_label" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_chademo"
+            android:icon="@drawable/ic_chademo"
+            android:key="@string/pref_enable_chademo_key"
+            android:summaryOff="@string/pref_enable_chademo_false"
+            android:summaryOn="@string/pref_enable_chademo_true"
+            android:title="@string/pref_enable_chademo_label" />
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_tesla_hpwc"
+            android:icon="@drawable/ic_tesla_hpwc"
+            android:key="@string/pref_enable_tesla_hpwc_key"
+            android:summaryOff="@string/pref_enable_tesla_hpwc_false"
+            android:summaryOn="@string/pref_enable_tesla_hpwc_true"
+            android:title="@string/pref_enable_tesla_hpwc_label" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

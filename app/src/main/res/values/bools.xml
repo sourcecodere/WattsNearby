@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="enable_only_fast_chargers">false</bool>
+    <bool name="enable_type2_mennekes">true</bool>
+    <bool name="enable_combo_ccs_eu">true</bool>
+    <bool name="enable_type1_j1772">true</bool>
+    <bool name="enable_type1_ccs">true</bool>
+    <bool name="enable_chademo">true</bool>
+    <bool name="enable_tesla_hpwc">true</bool>
+</resources>

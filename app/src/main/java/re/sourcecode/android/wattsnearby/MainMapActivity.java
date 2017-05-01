@@ -8,7 +8,6 @@ import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -21,7 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -69,6 +67,13 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
+    private static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
+
+    private static final int INTENT_PLACE = 1; // For places search
+
+    public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet fragment
+    public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
+
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.
 
@@ -86,10 +91,6 @@ public class MainMapActivity extends AppCompatActivity implements
     private Marker mCurrentLocationMarker; // car marker with position
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
-    private static final int INTENT_PLACE = 1; // For places search
-
-    public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet dialog fragment
 
     /**
      * First call in the lifecycle. This is followed by onStart().
@@ -98,8 +99,10 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_map);
+
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -123,6 +126,7 @@ public class MainMapActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "My location fab clicked!");
                 if ((ContextCompat.checkSelfPermission(MainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
                     // Try to set last location, update car marker, and zoom to location
                     updateCurrentLocation(true);
@@ -151,6 +155,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
 
     }
@@ -161,6 +166,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onStart() {
+        Log.d(TAG, "onStart");
         buildGoogleApiClient(); // Get connection to google services.
         super.onStart();
 
@@ -180,6 +186,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -217,6 +224,19 @@ public class MainMapActivity extends AppCompatActivity implements
                 e.printStackTrace();
             }
             return true;
+        } else if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.action_about) {
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragment();
+
+            Bundle args = new Bundle();
+            args.putBoolean(ARG_DETAIL_SHEET_ABOUT, true);
+            bottomSheetDialogFragment.setArguments(args);
+
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+            return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -257,6 +277,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady");
         mMap = googleMap;
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -373,13 +394,12 @@ public class MainMapActivity extends AppCompatActivity implements
 
         if (stationId != null) { //every station marker should have data (stationId), only the car does not
             Bundle args = new Bundle();
-            args.putLong(ARG_DETAIL_SHEET_STATION_ID ,stationId);
+            args.putLong(ARG_DETAIL_SHEET_STATION_ID, stationId);
             bottomSheetDialogFragment.setArguments(args);
         }
 
 
         bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
-        // TODO anchor the fab buttons.
 
         return false;
     }
@@ -399,7 +419,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleMap.onCameraIdle
-     *
+     * <p>
      * Callback. Checks if the new idle position of the map camera should initiate a OCM sync
      */
     @Override
@@ -430,9 +450,10 @@ public class MainMapActivity extends AppCompatActivity implements
             WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
         }
     }
+
     /**
      * Places API
-     *
+     * <p>
      * Callback invoked when a place has been selected from the PlaceAutocompleteFragment.
      */
     @Override
@@ -447,7 +468,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Places API
-     *
+     * <p>
      * Callback invoked when PlaceAutocompleteFragment encounters an error.
      */
     @Override
@@ -515,6 +536,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     protected void updateCurrentLocation(Boolean moveCamera) {
         // Handle locations of handset
+        Log.d(TAG, "updateCurrentLocation called");
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
 
             if (mGoogleApiClient != null) {
@@ -670,6 +692,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * Setup the GoogleApiClient for play services (maps)
      */
     protected synchronized void buildGoogleApiClient() {
+        Log.d(TAG, "buildGoogleApiClient");
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)

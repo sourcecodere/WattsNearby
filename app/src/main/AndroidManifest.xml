@@ -42,6 +42,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SettingsActivity"></activity>
+
         <!-- Our ContentProvider -->
         <provider
             android:name=".data.ChargingStationProvider"
