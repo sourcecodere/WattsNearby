@@ -157,6 +157,7 @@ public class MainMapActivity extends AppCompatActivity implements
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
+        mGoogleApiClient.connect();
 
     }
 
@@ -178,6 +179,10 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+        if(mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
 
     }
 
@@ -188,6 +193,7 @@ public class MainMapActivity extends AppCompatActivity implements
     protected void onStop() {
         Log.d(TAG, "onStop");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
         super.onStop();

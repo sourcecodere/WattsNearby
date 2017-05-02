@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
+import re.sourcecode.android.wattsnearby.data.WattsPreferences;
 
 /**
  * Created by olem on 4/19/17.
@@ -138,7 +139,6 @@ public class WattsMapUtils {
 
         try {
             while (getConnectionsCursor.moveToNext()) {
-                int bool = getConnectionsCursor.getInt(INDEX_STATION_FAST);
                 if (getConnectionsCursor.getInt(INDEX_STATION_FAST) > 0) {
                     return true;
                 }
@@ -150,4 +150,12 @@ public class WattsMapUtils {
         return false;
 
     }
+
+    /**
+     * Checks database for charing station outlets
+     *
+     * @param stationId
+     * @return hasmap of boolean charing types
+     */
+    //TODO:
 }
