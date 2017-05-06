@@ -30,6 +30,7 @@ public class WattsStationParcelable implements Parcelable {
     private String mState;
     private String mTown;
     private String mCountry;
+    private int mFavorite;
 
     public WattsStationParcelable() {
 
@@ -50,7 +51,8 @@ public class WattsStationParcelable implements Parcelable {
                                   String postCode,
                                   String state,
                                   String town,
-                                  String country) {
+                                  String country,
+                                  int favorite) {
         this.mId = id;
         this.mOpTitle = opTitle;
         this.mOpWeb = opWeb;
@@ -67,6 +69,7 @@ public class WattsStationParcelable implements Parcelable {
         this.mState = state;
         this.mTown = town;
         this.mCountry = country;
+        this.mFavorite = favorite;
     }
 
     public WattsStationParcelable(Cursor cursor) {
@@ -87,7 +90,7 @@ public class WattsStationParcelable implements Parcelable {
         int idx_state = cursor.getColumnIndex(ChargingStationContract.StationEntry.COLUMN_ADDR_STATE);
         int idx_town = cursor.getColumnIndex(ChargingStationContract.StationEntry.COLUMN_ADDR_TOWN);
         int idx_country = cursor.getColumnIndex(ChargingStationContract.StationEntry.COLUMN_ADDR_COUNTRY_TITLE);
-
+        int idx_favorite = cursor.getColumnIndex(ChargingStationContract.StationEntry.COLUMN_FAVORITE);
 
         this.mId = cursor.getLong(idx_col_id);
         this.mOpTitle = cursor.getString(idx_col_title);
@@ -105,6 +108,7 @@ public class WattsStationParcelable implements Parcelable {
         this.mState = cursor.getString(idx_state);
         this.mTown = cursor.getString(idx_town);
         this.mCountry = cursor.getString(idx_country);
+        this.mFavorite = cursor.getInt(idx_favorite);
     }
 
     @Override
@@ -131,6 +135,7 @@ public class WattsStationParcelable implements Parcelable {
         parcel.writeString(mState);
         parcel.writeString(mTown);
         parcel.writeString(mCountry);
+        parcel.writeInt(mFavorite);
     }
 
     public static final Parcelable.Creator<WattsStationParcelable> CREATOR
@@ -164,8 +169,11 @@ public class WattsStationParcelable implements Parcelable {
         mState = in.readString();
         mTown = in.readString();
         mCountry = in.readString();
+        mFavorite = in.readInt();
 
     }
+
+
 
     public long getmId() {
         return mId;
@@ -294,4 +302,8 @@ public class WattsStationParcelable implements Parcelable {
     public void setmCountry(String mCountry) {
         this.mCountry = mCountry;
     }
+
+    public int getmFavorite() { return mFavorite; }
+
+    public void setmFavorite(int mFavorite) { this.mFavorite = mFavorite; }
 }

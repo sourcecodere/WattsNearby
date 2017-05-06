@@ -85,6 +85,7 @@
     <string name="credit_ic_type1_css">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432291</string>
     <string name="credit_ic_type1_j1772">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432296</string>
 
-
+<!-- Bottom sheet -->
+    <string name="switch_favorite">Favorite: </string>
 
 </resources>

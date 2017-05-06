@@ -87,7 +87,8 @@ public class ChargingStationContract {
 
         /* Status */
         public static final String COLUMN_TIME_UPDATED = "time_updated";
-
+        /* Status */
+        public static final String COLUMN_FAVORITE = "favorite";
 
 
         /* Define a function to build a URI to find a specific station by it's identifier */

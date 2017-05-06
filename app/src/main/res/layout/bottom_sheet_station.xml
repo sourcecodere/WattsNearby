@@ -77,6 +77,7 @@
                 android:textColor="@color/primary_light" />
         </LinearLayout>
 
+
         <ImageButton
             android:id="@+id/btn_google_maps"
             android:layout_width="wrap_content"
@@ -98,45 +99,71 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/sheet_station_operator_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        android:text="Charge  Drive (Fortum - NO)"
-        android:textColor="@color/primary_text" />
+        android:orientation="horizontal"
+        android:background="@color/primary_light">
 
-    <TextView
-        android:id="@+id/sheet_station_operator_web"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        android:text="http://www.fortum.no/hurtigladere"
-        android:textColor="@color/secondary_text"/>
 
-    <TextView
-        android:id="@+id/sheet_station_membership"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        android:text="Requires membership"
-        android:textColor="@color/secondary_text" />
-    <TextView
-        android:id="@+id/sheet_station_key"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        android:text="Requires access key"
-        android:textColor="@color/secondary_text" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.6">
 
-    <TextView
-        android:id="@+id/sheet_station_usage_type_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        android:text="Public - Pay At Location"
-        android:textColor="@color/secondary_text" />
+            <TextView
+                android:id="@+id/sheet_station_operator_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary_light"
+                android:text="Charge  Drive (Fortum - NO)"
+                android:textColor="@color/primary_text" />
 
+            <TextView
+                android:id="@+id/sheet_station_operator_web"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary_light"
+                android:text="http://www.fortum.no/hurtigladere"
+                android:textColor="@color/secondary_text" />
+
+            <TextView
+                android:id="@+id/sheet_station_membership"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary_light"
+                android:text="Requires membership"
+                android:textColor="@color/secondary_text" />
+
+            <TextView
+                android:id="@+id/sheet_station_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary_light"
+                android:text="Requires access key"
+                android:textColor="@color/secondary_text" />
+
+            <TextView
+                android:id="@+id/sheet_station_usage_type_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary_light"
+                android:text="Public - Pay At Location"
+                android:textColor="@color/secondary_text" />
+        </LinearLayout>
+        <Switch
+            android:id="@+id/favorite_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="24dp"
+            android:background="@color/primary_light"
+            android:text="@string/switch_favorite"
+            android:layout_gravity="end"
+            android:layout_weight="0.4"
+            />
+
+    </LinearLayout>
     <!-- no support for ListView in CoordinatorLayout!!-->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/sheet_list"
