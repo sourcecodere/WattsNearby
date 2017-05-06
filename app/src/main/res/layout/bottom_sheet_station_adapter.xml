@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+
+    <ImageView
+        android:id="@+id/connection_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_other_input" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/connection_fast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="FAST" />
+
+            <TextView
+                android:id="@+id/connection_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="CHAdeMO" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/connection_level_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="Level 3:  High (Over 40kW)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/connection_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="DC" />
+
+            <TextView
+                android:id="@+id/connection_amp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="110 A" />
+
+            <TextView
+                android:id="@+id/connection_volt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="400 v" />
+
+            <TextView
+                android:id="@+id/connection_kw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="44.0 Kw" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

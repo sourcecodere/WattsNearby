@@ -193,4 +193,28 @@ public class WattsPreferences {
         return shouldDisplayTeslaHpwc;
     }
 
+    /**
+     * Returns true if the user prefers to see other charger inputs, false otherwise. This
+     * preference can be changed by the user within the SettingsFragment.
+     *
+     * @param context Used to access SharedPreferences
+     * @return true if the user prefers to only see other charger inputs, false otherwise
+     */
+    public static boolean areOtherInputsEnabled(Context context) {
+        /* Key for accessing the preference for showing notifications */
+        String displayOtherInputKey = context.getString(R.string.pref_enable_other_input_key);
+
+        boolean shouldDisplayOtherInputByDefault = context
+                .getResources()
+                .getBoolean(R.bool.enable_other_input);
+
+        /* As usual, we use the default SharedPreferences to access the user's preferences */
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        /* If a value is stored with the key, we extract it here. If not, use a default. */
+        boolean shouldDisplayOtherInput = sp
+                .getBoolean(displayOtherInputKey, shouldDisplayOtherInputByDefault);
+
+        return shouldDisplayOtherInput;
+    }
 }

@@ -4,6 +4,7 @@ package re.sourcecode.android.wattsnearby.utilities;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
@@ -13,7 +14,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 import re.sourcecode.android.wattsnearby.data.WattsPreferences;
@@ -43,12 +47,10 @@ public class WattsMapUtils {
     public static final int INDEX_LAT = 2;
     public static final int INDEX_LON = 3;
 
-    /* The data we need to check for fast charging capacity */
-    private static final String[] CONNECTIO_CAPACITY_PROJECTION = {
-            ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST
+    /* The data we need to count matching connections at station */
+    private static final String[] CONNECTION_ID_PROJECTION = {
+            ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID
     };
-    private static final int INDEX_STATION_FAST = 0;
-
 
     /**
      * Adds the station markers for the current visible region from the content provider.
@@ -89,23 +91,38 @@ public class WattsMapUtils {
                 if (visibleBounds.contains(stationPosition)) {
                     //Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " within bounds");
                     if (!visibleStationMarkers.containsKey(stationId)) {
-                        Marker tmpMarker;
-                        if (checkForFastCharging(wattsContentResolver, stationId)) {
-                            tmpMarker = map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStationFast));
-                        } else {
-                            tmpMarker = map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStation));
-                        }
-                        tmpMarker.setTag(stationId); // save the station id directly on the marker as a tag.
-                        visibleStationMarkers.put(stationId, tmpMarker); // save the stationId and marker in hashTable for house cleaning
-                    }
+                        // not in map, we need to get it from the db and add it to the map
+                        // if the user preferences matches the stations connections
 
+                        Cursor connectionCursor = WattsDataUtils.getConnectionsFilteredByPrefs(
+                                context,
+                                wattsContentResolver,
+                                stationId,
+                                CONNECTION_ID_PROJECTION);
+                        try {
+                            if (connectionCursor.getCount() > 0) {
+                                Log.d(TAG, "station" + stationId + " has " + connectionCursor.getCount() + " matching connections");
+                                // we have matching connections, add it to the map
+                                Marker tmpMarker;
+                                if (WattsDataUtils.checkFastChargingAtStation(wattsContentResolver, stationId)) {
+                                    tmpMarker = map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStationFast));
+                                } else {
+                                    tmpMarker = map.addMarker(WattsImageUtils.getStationMarkerOptions(stationPosition, stationTitle, iconStation));
+                                }
+
+                                tmpMarker.setTag(stationId); // save the station id directly on the marker as a tag.
+                                visibleStationMarkers.put(stationId, tmpMarker); // save the stationId and marker in hashTable for house cleaning
+                            }
+                        } finally {
+                            connectionCursor.close();
+                        }
+                    }
                 } else {
                     //Log.d(TAG, "Id: " + getStationsCursor.getLong(INDEX_ID) + " outside of bounds");
                     if (visibleStationMarkers.containsKey(stationId)) {
                         // Remove the marker from the map (value)
                         visibleStationMarkers.get(stationId).remove();
                         // Remove the reference in the hashmap (key)
-
                         visibleStationMarkers.remove(stationId);
                     }
                 }
@@ -119,43 +136,5 @@ public class WattsMapUtils {
 
     }
 
-    /**
-     * Checks database for fast charging capacity at certain station
-     *
-     * @param stationId
-     * @return true or false
-     */
-    private static Boolean checkForFastCharging(ContentResolver wattsContentResolver, Long stationId) {
 
-        Uri getConnectionUri = ChargingStationContract.ConnectionEntry.CONTENT_URI;
-
-        Cursor getConnectionsCursor = wattsContentResolver.query(
-                getConnectionUri,
-                CONNECTIO_CAPACITY_PROJECTION,
-                ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "=?",
-                new String[]{Long.toString(stationId)},
-                null
-        );
-
-        try {
-            while (getConnectionsCursor.moveToNext()) {
-                if (getConnectionsCursor.getInt(INDEX_STATION_FAST) > 0) {
-                    return true;
-                }
-            }
-        } finally {
-            getConnectionsCursor.close();
-        }
-
-        return false;
-
-    }
-
-    /**
-     * Checks database for charing station outlets
-     *
-     * @param stationId
-     * @return hasmap of boolean charing types
-     */
-    //TODO:
 }

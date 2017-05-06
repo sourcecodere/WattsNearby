@@ -392,9 +392,6 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        //TODO: move the map center up a bit?
-
-
         BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragment();
         Long stationId = (Long) marker.getTag();
 
@@ -403,7 +400,6 @@ public class MainMapActivity extends AppCompatActivity implements
             args.putLong(ARG_DETAIL_SHEET_STATION_ID, stationId);
             bottomSheetDialogFragment.setArguments(args);
         }
-
 
         bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
 

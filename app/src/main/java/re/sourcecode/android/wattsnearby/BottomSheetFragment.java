@@ -2,7 +2,6 @@ package re.sourcecode.android.wattsnearby;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.Dimension;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -44,17 +43,17 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
         if ((args != null) && (getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID))) { //user pushed a station
             Long stationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
-            contentView = View.inflate(getContext(), R.layout.bottom_sheet_marker_station, null);
-            TextView title = (TextView) contentView.findViewById(R.id.sheet_title);
-            TextView sub_title = (TextView) contentView.findViewById(R.id.sheet_sub_title);
-            title.setText("This is a station!"); // Todo get data from content provider
-            sub_title.setText(stationId.toString());
+            contentView = View.inflate(getContext(), R.layout.bottom_sheet_station, null);
+            TextView addr_title = (TextView) contentView.findViewById(R.id.sheet_station_addr_title);
+
+            //title.setText("This is a station!"); // Todo get data from content provider
+            addr_title.setText(stationId.toString());
 
         } else if ((args != null) && (getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_ABOUT))) {
           contentView = View.inflate(getContext(),R.layout.bottom_sheet_about, null);
 
         } else { // user pushed the car marker
-            contentView = View.inflate(getContext(), R.layout.bottom_sheet_marker_car, null);
+            contentView = View.inflate(getContext(), R.layout.bottom_sheet_car, null);
             TextView title = (TextView) contentView.findViewById(R.id.car_sheet_title);
             title.setText(getResources().getString(R.string.marker_current));
         }
@@ -74,4 +73,5 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         return super.onCreateDialog(savedInstanceState);
 
     }
+
 }

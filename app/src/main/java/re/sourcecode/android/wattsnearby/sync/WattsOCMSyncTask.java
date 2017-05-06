@@ -162,7 +162,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
 
             Boolean stationInDB = currentStationCursor.moveToFirst();
 
-            Log.d(TAG, stationByIdUri.toString() + " " + stationInDB.toString());
+            //Log.d(TAG, stationByIdUri.toString() + " " + stationInDB.toString());
             /*
             * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
             */

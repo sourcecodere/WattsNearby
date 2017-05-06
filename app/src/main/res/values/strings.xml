@@ -65,6 +65,11 @@
     <string name="pref_enable_tesla_hpwc_label">Tesla HPWC</string>
     <string name="pref_enable_tesla_hpwc_true">Enabled</string>
     <string name="pref_enable_tesla_hpwc_false">Not Enabled</string>
+    <!-- other_input -->
+    <string name="pref_enable_other_input_key" translatable="false">enable_other_input</string>
+    <string name="pref_enable_other_input_label">Other connections</string>
+    <string name="pref_enable_other_input_true">Enabled</string>
+    <string name="pref_enable_other_input_false">Not Enabled</string>
 
     <!-- About -->
     <string name="about_title">About WattsNearby</string>

@@ -58,6 +58,13 @@
             android:summaryOn="@string/pref_enable_tesla_hpwc_true"
             android:title="@string/pref_enable_tesla_hpwc_label" />
 
+        <CheckBoxPreference
+            android:defaultValue="@bool/enable_other_input"
+            android:icon="@drawable/ic_other_input"
+            android:key="@string/pref_enable_other_input_key"
+            android:summaryOff="@string/pref_enable_other_input_false"
+            android:summaryOn="@string/pref_enable_other_input_true"
+            android:title="@string/pref_enable_other_input_label" />
     </PreferenceCategory>
 
 </PreferenceScreen>
