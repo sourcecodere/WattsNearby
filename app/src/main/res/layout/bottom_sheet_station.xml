@@ -145,6 +145,14 @@
                 android:textColor="@color/secondary_text" />
 
             <TextView
+                android:id="@+id/sheet_pay_on_site"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary_light"
+                android:text="Pay on site"
+                android:textColor="@color/secondary_text" />
+
+            <TextView
                 android:id="@+id/sheet_station_usage_type_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

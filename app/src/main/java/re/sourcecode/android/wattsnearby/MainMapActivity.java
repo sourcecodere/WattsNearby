@@ -89,7 +89,7 @@ public class MainMapActivity extends AppCompatActivity implements
     private BitmapDescriptor mMarkerIconStationFast; // Icon for fast charging stations.
 
     private Marker mCurrentLocationMarker; // car marker with position
-    private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap of station markers in the current map
+    private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
 
     /**
@@ -234,7 +234,7 @@ public class MainMapActivity extends AppCompatActivity implements
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_about) {
-            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragment();
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragmentGeneric();
 
             Bundle args = new Bundle();
             args.putBoolean(ARG_DETAIL_SHEET_ABOUT, true);
@@ -392,16 +392,21 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragment();
         Long stationId = (Long) marker.getTag();
 
         if (stationId != null) { //every station marker should have data (stationId), only the car does not
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragmentStation();
+
             Bundle args = new Bundle();
             args.putLong(ARG_DETAIL_SHEET_STATION_ID, stationId);
             bottomSheetDialogFragment.setArguments(args);
-        }
 
-        bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+        } else {
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragmentGeneric();
+
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+        }
 
         return false;
     }

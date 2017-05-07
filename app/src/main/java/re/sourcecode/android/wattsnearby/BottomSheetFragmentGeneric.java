@@ -10,13 +10,14 @@ import android.view.View;
 import android.widget.TextView;
 
 
+import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
+
+
 /**
  * Created by olem on 4/23/17.
  */
 
-public class BottomSheetFragment extends BottomSheetDialogFragment {
-
-
+public class BottomSheetFragmentGeneric extends BottomSheetDialogFragment {
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
 
@@ -37,20 +38,11 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
 
-
         View contentView;
-        Bundle args = getArguments();
 
-        if ((args != null) && (getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID))) { //user pushed a station
-            Long stationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
-            contentView = View.inflate(getContext(), R.layout.bottom_sheet_station, null);
-            TextView addr_title = (TextView) contentView.findViewById(R.id.sheet_station_addr_title);
-
-            //title.setText("This is a station!"); // Todo get data from content provider
-            addr_title.setText(stationId.toString());
-
-        } else if ((args != null) && (getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_ABOUT))) {
-          contentView = View.inflate(getContext(),R.layout.bottom_sheet_about, null);
+        if ((getArguments()!=null) && getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_ABOUT)) {
+            // about from appbar
+            contentView = View.inflate(getContext(), R.layout.bottom_sheet_about, null);
 
         } else { // user pushed the car marker
             contentView = View.inflate(getContext(), R.layout.bottom_sheet_car, null);
@@ -66,12 +58,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
 
         }
-    }
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
-
     }
 
 }

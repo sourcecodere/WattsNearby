@@ -307,6 +307,7 @@ public class ChargingStationProvider extends ContentProvider {
                         selectionArgs);
 
                 break;
+
             case CODE_CONNECTION:
                 numRowsDeleted = db.delete(
                         ChargingStationContract.ConnectionEntry.TABLE_NAME,
@@ -332,7 +333,20 @@ public class ChargingStationProvider extends ContentProvider {
 
         switch(sUriMatcher.match(uri)){
             case CODE_STATION:
-                rows = db.update(ChargingStationContract.StationEntry.TABLE_NAME, values, selection, selectionArgs);
+                rows = db.update(
+                        ChargingStationContract.StationEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            case CODE_STATION_ID:
+                long _id = ContentUris.parseId(uri);
+                rows = db.update(
+                        ChargingStationContract.StationEntry.TABLE_NAME,
+                        values,
+                        ChargingStationContract.StationEntry.COLUMN_ID + "= ?",
+                        new String[]{String.valueOf(_id)}
+                );
                 break;
             case CODE_CONNECTION:
                 rows = db.update(ChargingStationContract.ConnectionEntry.TABLE_NAME, values, selection, selectionArgs);
