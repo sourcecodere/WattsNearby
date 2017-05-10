@@ -61,7 +61,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
     public void onBindViewHolder(ConnectionAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
-        String connection_title = mCursor.getString(BottomSheetFragmentStation.INDEX_CONN_TITLE);
+        String connection_title = mCursor.getString(BottomSheetStationFragment.INDEX_CONN_TITLE);
         holder.connTitleView.setText(connection_title);
 
     }
@@ -93,9 +93,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
             super(view);
 
             connTitleView = (TextView) view.findViewById(R.id.connection_title);
-
         }
-
     }
 
     /**

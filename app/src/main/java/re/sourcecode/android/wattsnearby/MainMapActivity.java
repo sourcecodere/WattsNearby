@@ -234,7 +234,7 @@ public class MainMapActivity extends AppCompatActivity implements
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_about) {
-            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragmentGeneric();
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetGenericFragment();
 
             Bundle args = new Bundle();
             args.putBoolean(ARG_DETAIL_SHEET_ABOUT, true);
@@ -395,7 +395,7 @@ public class MainMapActivity extends AppCompatActivity implements
         Long stationId = (Long) marker.getTag();
 
         if (stationId != null) { //every station marker should have data (stationId), only the car does not
-            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragmentStation();
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetStationFragment();
 
             Bundle args = new Bundle();
             args.putLong(ARG_DETAIL_SHEET_STATION_ID, stationId);
@@ -403,7 +403,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         } else {
-            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetFragmentGeneric();
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetGenericFragment();
 
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         }

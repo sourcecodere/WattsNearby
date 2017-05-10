@@ -17,7 +17,7 @@ import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
  * Created by olem on 4/23/17.
  */
 
-public class BottomSheetFragmentGeneric extends BottomSheetDialogFragment {
+public class BottomSheetGenericFragment extends BottomSheetDialogFragment {
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
 

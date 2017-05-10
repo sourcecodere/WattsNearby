@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -31,10 +30,10 @@ import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
  * Created by olem on 4/23/17.
  */
 
-public class BottomSheetFragmentStation extends BottomSheetDialogFragment
+public class BottomSheetStationFragment extends BottomSheetDialogFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = BottomSheetFragmentStation.class.getSimpleName();
+    private static final String TAG = BottomSheetStationFragment.class.getSimpleName();
 
     TextView viewOpTitleView;
     TextView viewOpWebSite;
