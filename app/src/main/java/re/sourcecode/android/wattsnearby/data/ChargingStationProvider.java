@@ -205,7 +205,7 @@ public class ChargingStationProvider extends ContentProvider {
                 retCursor = db.query(
                         ChargingStationContract.ConnectionEntry.TABLE_NAME,
                         projection,
-                        ChargingStationContract.ConnectionEntry._ID + "= ?",
+                        ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "= ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,

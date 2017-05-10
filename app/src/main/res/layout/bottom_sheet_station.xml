@@ -174,7 +174,7 @@
     </LinearLayout>
     <!-- no support for ListView in CoordinatorLayout!!-->
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/sheet_list"
+        android:id="@+id/recycler_view_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/primary_light"
