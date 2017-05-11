@@ -48,7 +48,23 @@
         <provider
             android:name=".data.ChargingStationProvider"
             android:authorities="@string/content_authority"
-            android:exported="false" />
+            android:exported="true" />
+
+
+        <service android:name=".widget.WattsWidgetRemoteViewService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+
+        <!-- Receiver -->
+        <receiver android:name=".widget.WattsWidgetProvider"
+            android:label="@string/widget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
     </application>
 
 </manifest>

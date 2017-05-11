@@ -73,6 +73,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
+    public static final String ARG_WIDGET_INTENT_KEY = "stationid";
 
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.

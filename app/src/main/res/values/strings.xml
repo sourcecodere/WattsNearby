@@ -86,9 +86,12 @@
     <string name="credit_ic_type1_css">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432291</string>
     <string name="credit_ic_type1_j1772">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432296</string>
 
-<!-- Bottom sheet -->
+    <!-- Bottom sheet -->
     <string name="switch_favorite">Favorite: </string>
     <string name="connection_power" formatted="false" translatable="false">"%.0fV/%.0fA/%.0fkW"</string>
     <string name="fast_charger">Fast charger</string>
 
+    <!-- Widget top text -->
+    <string name="widget_title" translatable="false">WattsNearby</string>
+    <string name="widget_top_text">WattsNearby favorites:</string>
 </resources>
