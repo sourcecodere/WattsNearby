@@ -2,12 +2,18 @@ package re.sourcecode.android.wattsnearby;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import re.sourcecode.android.wattsnearby.utilities.WattsAccessibilityUtils;
+import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 
 
 /**
@@ -59,10 +65,43 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
      */
     @Override
     public void onBindViewHolder(ConnectionAdapterViewHolder holder, int position) {
+
         mCursor.moveToPosition(position);
 
-        String connection_title = mCursor.getString(BottomSheetStationFragment.INDEX_CONN_TITLE);
-        holder.connTitleView.setText(connection_title);
+        int conType = mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_TYPE_ID);
+        holder.connIconView.setImageDrawable(
+                WattsImageUtils.getConnectionIcon(mContext, conType)
+        );
+        holder.connIconView.setContentDescription(
+                WattsAccessibilityUtils.getConnectionDescription(mContext, conType)
+        );
+
+        holder.connTitleView.setText(
+                mCursor.getString(
+                        BottomSheetStationFragment.INDEX_CONN_TITLE)
+        );
+
+        holder.connLevelTitleView.setText(
+                mCursor.getString(BottomSheetStationFragment.INDEX_CONN_LEVEL_TITLE)
+        );
+
+        holder.connCurrentView.setText(
+                mCursor.getString(BottomSheetStationFragment.INDEX_CONN_CURRENT_TYPE_DESC)
+        );
+        holder.connPowerView.setText(
+                String.format(mContext.getString(R.string.connection_power),
+                        mCursor.getDouble(BottomSheetStationFragment.INDEX_CONN_VOLT),
+                        mCursor.getDouble(BottomSheetStationFragment.INDEX_CONN_AMP),
+                        mCursor.getDouble(BottomSheetStationFragment.INDEX_CONN_KW)
+                )
+        );
+        if (mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_LEVEL_FAST) == 1) {
+            holder.connFastView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_fast));
+            holder.connFastView.setContentDescription(mContext.getString(R.string.fast_charger));
+        } else {
+            holder.connFastView.setVisibility(View.INVISIBLE);
+        }
+
 
     }
 
@@ -81,18 +120,28 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
 
     /**
      * A ViewHolder is a required part of the pattern for RecyclerViews. It mostly behaves as
-     * a cache of the child views for a forecast item. It's also a convenient place to set an
+     * a cache of the child views for a connection item. It's also a convenient place to set an
      * OnClickListener, since it has access to the adapter and the views.
      */
     class ConnectionAdapterViewHolder extends RecyclerView.ViewHolder {
 
+        final ImageView connIconView;
+        final ImageView connFastView;
         final TextView connTitleView;
+        final TextView connLevelTitleView;
+        final TextView connCurrentView;
+        final TextView connPowerView;
 
 
         ConnectionAdapterViewHolder(View view) {
             super(view);
 
+            connIconView = (ImageView) view.findViewById(R.id.connection_icon);
+            connFastView = (ImageView) view.findViewById(R.id.connection_fast);
             connTitleView = (TextView) view.findViewById(R.id.connection_title);
+            connLevelTitleView = (TextView) view.findViewById(R.id.connection_level_title);
+            connCurrentView = (TextView) view.findViewById(R.id.connection_current);
+            connPowerView = (TextView) view.findViewById(R.id.connection_power);
         }
     }
 

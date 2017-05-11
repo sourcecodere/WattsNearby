@@ -11,7 +11,7 @@
     <ImageView
         android:id="@+id/connection_icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="16dp"
         android:src="@drawable/ic_other_input" />
 
@@ -26,39 +26,32 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <ImageView
                 android:id="@+id/connection_fast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
-                android:text="FAST" />
+                android:src="@drawable/ic_fast" />
 
             <TextView
                 android:id="@+id/connection_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:gravity="center_vertical"
                 android:text="CHAdeMO" />
         </LinearLayout>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/connection_level_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:text="Level 3:  High (Over 40kW)" />
 
-            <TextView
-                android:id="@+id/connection_level_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:gravity="center_vertical"
-                android:text="Level 3:  High (Over 40kW)" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -69,40 +62,19 @@
                 android:id="@+id/connection_current"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:gravity="center_vertical"
                 android:text="DC" />
 
             <TextView
-                android:id="@+id/connection_amp"
+                android:id="@+id/connection_power"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:gravity="center_vertical"
-                android:text="110 A" />
-
-            <TextView
-                android:id="@+id/connection_volt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:gravity="center_vertical"
-                android:text="400 v" />
-
-            <TextView
-                android:id="@+id/connection_kw"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:gravity="center_vertical"
-                android:text="44.0 Kw" />
-
+                android:text="400V/110A/44.0kW" />
         </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>

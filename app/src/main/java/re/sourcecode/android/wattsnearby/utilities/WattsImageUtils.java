@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 
@@ -14,6 +15,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import re.sourcecode.android.wattsnearby.R;
 
 /**
  * Created by olem on 4/9/17.
@@ -60,5 +63,25 @@ public class WattsImageUtils {
         markerOptions.anchor(1.0f, 0.5f);
         markerOptions.position(position);
         return markerOptions;
+    }
+
+    public static Drawable getConnectionIcon(Context context, int connectionId) {
+        switch (connectionId) {
+            case 2: //
+                return ContextCompat.getDrawable(context, R.drawable.ic_chademo);
+            case 33:
+                return ContextCompat.getDrawable(context, R.drawable.ic_combo_ccs_eu);
+            case 30:
+                return ContextCompat.getDrawable(context, R.drawable.ic_tesla_hpwc);
+            case 25:
+                return ContextCompat.getDrawable(context, R.drawable.ic_type2_mennekes);
+            case 32:
+                return ContextCompat.getDrawable(context, R.drawable.ic_type1_ccs);
+            case 1:
+                return ContextCompat.getDrawable(context, R.drawable.ic_type1_j1772);
+            default:
+                return ContextCompat.getDrawable(context, R.drawable.ic_other_input);
+        }
+
     }
 }
