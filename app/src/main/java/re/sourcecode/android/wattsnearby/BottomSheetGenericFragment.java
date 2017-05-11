@@ -1,16 +1,14 @@
 package re.sourcecode.android.wattsnearby;
 
 import android.app.Dialog;
-import android.os.Bundle;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
-
-
-import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 
 
 /**
@@ -48,6 +46,16 @@ public class BottomSheetGenericFragment extends BottomSheetDialogFragment {
             contentView = View.inflate(getContext(), R.layout.bottom_sheet_car, null);
             TextView title = (TextView) contentView.findViewById(R.id.car_sheet_title);
             title.setText(getResources().getString(R.string.marker_current));
+            ImageButton settingsBtn = (ImageButton) contentView.findViewById(R.id.btn_settings);
+            settingsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // launch the settings activity
+                    Intent intent = new Intent(getContext(), SettingsActivity.class);
+                    startActivity(intent);
+                }
+            });
+
         }
 
         dialog.setContentView(contentView);

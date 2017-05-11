@@ -3,6 +3,7 @@ package re.sourcecode.android.wattsnearby;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+
+import java.util.Locale;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 
@@ -142,6 +145,11 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     private Uri mStationUri;
     private Uri mConnectionUri;
 
+    /* Data for external maps intent */
+    private Double mLatitude;
+    private Double mLongitude;
+    private String mLabel;
+
     private ConnectionAdapter mConnectionAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -174,6 +182,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             viewFavorite = (Switch) rootView.findViewById(R.id.favorite_switch);
             viewGoogleDirectionsBtn = (ImageButton) rootView.findViewById(R.id.btn_google_maps_direction);
             viewGoogleMapsBtn = (ImageButton) rootView.findViewById(R.id.btn_google_maps);
+
 
 
             /*
@@ -320,6 +329,33 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
                     }
                 }
             });
+
+            mLatitude = data.getDouble(INDEX_STATION_LAT);
+            mLongitude = data.getDouble(INDEX_STATION_LON);
+            if (data.getString(INDEX_STATION_OPERATOR_TITLE) != null) {
+                mLabel = data.getString(INDEX_STATION_OPERATOR_TITLE);
+            } else {
+                mLabel = data.getString(INDEX_STATION_ADDR_TITLE);
+            }
+            // the google map button
+            viewGoogleMapsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f(%s)", mLatitude, mLongitude, mLatitude, mLongitude, mLabel);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    getContext().startActivity(intent);
+                }
+            });
+            // the google directions button
+            viewGoogleDirectionsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String uri = String.format(Locale.ENGLISH, "google.navigation:q=%f,%f", mLatitude, mLongitude);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                    getContext().startActivity(intent);
+                }
+            });
+
         } else if (loader.getId() == ID_CONNECTION_LOADER) {
             mConnectionAdapter.swapCursor(data);
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;

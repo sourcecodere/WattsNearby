@@ -72,7 +72,8 @@
     <string name="pref_enable_other_input_false">Not Enabled</string>
 
     <!-- About -->
-    <string name="about_title">About WattsNearby</string>
+    <string name="about_title" translatable="false">WattsNearby</string>
+    <string name="about_developer" translatable="false">Copyright \u00A9 2017 sourcecode.re</string>
 
     <!-- Credits -->
     <!-- IC launcher icon -->
