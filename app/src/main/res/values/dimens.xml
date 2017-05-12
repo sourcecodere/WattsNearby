@@ -16,6 +16,7 @@
 
     <!-- Widget dimens -->
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_header_padding">8dp</dimen>
     <dimen name="widget_default_width">250dp</dimen>
     <dimen name="widget_default_height">180dp</dimen>
 
