@@ -1,4 +1,4 @@
-package re.sourcecode.android.wattsnearby;
+package re.sourcecode.android.wattsnearby.fragment;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -9,6 +9,10 @@ import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import re.sourcecode.android.wattsnearby.MainMapActivity;
+import re.sourcecode.android.wattsnearby.R;
+import re.sourcecode.android.wattsnearby.SettingsActivity;
 
 
 /**

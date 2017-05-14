@@ -1,4 +1,4 @@
-package re.sourcecode.android.wattsnearby;
+package re.sourcecode.android.wattsnearby.fragment;
 
 
 import android.content.ContentResolver;
@@ -26,6 +26,9 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import re.sourcecode.android.wattsnearby.MainMapActivity;
+import re.sourcecode.android.wattsnearby.R;
+import re.sourcecode.android.wattsnearby.adapter.ConnectionAdapter;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 import re.sourcecode.android.wattsnearby.utilities.WattsWidgetUtils;
 

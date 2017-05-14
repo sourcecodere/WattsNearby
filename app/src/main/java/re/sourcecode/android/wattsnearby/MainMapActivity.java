@@ -49,6 +49,8 @@ import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.HashMap;
 
+import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
+import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
 import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;

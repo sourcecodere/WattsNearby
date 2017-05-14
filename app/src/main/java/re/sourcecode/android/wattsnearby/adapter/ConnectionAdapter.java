@@ -1,8 +1,7 @@
-package re.sourcecode.android.wattsnearby;
+package re.sourcecode.android.wattsnearby.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
+import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.utilities.WattsAccessibilityUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 
@@ -153,7 +154,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
      *
      * @param newCursor the new cursor to use as ForecastAdapter's data source
      */
-    void swapCursor(Cursor newCursor) {
+    public void swapCursor(Cursor newCursor) {
         mCursor = newCursor;
         notifyDataSetChanged();
     }

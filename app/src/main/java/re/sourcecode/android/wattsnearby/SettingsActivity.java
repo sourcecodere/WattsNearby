@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
+
 /**
  * Created by olem on 4/29/17.
  *
