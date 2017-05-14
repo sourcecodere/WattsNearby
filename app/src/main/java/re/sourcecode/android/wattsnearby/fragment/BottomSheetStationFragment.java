@@ -297,7 +297,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             } else {
                 viewUtTitle.setVisibility(View.GONE);
             }
-            
+
             boolean keepDetailBar = false;
 
             if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {

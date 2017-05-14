@@ -196,6 +196,7 @@
         android:layout_height="wrap_content"
         android:autoLink="web"
         android:background="@color/primary_dark"
+        android:paddingTop="@dimen/padding_small"
         android:paddingBottom="@dimen/padding_small"
         android:paddingEnd="@dimen/padding_small"
         android:paddingLeft="@dimen/padding_small"
