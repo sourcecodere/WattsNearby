@@ -93,5 +93,5 @@
 
     <!-- Widget top text -->
     <string name="widget_title" translatable="false">WattsNearby</string>
-    <string name="widget_top_text">WattsNearby favorites:</string>
+    <string name="widget_top_text">WattsNearby favorites</string>
 </resources>

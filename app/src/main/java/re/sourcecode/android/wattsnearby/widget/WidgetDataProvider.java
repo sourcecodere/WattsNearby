@@ -29,7 +29,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     Cursor mCursor = null;
 
     /* The data we need to get for each list item */
-    public static final String[] STATION_LIST_PROJECTION = {
+    private static final String[] STATION_LIST_PROJECTION = {
             ChargingStationContract.StationEntry.COLUMN_ID,
             ChargingStationContract.StationEntry.COLUMN_OPERATOR_TITLE,
             ChargingStationContract.StationEntry.COLUMN_ADDR_TITLE,
@@ -41,11 +41,11 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
      * to access the data from our query. If the order of the Strings above changes, these
      * indices must be adjusted to match the order of the Strings.
      */
-    public static final int INDEX_ID = 0;
-    public static final int INDEX_OPERTOR_TITLE = 1;
-    public static final int INDEX_ADDR_TITLE = 2;
-    public static final int INDEX_ADDR_TOWN = 3;
-    public static final int INDEX_FAVORITE = 4;
+    private static final int INDEX_ID = 0;
+    private static final int INDEX_OPERTOR_TITLE = 1;
+    private static final int INDEX_ADDR_TITLE = 2;
+    private static final int INDEX_ADDR_TOWN = 3;
+    private static final int INDEX_FAVORITE = 4;
 
 
     public WidgetDataProvider(Context context, Intent intent) {
@@ -80,13 +80,10 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public RemoteViews getViewAt(int position) {
-//        RemoteViews view = new RemoteViews(mContext.getPackageName(),
-//                android.R.layout.simple_list_item_1);
-//        view.setTextViewText(android.R.id.text1, mCollection.get(position));
-//        return view;
+
         String title = "";
         String where = "";
-        int stationId;
+        int stationId = 0;
 
 
         if (position == AdapterView.INVALID_POSITION ||
@@ -105,20 +102,20 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
         }
 
         // fetch layout
-//        RemoteViews views = new RemoteViews(
-//                mContext.getPackageName(),
-//                R.layout.widget_station_item);
-//
-//        views.setTextViewText(R.id.widget_item_title, title);
-//        views.setTextViewText(R.id.widget_item_where, where);
-        RemoteViews view = new RemoteViews(mContext.getPackageName(),
-                android.R.layout.simple_list_item_1);
-        view.setTextViewText(android.R.id.text1, title);
+        RemoteViews view = new RemoteViews(
+                mContext.getPackageName(),
+                R.layout.widget_station_item);
 
-//        // click, set extra data.
-//        final Intent fillInIntent = new Intent();
-//        fillInIntent.putExtra(MainMapActivity.ARG_WIDGET_INTENT_KEY, stationId);
-//        view.setOnClickFillInIntent(R.id.list_item, fillInIntent);
+        view.setTextViewText(R.id.widget_item_title, title);
+        view.setTextViewText(R.id.widget_item_where, where);
+
+
+        // click, set extra data.
+        if (stationId != 0) {
+            final Intent fillInIntent = new Intent();
+            fillInIntent.putExtra(MainMapActivity.ARG_WIDGET_INTENT_KEY, stationId);
+            view.setOnClickFillInIntent(R.id.list_item, fillInIntent);
+        }
 
         return view;
     }
@@ -152,12 +149,11 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
             mCursor.close();
         }
 
-
         mCursor = mContext.getContentResolver().query(
                 ChargingStationContract.StationEntry.CONTENT_URI,
                 STATION_LIST_PROJECTION,
                 ChargingStationContract.StationEntry.COLUMN_FAVORITE + "=?",
-                new String[] {"1"},
+                new String[]{"1"},
                 null);
     }
 

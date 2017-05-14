@@ -1,38 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/list_item"
-    android:layout_height="72dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary_light"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingLeft="16dp"
-    android:paddingStart="16dp"
-    android:paddingRight="16dp"
-    android:paddingEnd="16dp"
-    >
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/widget_padding"
+    android:paddingLeft="@dimen/widget_padding"
+    android:paddingRight="@dimen/widget_padding"
+    android:paddingStart="@dimen/widget_padding">
+
     <TextView
         android:id="@+id/widget_item_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/widget_padding"
+        android:paddingStart="@dimen/widget_padding"
+        android:paddingRight="@dimen/widget_padding"
+        android:paddingTop="@dimen/widget_padding"
         android:gravity="start|center_vertical"
+        android:textColor="@color/primary_text"
         tools:text="Fortum hurtigladestasjon, Moller Bil"
         />
-    <LinearLayout
-        android:layout_width="0dp"
+
+    <TextView
+        android:id="@+id/widget_item_where"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="end"
-        >
-        <TextView
-            android:id="@+id/widget_item_where"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="10sp"
-            android:paddingRight="10sp"
-            android:paddingStart="0sp"
-            android:paddingLeft="0sp"
-            tools:text="Frogner"
-            />
-    </LinearLayout>
+        android:paddingLeft="@dimen/widget_padding"
+        android:paddingStart="@dimen/widget_padding"
+        android:paddingBottom="@dimen/widget_padding"
+        android:paddingRight="@dimen/widget_padding"
+        android:paddingEnd="@dimen/widget_padding"
+        android:textColor="@color/secondary_text"
+        android:layout_gravity="start|center_vertical"
+        tools:text="Frogner" />
+
 </LinearLayout>
