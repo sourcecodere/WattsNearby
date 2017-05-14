@@ -14,6 +14,7 @@
 
     <!-- Image desctiptions -->
     <string name="img_electric_car">Electric car</string>
+    <string name="img_fast">Fast charger</string>
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
 

@@ -50,9 +50,13 @@
         android:paddingBottom="@dimen/padding_small">
 
         <ImageView
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
             android:layout_height="wrap_content"
             android:contentDescription="@string/img_electric_car"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:src="@drawable/ic_electric_car_launcher" />
 
         <TextView
@@ -71,9 +75,13 @@
         android:paddingBottom="@dimen/padding_small">
 
         <ImageView
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
             android:layout_height="wrap_content"
             android:contentDescription="@string/pref_enable_type2_mennekes_label"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:src="@drawable/ic_type2_mennekes" />
 
         <TextView
@@ -92,9 +100,13 @@
         android:paddingBottom="@dimen/padding_small">
 
         <ImageView
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
             android:layout_height="wrap_content"
             android:contentDescription="@string/pref_enable_combo_ccs_eu_label"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:src="@drawable/ic_combo_ccs_eu" />
 
         <TextView
@@ -114,9 +126,13 @@
 
         <ImageView
 
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
             android:layout_height="wrap_content"
             android:contentDescription="@string/pref_enable_type1_j1772_label"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:src="@drawable/ic_type1_j1772" />
 
         <TextView
@@ -135,9 +151,13 @@
         android:paddingBottom="@dimen/padding_small">
 
         <ImageView
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
             android:layout_height="wrap_content"
             android:contentDescription="@string/pref_enable_type1_ccs_label"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:src="@drawable/ic_type1_ccs" />
 
         <TextView
@@ -156,9 +176,13 @@
         android:paddingBottom="@dimen/padding_small">
 
         <ImageView
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
             android:layout_height="wrap_content"
             android:contentDescription="@string/pref_enable_chademo_label"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:src="@drawable/ic_chademo" />
 
         <TextView
@@ -177,7 +201,11 @@
         android:paddingBottom="@dimen/padding_small">
 
         <ImageView
-            android:layout_width="150px"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
             android:layout_height="wrap_content"
             android:contentDescription="@string/pref_enable_tesla_hpwc_label"
             android:src="@drawable/ic_tesla_hpwc" />

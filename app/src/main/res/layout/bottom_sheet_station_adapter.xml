@@ -2,79 +2,92 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:gravity="center_vertical"
     android:orientation="horizontal">
-
 
     <ImageView
         android:id="@+id/connection_icon"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/icon_size_large"
         android:layout_height="match_parent"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_other_input" />
+        android:layout_weight="0.2"
+        android:layout_marginRight="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
+        android:layout_marginStart="@dimen/margin_small"
+        android:layout_marginLeft="@dimen/margin_small"
 
+        android:src="@drawable/ic_chademo" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.8"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/connection_fast"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:src="@drawable/ic_fast" />
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/padding_medium">
 
             <TextView
                 android:id="@+id/connection_title"
+                style="@style/AppTheme.SubTitle.Dark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center_vertical"
+                android:layout_weight="0.8"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginLeft="@dimen/margin_small"
                 android:text="CHAdeMO" />
+
+            <ImageView
+                android:id="@+id/connection_fast"
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"
+                android:src="@drawable/ic_fast"
+                android:layout_gravity="end"
+                android:contentDescription="@string/img_fast"/>
+
         </LinearLayout>
 
         <TextView
             android:id="@+id/connection_level_title"
+            style="@style/AppTheme.Body.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center_vertical"
-            android:text="Level 3:  High (Over 40kW)" />
-
+            android:layout_margin="@dimen/margin_small"
+            android:text="Level 3: High (Over 40kW)" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_margin="@dimen/margin_small">
 
             <TextView
                 android:id="@+id/connection_current"
+                style="@style/AppTheme.Body.Dark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center_vertical"
+                android:layout_weight="0.2"
+                android:paddingLeft="@dimen/padding_small"
+                android:paddingStart="@dimen/padding_small"
                 android:text="DC" />
 
             <TextView
                 android:id="@+id/connection_power"
+                style="@style/AppTheme.Body.Dark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:gravity="center_vertical"
+                android:layout_weight="0.8"
+                android:paddingEnd="@dimen/padding_small"
+                android:paddingLeft="@dimen/padding_small"
+                android:paddingRight="@dimen/padding_small"
+                android:paddingStart="@dimen/padding_small"
                 android:text="400V/110A/44.0kW" />
         </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>

@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -45,6 +46,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     TextView viewTitle;
     TextView viewOpWebSite;
     TextView viewUtTitle;
+    LinearLayout viewDetailBar;
     TextView viewAccessKey;
     TextView viewMembership;
     TextView viewPayOnSite;
@@ -110,7 +112,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST,
             ChargingStationContract.ConnectionEntry.COLUMN_CONN_TITLE,
             ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_TITLE,
-            ChargingStationContract.ConnectionEntry.COLUMN_CONN_CURRENT_TYPE_DESC,
+            ChargingStationContract.ConnectionEntry.COLUMN_CONN_CURRENT_TYPE_TITLE,
             ChargingStationContract.ConnectionEntry.COLUMN_CONN_AMP,
             ChargingStationContract.ConnectionEntry.COLUMN_CONN_VOLT,
             ChargingStationContract.ConnectionEntry.COLUMN_CONN_KW
@@ -125,7 +127,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     public static final int INDEX_CONN_LEVEL_FAST = 1;
     public static final int INDEX_CONN_TITLE = 2;
     public static final int INDEX_CONN_LEVEL_TITLE = 3;
-    public static final int INDEX_CONN_CURRENT_TYPE_DESC = 4;
+    public static final int INDEX_CONN_CURRENT_TYPE_TITLE = 4;
     public static final int INDEX_CONN_AMP = 5;
     public static final int INDEX_CONN_VOLT = 6;
     public static final int INDEX_CONN_KW = 7;
@@ -171,6 +173,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             viewTitle = (TextView) rootView.findViewById(R.id.sheet_station_title);
             viewOpWebSite = (TextView) rootView.findViewById(R.id.sheet_station_operator_web);
             viewUtTitle = (TextView) rootView.findViewById(R.id.sheet_station_usage_type_title);
+            viewDetailBar = (LinearLayout) rootView.findViewById(R.id.sheet_station_detail_bar);
             viewAccessKey = (TextView) rootView.findViewById(R.id.sheet_station_key);
             viewMembership = (TextView) rootView.findViewById(R.id.sheet_station_membership);
             viewPayOnSite = (TextView) rootView.findViewById(R.id.sheet_pay_on_site);
@@ -289,22 +292,35 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
                 viewTitle.setText(data.getString(INDEX_STATION_OPERATOR_TITLE));
             }
 
+            if (data.getString(INDEX_STATION_UT_TITLE) != null) {
+                viewUtTitle.setText(data.getString(INDEX_STATION_UT_TITLE));
+            } else {
+                viewUtTitle.setVisibility(View.GONE);
+            }
+            
+            boolean keepDetailBar = false;
 
-            viewUtTitle.setText(data.getString(INDEX_STATION_UT_TITLE));
             if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
                 viewAccessKey.setText("ACCESSKEY");
+                keepDetailBar = true;
             } else {
-                viewAccessKey.setVisibility(View.GONE);
+                viewAccessKey.setVisibility(View.INVISIBLE);
             }
             if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
                 viewMembership.setText("MEMBERSHIP");
+                keepDetailBar = true;
             } else {
-                viewMembership.setVisibility(View.GONE);
+                viewMembership.setVisibility(View.INVISIBLE);
             }
             if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
                 viewPayOnSite.setText("PAY_ON_SITE");
+                keepDetailBar = true;
             } else {
-                viewPayOnSite.setVisibility(View.GONE);
+                viewPayOnSite.setVisibility(View.INVISIBLE);
+            }
+
+            if (!keepDetailBar) {
+                viewDetailBar.setVisibility(View.GONE);
             }
 
             if (data.getString(INDEX_STATION_OPERATOR_WEBSITE) != null) {
@@ -312,6 +328,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             } else {
                 viewOpWebSite.setVisibility(View.GONE);
             }
+
             // Maybe we need addr2 also? Skipped to save space.
             viewAddr.setText(data.getString(INDEX_STATION_ADDR_LINE1));
             viewPostCode.setText(data.getString(INDEX_STATION_ADDR_POSTCODE));

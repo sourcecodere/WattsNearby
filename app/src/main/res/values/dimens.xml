@@ -16,6 +16,11 @@
     <dimen name="padding_large">32dp</dimen>
     <dimen name="padding_huge">64dp</dimen>
 
+    <!-- Icon sizes -->
+    <dimen name="icon_size_small">24dp</dimen>
+    <dimen name="icon_size_medium">32dp</dimen>
+    <dimen name="icon_size_large">42dp</dimen>
+
     <!-- Floating action button -->
     <dimen name="fab_margin">16dp</dimen>
 

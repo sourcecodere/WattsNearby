@@ -87,7 +87,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
         );
 
         holder.connCurrentView.setText(
-                mCursor.getString(BottomSheetStationFragment.INDEX_CONN_CURRENT_TYPE_DESC)
+                mCursor.getString(BottomSheetStationFragment.INDEX_CONN_CURRENT_TYPE_TITLE)
         );
         holder.connPowerView.setText(
                 String.format(mContext.getString(R.string.connection_power),
