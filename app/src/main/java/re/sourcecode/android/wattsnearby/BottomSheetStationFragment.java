@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.util.Locale;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
+import re.sourcecode.android.wattsnearby.utilities.WattsWidgetUtils;
 
 
 /**
@@ -322,10 +323,16 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
                     ContentValues values = new ContentValues();
                     if (isChecked) {
                         values.put(ChargingStationContract.StationEntry.COLUMN_FAVORITE, 1);
+                        // Update the database
                         wattsContentResolver.update(mStationUri, values, null, null);
+                        // Refresh any widgets
+                        WattsWidgetUtils.sendRefreshBroadcast(getContext());
                     } else {
                         values.put(ChargingStationContract.StationEntry.COLUMN_FAVORITE, 0);
+                        // Update the database
                         wattsContentResolver.update(mStationUri, values, null, null);
+                        // Refresh any widgets
+                        WattsWidgetUtils.sendRefreshBroadcast(getContext());
                     }
                 }
             });
@@ -381,6 +388,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
          */
         mConnectionAdapter.swapCursor(null);
     }
+
 }
 
 

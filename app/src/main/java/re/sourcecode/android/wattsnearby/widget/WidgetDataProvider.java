@@ -83,7 +83,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
         String title = "";
         String where = "";
-        int stationId = 0;
+        Long stationId = null;
 
 
         if (position == AdapterView.INVALID_POSITION ||
@@ -92,7 +92,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
         }
 
         if (mCursor.moveToPosition(position)) {
-            stationId = mCursor.getInt(INDEX_ID);
+            stationId = mCursor.getLong(INDEX_ID);
             if (mCursor.getString(INDEX_OPERTOR_TITLE) != null) {
                 title = mCursor.getString(INDEX_OPERTOR_TITLE);
             } else {
@@ -111,7 +111,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
 
         // click, set extra data.
-        if (stationId != 0) {
+        if (stationId != null) {
             final Intent fillInIntent = new Intent();
             fillInIntent.putExtra(MainMapActivity.ARG_WIDGET_INTENT_KEY, stationId);
             view.setOnClickFillInIntent(R.id.list_item, fillInIntent);
@@ -139,6 +139,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     public boolean hasStableIds() {
         return true;
     }
+
 
     private void initData() {
         mCollection.clear();

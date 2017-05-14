@@ -51,6 +51,7 @@ import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTaskListener;
+import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
 
@@ -92,6 +93,7 @@ public class MainMapActivity extends AppCompatActivity implements
     private Marker mCurrentLocationMarker; // car marker with position
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
+    private Long mStationIdFromIntent; // for intent
 
     /**
      * First call in the lifecycle. This is followed by onStart().
@@ -143,6 +145,11 @@ public class MainMapActivity extends AppCompatActivity implements
         mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
         // Create the charging station marker bitmap
         mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station_fast, getResources().getInteger(R.integer.station_icon_add_to_size));
+
+        // Intent with stationId (e.g. from widget list item click)
+        if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
+            mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0l);
+        }
     }
 
     /**
@@ -327,6 +334,24 @@ public class MainMapActivity extends AppCompatActivity implements
         // Setup callback for when user clicks on marker
         mMap.setOnMarkerClickListener(this);
 
+        // Intent handling.
+        if (mStationIdFromIntent != null) {
+            // Todo zoom to position
+
+            // Move the camera to station position
+            LatLng stationLatLng = WattsDataUtils.getStationLatLng(getApplicationContext(), mStationIdFromIntent);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(stationLatLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_station_select)));
+
+            // Open bottom sheet for station
+            BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetStationFragment();
+
+            Bundle args = new Bundle();
+            args.putLong(ARG_DETAIL_SHEET_STATION_ID, mStationIdFromIntent);
+            bottomSheetDialogFragment.setArguments(args);
+
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+        }
     }
 
     /**
