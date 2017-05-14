@@ -26,7 +26,8 @@
             android:src="@drawable/ic_settings_white"
             android:layout_weight="0.2"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="24dp"/>
+            android:padding="24dp"
+            android:contentDescription="@string/btn_settings"/>
 
     </LinearLayout>
 

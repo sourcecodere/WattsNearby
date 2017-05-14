@@ -25,8 +25,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></fragment>
-
-
+        
     </RelativeLayout>
 
     <!-- Bottom Sheet
@@ -41,7 +40,8 @@
         android:src="@drawable/ic_my_location_white"
         android:theme="@style/FloatingButton"
         app:fabSize="mini"
-        app:rippleColor="@color/accent" />
+        app:rippleColor="@color/accent"
+        android:contentDescription="@string/btn_my_location"/>
 
 
 

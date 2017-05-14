@@ -21,9 +21,7 @@
         android:paddingRight="@dimen/widget_padding"
         android:paddingTop="@dimen/widget_padding"
         android:gravity="start|center_vertical"
-        android:textColor="@color/primary_text"
-        tools:text="Fortum hurtigladestasjon, Moller Bil"
-        />
+        android:textColor="@color/primary_text" />
 
     <TextView
         android:id="@+id/widget_item_where"
@@ -35,7 +33,6 @@
         android:paddingRight="@dimen/widget_padding"
         android:paddingEnd="@dimen/widget_padding"
         android:textColor="@color/secondary_text"
-        android:layout_gravity="start|center_vertical"
-        tools:text="Frogner" />
+        android:layout_gravity="start|center_vertical" />
 
 </LinearLayout>

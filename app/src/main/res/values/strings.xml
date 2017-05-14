@@ -5,6 +5,12 @@
     <!-- Content provider -->
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
+    <!-- Button descriptions -->
+    <string name="btn_my_location">Focus on my location</string>
+    <string name="btn_settings">Open settings</string>
+    <string name="btn_google_maps">Open location in google maps</string>
+    <string name="btn_navigation">Open navigation in google maps</string>
+    <string name="btn_favorite">Add as favorite</string>
 
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
@@ -24,7 +30,6 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
-
 
     <!-- Preferences/filters -->
 
