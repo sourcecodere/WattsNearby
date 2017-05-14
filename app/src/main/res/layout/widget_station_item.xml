@@ -21,7 +21,7 @@
         android:paddingRight="@dimen/widget_padding"
         android:paddingTop="@dimen/widget_padding"
         android:gravity="start|center_vertical"
-        android:textColor="@color/primary_text" />
+        android:textColor="@color/primary_dark_text" />
 
     <TextView
         android:id="@+id/widget_item_where"

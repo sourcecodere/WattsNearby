@@ -14,13 +14,13 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 
@@ -42,20 +42,18 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
 
     private static final String TAG = BottomSheetStationFragment.class.getSimpleName();
 
-    TextView viewOpTitleView;
+    TextView viewTitle;
     TextView viewOpWebSite;
     TextView viewUtTitle;
     TextView viewAccessKey;
     TextView viewMembership;
     TextView viewPayOnSite;
-    TextView viewAddrTitle;
-    TextView viewAddr1;
-    TextView viewAddr2;
+    TextView viewAddr;
     TextView viewPostCode;
     TextView viewState;
     TextView viewTown;
     TextView viewCountry;
-    Switch viewFavorite;
+    SwitchCompat viewFavorite;
     ImageButton viewGoogleDirectionsBtn;
     ImageButton viewGoogleMapsBtn;
 
@@ -79,7 +77,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             ChargingStationContract.StationEntry.COLUMN_ADDR_POSTCODE,
             ChargingStationContract.StationEntry.COLUMN_ADDR_STATE,
             ChargingStationContract.StationEntry.COLUMN_ADDR_TOWN,
-            ChargingStationContract.StationEntry.COLUMN_ADDR_COUNTRY_TITLE,
+            ChargingStationContract.StationEntry.COLUMN_ADDR_COUNTRY_ISO,
             ChargingStationContract.StationEntry.COLUMN_FAVORITE
     };
 
@@ -102,7 +100,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     public static final int INDEX_STATION_ADDR_POSTCODE = 11;
     public static final int INDEX_STATION_ADDR_STATE = 12;
     public static final int INDEX_STATION_ADDR_TOWN = 13;
-    public static final int INDEX_STATION_ADDR_COUNTRY_TITLE = 14;
+    public static final int INDEX_STATION_ADDR_COUNTRY_CODE = 14;
     public static final int INDEX_STATION_FAVORITE = 15;
 
     /* The columns of data that we are interested in displaying within our BottomSheetDialogFragment's
@@ -170,20 +168,18 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             mStationUri = ChargingStationContract.StationEntry.buildStationUri(mStationId);
             mConnectionUri = ChargingStationContract.ConnectionEntry.buildStationUri(mStationId);
 
-            viewOpTitleView = (TextView) rootView.findViewById(R.id.sheet_station_operator_title);
+            viewTitle = (TextView) rootView.findViewById(R.id.sheet_station_title);
             viewOpWebSite = (TextView) rootView.findViewById(R.id.sheet_station_operator_web);
             viewUtTitle = (TextView) rootView.findViewById(R.id.sheet_station_usage_type_title);
             viewAccessKey = (TextView) rootView.findViewById(R.id.sheet_station_key);
             viewMembership = (TextView) rootView.findViewById(R.id.sheet_station_membership);
             viewPayOnSite = (TextView) rootView.findViewById(R.id.sheet_pay_on_site);
-            viewAddrTitle = (TextView) rootView.findViewById(R.id.sheet_station_addr_title);
-            viewAddr1 = (TextView) rootView.findViewById(R.id.sheet_station_addr1);
-            viewAddr2 = (TextView) rootView.findViewById(R.id.sheet_station_addr2);
+            viewAddr = (TextView) rootView.findViewById(R.id.sheet_station_addr);
             viewPostCode = (TextView) rootView.findViewById(R.id.sheet_station_addr_post_code);
             viewState = (TextView) rootView.findViewById(R.id.sheet_station_addr_state);
             viewTown = (TextView) rootView.findViewById(R.id.sheet_station_addr_town);
-            viewCountry = (TextView) rootView.findViewById(R.id.sheet_station_country);
-            viewFavorite = (Switch) rootView.findViewById(R.id.favorite_switch);
+            viewCountry = (TextView) rootView.findViewById(R.id.sheet_station_addr_country);
+            viewFavorite = (SwitchCompat) rootView.findViewById(R.id.favorite_switch);
             viewGoogleDirectionsBtn = (ImageButton) rootView.findViewById(R.id.btn_google_maps_direction);
             viewGoogleMapsBtn = (ImageButton) rootView.findViewById(R.id.btn_google_maps);
 
@@ -287,31 +283,41 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             return;
         }
         if (loader.getId() == ID_STATION_LOADER) {
-            viewOpTitleView.setText(data.getString(INDEX_STATION_OPERATOR_TITLE));
-            viewOpWebSite.setText(data.getString(INDEX_STATION_OPERATOR_WEBSITE));
+            if (data.getString(INDEX_STATION_ADDR_TITLE) != null) {
+                viewTitle.setText(data.getString(INDEX_STATION_ADDR_TITLE));
+            } else {
+                viewTitle.setText(data.getString(INDEX_STATION_OPERATOR_TITLE));
+            }
+
+
             viewUtTitle.setText(data.getString(INDEX_STATION_UT_TITLE));
             if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
                 viewAccessKey.setText("ACCESSKEY");
             } else {
-                viewAccessKey.setText("NO ACCESSKEY");
+                viewAccessKey.setVisibility(View.GONE);
             }
             if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
                 viewMembership.setText("MEMBERSHIP");
             } else {
-                viewMembership.setText("NO MEMBERSHIP");
+                viewMembership.setVisibility(View.GONE);
             }
             if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
                 viewPayOnSite.setText("PAY_ON_SITE");
             } else {
-                viewPayOnSite.setText("NO PAY ON SITE");
+                viewPayOnSite.setVisibility(View.GONE);
             }
-            viewAddrTitle.setText(data.getString(INDEX_STATION_ADDR_TITLE));
-            viewAddr1.setText(data.getString(INDEX_STATION_ADDR_LINE1));
-            viewAddr2.setText(data.getString(INDEX_STATION_ADDR_LINE2));
+
+            if (data.getString(INDEX_STATION_OPERATOR_WEBSITE) != null) {
+                viewOpWebSite.setText(data.getString(INDEX_STATION_OPERATOR_WEBSITE));
+            } else {
+                viewOpWebSite.setVisibility(View.GONE);
+            }
+            // Maybe we need addr2 also? Skipped to save space.
+            viewAddr.setText(data.getString(INDEX_STATION_ADDR_LINE1));
             viewPostCode.setText(data.getString(INDEX_STATION_ADDR_POSTCODE));
             viewState.setText(data.getString(INDEX_STATION_ADDR_STATE));
             viewTown.setText(data.getString(INDEX_STATION_ADDR_TOWN));
-            viewCountry.setText(data.getString(INDEX_STATION_ADDR_COUNTRY_TITLE));
+            viewCountry.setText(data.getString(INDEX_STATION_ADDR_COUNTRY_CODE));
             if (data.getInt(INDEX_STATION_FAVORITE) == 1) {
                 viewFavorite.setChecked(true);
             } else {

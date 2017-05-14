@@ -10,9 +10,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_dark"
+        android:background="@color/primary"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="@dimen/padding_small">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,160 +21,188 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/sheet_station_addr_title"
+                android:id="@+id/sheet_station_title"
+                style="@style/AppTheme.SubTitle.Dark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
                 android:text="Kiwi Fjellbo"
-                android:textColor="@color/primary_light" />
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/sheet_station_addr1"
+                android:id="@+id/sheet_station_addr"
+                style="@style/AppTheme.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
-                android:text="Fjellbovegen 6"
-                android:textColor="@color/primary_light" />
+                android:text="Fjellbovegen 6" />
 
-            <TextView
-                android:id="@+id/sheet_station_addr2"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
-                android:text=""
-                android:textColor="@color/primary_light" />
+                android:orientation="horizontal"></LinearLayout>
 
-            <TextView
-                android:id="@+id/sheet_station_addr_town"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
-                android:text="FROGNER"
-                android:textColor="@color/primary_light" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/sheet_station_addr_state"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
-                android:text="Akershus"
-                android:textColor="@color/primary_light" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/sheet_station_addr_post_code"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
-                android:text="2016"
-                android:textColor="@color/primary_light" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/sheet_station_country"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_dark"
-                android:text="Norway"
-                android:textColor="@color/primary_light" />
+                        <TextView
+                            android:id="@+id/sheet_station_addr_post_code"
+                            style="@style/AppTheme.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/padding_small"
+                            android:paddingRight="@dimen/padding_small"
+                            android:text="2016" />
+
+                        <TextView
+                            android:id="@+id/sheet_station_addr_town"
+                            style="@style/AppTheme.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/padding_small"
+                            android:paddingRight="@dimen/padding_small"
+                            android:text="FROGNER" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/sheet_station_addr_state"
+                            style="@style/AppTheme.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/padding_small"
+                            android:paddingRight="@dimen/padding_small"
+                            android:text="Akershus" />
+
+                        <TextView
+                            android:id="@+id/sheet_station_addr_country"
+                            style="@style/AppTheme.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingEnd="@dimen/padding_small"
+                            android:paddingRight="@dimen/padding_small"
+                            android:text="NO" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/sheet_station_usage_type_title"
+                        style="@style/AppTheme.Caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Public - Pay At Location" />
+                </LinearLayout>
+
+
+            </LinearLayout>
         </LinearLayout>
 
-
-        <ImageButton
-            android:id="@+id/btn_google_maps"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="24dp"
-            android:src="@drawable/ic_map_white"
-            android:contentDescription="@string/btn_google_maps"/>
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/btn_google_maps_direction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="24dp"
-            android:src="@drawable/ic_directions_white"
-            android:contentDescription="@string/btn_navigation"/>
+                <ImageButton
+                    android:id="@+id/btn_google_maps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/btn_google_maps"
+                    android:padding="@dimen/padding_medium"
+                    android:src="@drawable/ic_map_white" />
+
+                <ImageButton
+                    android:id="@+id/btn_google_maps_direction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/btn_navigation"
+                    android:padding="@dimen/padding_medium"
+                    android:src="@drawable/ic_directions_white" />
+            </LinearLayout>
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/favorite_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/btn_favorite"
+                android:padding="@dimen/padding_small"
+                android:text="@string/switch_favorite"
+                android:textColor="@color/primary_light"
+                android:theme="@style/AppTheme.CustomSwitch" />
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/primary_dark"
         android:orientation="horizontal"
-        android:background="@color/primary_light">
+        android:padding="@dimen/padding_small">
 
-
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/sheet_station_membership"
+            style="@style/AppTheme.Caption.Small"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="0.6">
+            android:layout_weight="0.33"
+            android:text="MEMBERSHIP" />
 
-            <TextView
-                android:id="@+id/sheet_station_operator_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_light"
-                android:text="Charge  Drive (Fortum - NO)"
-                android:textColor="@color/primary_text" />
-
-            <TextView
-                android:id="@+id/sheet_station_operator_web"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_light"
-                android:text="http://www.fortum.no/hurtigladere"
-                android:textColor="@color/secondary_text" />
-
-            <TextView
-                android:id="@+id/sheet_station_membership"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_light"
-                android:text="Requires membership"
-                android:textColor="@color/secondary_text" />
-
-            <TextView
-                android:id="@+id/sheet_station_key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_light"
-                android:text="Requires access key"
-                android:textColor="@color/secondary_text" />
-
-            <TextView
-                android:id="@+id/sheet_pay_on_site"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_light"
-                android:text="Pay on site"
-                android:textColor="@color/secondary_text" />
-
-            <TextView
-                android:id="@+id/sheet_station_usage_type_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_light"
-                android:text="Public - Pay At Location"
-                android:textColor="@color/secondary_text" />
-        </LinearLayout>
-        <Switch
-            android:id="@+id/favorite_switch"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/sheet_station_key"
+            style="@style/AppTheme.Caption.Small"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp"
-            android:background="@color/primary_light"
-            android:text="@string/switch_favorite"
-            android:layout_gravity="end"
-            android:layout_weight="0.4"
-            android:contentDescription="@string/btn_favorite"
-            />
+            android:layout_weight="0.33"
+            android:text="ACCESS KEY" />
+
+        <TextView
+            android:id="@+id/sheet_pay_on_site"
+            style="@style/AppTheme.Caption.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:text="PAY ON SITE" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/sheet_station_operator_web"
+        style="@style/AppTheme.Body.Small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:background="@color/primary_dark"
+        android:paddingBottom="@dimen/padding_small"
+        android:paddingEnd="@dimen/padding_small"
+        android:paddingLeft="@dimen/padding_small"
+        android:paddingRight="@dimen/padding_small"
+        android:paddingStart="@dimen/padding_small"
+        android:text="http://www.fortum.no/hurtigladere" />
+
     <!-- no support for ListView in CoordinatorLayout!!-->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_list"

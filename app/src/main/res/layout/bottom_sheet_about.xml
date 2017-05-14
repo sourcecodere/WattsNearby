@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary_light"
-        android:textColor="@color/primary_text"
+        style="@style/AppTheme.SubTitle.Dark"
         android:text="@string/credit_ic"/>
 
     <LinearLayout
@@ -44,12 +44,14 @@
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_electric_car_launcher" />
+            android:src="@drawable/ic_electric_car_launcher"
+            android:contentDescription="@string/img_electric_car"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_launcher" />
     </LinearLayout>
     <LinearLayout
@@ -61,12 +63,14 @@
             android:layout_width="150px"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_type2_mennekes"
+            android:contentDescription="@string/pref_enable_type2_mennekes_label"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_type2_mennekes"
             />
     </LinearLayout>
@@ -79,12 +83,14 @@
             android:layout_width="150px"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_combo_ccs_eu"
+            android:contentDescription="@string/pref_enable_combo_ccs_eu_label"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_combo_css"
             />
     </LinearLayout>
@@ -97,12 +103,14 @@
             android:layout_width="150px"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_type1_j1772"
+            android:contentDescription="@string/pref_enable_type1_j1772_label"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_type1_j1772"
             />
     </LinearLayout>
@@ -115,12 +123,14 @@
             android:layout_width="150px"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_type1_ccs"
+            android:contentDescription="@string/pref_enable_type1_ccs_label"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_type1_css"
             />
     </LinearLayout>
@@ -133,12 +143,14 @@
             android:layout_width="150px"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chademo"
+            android:contentDescription="@string/pref_enable_chademo_label"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_chademo"
             />
     </LinearLayout>
@@ -151,12 +163,14 @@
             android:layout_width="150px"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_tesla_hpwc"
+            android:contentDescription="@string/pref_enable_tesla_hpwc_label"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_tesla_hpwc"
             />
     </LinearLayout>

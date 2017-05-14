@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary_dark"
-            android:textColor="@color/primary_light"
+            style="@style/AppTheme.SubTitle.Light"
             android:layout_weight="0.8"/>
 
         <ImageButton

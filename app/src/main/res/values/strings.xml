@@ -6,12 +6,14 @@
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
     <!-- Button descriptions -->
-    <string name="btn_my_location">Focus on my location</string>
+    <string name="btn_my_location">Move map to my location</string>
     <string name="btn_settings">Open settings</string>
     <string name="btn_google_maps">Open location in google maps</string>
     <string name="btn_navigation">Open navigation in google maps</string>
     <string name="btn_favorite">Add as favorite</string>
 
+    <!-- Image desctiptions -->
+    <string name="img_electric_car">Electric car</string>
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
 

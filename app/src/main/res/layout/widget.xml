@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/widget_top_text"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/primary_text"
+                android:textColor="@color/primary_dark_text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:paddingStart="@dimen/widget_header_padding"
                 android:paddingLeft="@dimen/widget_header_padding"

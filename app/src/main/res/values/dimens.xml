@@ -10,6 +10,11 @@
     <dimen name="margin_medium">16dp</dimen>
     <dimen name="margin_large">32dp</dimen>
     <dimen name="margin_huge">64dp</dimen>
+    <dimen name="padding_tiny">4dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">32dp</dimen>
+    <dimen name="padding_huge">64dp</dimen>
 
     <!-- Floating action button -->
     <dimen name="fab_margin">16dp</dimen>
@@ -22,4 +27,11 @@
     <dimen name="widget_default_height">180dp</dimen>
     <dimen name="widget_icon_width">32dp</dimen>
     <dimen name="widget_icon_height">32dp</dimen>
+
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="text_size_sub_title">15sp</dimen>
+    <dimen name="text_size_caption">14sp</dimen>
+    <dimen name="text_size_caption_small">9sp</dimen>
+    <dimen name="text_size_body">13sp</dimen>
+    <dimen name="text_size_body_small">9sp</dimen>
 </resources>
