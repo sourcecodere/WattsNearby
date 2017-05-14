@@ -3,176 +3,191 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/primary"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/about_sheet_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:background="@color/primary_dark"
-        android:text="@string/about_title"
-        android:textAlignment="center"
-        android:textColor="@color/primary_light" />
+
         <TextView
-            android:id="@+id/about_sheet_developer"
+            android:id="@+id/about_sheet_title"
+            style="@style/AppTheme.SubTitle.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.8"
-            android:background="@color/primary_dark"
-            android:text="@string/about_developer"
+            android:text="@string/about_title"
             android:textAlignment="center"
-            android:textColor="@color/primary" />
+            android:textStyle="bold"
+            android:paddingTop="@dimen/padding_small"/>
+
+        <TextView
+            android:id="@+id/about_sheet_developer"
+            style="@style/AppTheme.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:paddingBottom="@dimen/padding_small"
+            android:text="@string/about_developer"
+            android:textAlignment="center" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/about_sheet_sub_title"
+        style="@style/AppTheme.Caption.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        style="@style/AppTheme.SubTitle.Dark"
-        android:text="@string/credit_ic"/>
+        android:background="@color/primary_dark"
+        android:padding="@dimen/padding_small"
+        android:text="@string/credit_ic" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_electric_car_launcher"
-            android:contentDescription="@string/img_electric_car"/>
+            android:contentDescription="@string/img_electric_car"
+            android:src="@drawable/ic_electric_car_launcher" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
             android:text="@string/credit_ic_launcher" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_type2_mennekes"
             android:contentDescription="@string/pref_enable_type2_mennekes_label"
-            />
+            android:src="@drawable/ic_type2_mennekes" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
-            android:text="@string/credit_ic_type2_mennekes"
-            />
+            android:text="@string/credit_ic_type2_mennekes" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_combo_ccs_eu"
             android:contentDescription="@string/pref_enable_combo_ccs_eu_label"
-            />
+            android:src="@drawable/ic_combo_ccs_eu" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
-            android:text="@string/credit_ic_combo_css"
-            />
+            android:text="@string/credit_ic_combo_css" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
+
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_type1_j1772"
             android:contentDescription="@string/pref_enable_type1_j1772_label"
-            />
+            android:src="@drawable/ic_type1_j1772" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
-            android:text="@string/credit_ic_type1_j1772"
-            />
+            android:text="@string/credit_ic_type1_j1772" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_type1_ccs"
             android:contentDescription="@string/pref_enable_type1_ccs_label"
-            />
+            android:src="@drawable/ic_type1_ccs" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
-            android:text="@string/credit_ic_type1_css"
-            />
+            android:text="@string/credit_ic_type1_css" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_chademo"
             android:contentDescription="@string/pref_enable_chademo_label"
-            />
+            android:src="@drawable/ic_chademo" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
-            android:text="@string/credit_ic_chademo"
-            />
+            android:text="@string/credit_ic_chademo" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
 
         <ImageView
             android:layout_width="150px"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_tesla_hpwc"
             android:contentDescription="@string/pref_enable_tesla_hpwc_label"
-            />
+            android:src="@drawable/ic_tesla_hpwc" />
 
         <TextView
+            style="@style/AppTheme.Body.Dark.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            style="@style/AppTheme.Body"
-            android:text="@string/credit_ic_tesla_hpwc"
-            />
+            android:text="@string/credit_ic_tesla_hpwc" />
     </LinearLayout>
 
 </LinearLayout>

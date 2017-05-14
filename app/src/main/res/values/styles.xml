@@ -48,8 +48,20 @@
         <item name="android:textSize">@dimen/text_size_body</item>
     </style>
 
+    <style name="AppTheme.Body.Dark" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:textColorLink">@color/accent</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+    </style>
+
     <style name="AppTheme.Body.Small" parent="@style/TextAppearance.AppCompat.Body1">
         <item name="android:textColor">@color/primary_light</item>
+        <item name="android:textColorLink">@color/accent</item>
+        <item name="android:textSize">@dimen/text_size_body_small</item>
+    </style>
+
+    <style name="AppTheme.Body.Dark.Small" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/primary_dark</item>
         <item name="android:textColorLink">@color/accent</item>
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
@@ -62,20 +74,17 @@
     </style>
 
     <!-- App bar with search. -->
-    <style name="AppTheme.AppBarOverlay"
-        parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <!-- Custom style for the bottom sheet fragment. -->
     <!-- Credits to: https://stackoverflow.com/a/35634293 -->
-    <style name="AppBottomSheetDialogTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
     <!-- Custom style for the bottom sheet fragment. -->
     <!-- Credits to: https://stackoverflow.com/a/35634293 -->
-    <style name="AppModalStyle"
-        parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="behavior_peekHeight">@dimen/bottom_sheet_peek_height</item>
     </style>
 
