@@ -22,7 +22,7 @@ For everyone driving an electric car. Ranging from the EV-enthusiast to the firs
 * Synchronizes nearby charging station data to a local database.
 * Saves user preferences:
  * Supported power outlets for the most popular EVs
- * Only display fast chargers (default)
+ * Only display fast chargers (default off)
 * Possibility to explore details for each charging station. Makes it easier to find the exact location of a charging station, see the capacity of the selected charging station and more.
 * Your favorite charging stations available in a built in widget.
 
