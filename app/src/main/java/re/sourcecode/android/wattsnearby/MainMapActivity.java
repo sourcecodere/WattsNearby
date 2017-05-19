@@ -3,6 +3,7 @@ package re.sourcecode.android.wattsnearby;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
@@ -19,6 +20,7 @@ import android.support.design.widget.Snackbar;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,7 +72,8 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
-        PlaceSelectionListener {
+        PlaceSelectionListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -100,6 +103,8 @@ public class MainMapActivity extends AppCompatActivity implements
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
     private Long mStationIdFromIntent; // for intent
+
+    private SharedPreferences mSharedPrefs; // for onSharedPreferenceChangeListener
 
     /**
      * First call in the lifecycle. This is followed by onStart().
@@ -176,6 +181,8 @@ public class MainMapActivity extends AppCompatActivity implements
         if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
             mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0l);
         }
+
+        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     /**
@@ -195,17 +202,6 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
-     * Dispatch onStart() to all fragments.  Ensure any created loaders are
-     * now started.
-     */
-    @Override
-    protected void onStart() {
-        buildGoogleApiClient(); // Get connection to google services.
-        super.onStart();
-
-    }
-
-    /**
      * Dispatch onPause() to fragments.
      */
     @Override
@@ -219,6 +215,16 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * Dispatch onStart() to all fragments.  Ensure any created loaders are
+     * now started.
+     */
+    @Override
+    protected void onStart() {
+        buildGoogleApiClient(); // Get connection to google services.
+        super.onStart();
+    }
+
+    /**
      * Dispatch onStop() to all fragments.  Ensure all loaders are stopped.
      */
     @Override
@@ -227,6 +233,8 @@ public class MainMapActivity extends AppCompatActivity implements
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+
+        // super
         super.onStop();
     }
 
@@ -263,7 +271,9 @@ public class MainMapActivity extends AppCompatActivity implements
             return true;
         } else if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
-            return true;
+            // Register listener for prefernce changes
+            mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
+            return false;
         } else if (id == R.id.action_about) {
             BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetGenericFragment();
 
@@ -277,6 +287,7 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * Dispatch incoming result to the correct fragment. startActivityForResult
@@ -518,6 +529,26 @@ public class MainMapActivity extends AppCompatActivity implements
         // move the camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_places_search)));
+    }
+
+    /**
+     * Called when a shared preference is changed, added, or removed. This
+     * may be called even if a preference is set to its existing value.
+     * <p>
+     * <p>This callback will be run on your main thread.
+     *
+     * @param sharedPreferences The {@link SharedPreferences} that received
+     *                          the change.
+     * @param key               The key of the preference that was changed, added, or
+     */
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        //Log.d(TAG, "onSharedPreferenceChanged");
+        for (Marker marker: mVisibleStationMarkers.values()) {
+            marker.remove();
+        }
+        mVisibleStationMarkers = new HashMap<Long, Marker>();
+        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
     }
 
     /**

@@ -7,7 +7,10 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.view.View;
+import android.view.ViewGroup;
 
+import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 
 /**
@@ -25,8 +28,8 @@ import re.sourcecode.android.wattsnearby.R;
  *
  */
 
-public class SettingsFragment extends PreferenceFragmentCompat implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat
+         {
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = value.toString();
@@ -60,32 +63,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 setPreferenceSummary(p, value);
             }
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // unregister the preference change listener
-        getPreferenceScreen().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // register the preference change listener
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Activity activity = getActivity();
-
-
-        //TODO: redraw the map with filters
-        // also make the map update
-
     }
 }
 
