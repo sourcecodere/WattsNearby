@@ -1,13 +1,15 @@
 # Watts Nearby: Electric Car Charge Map
 
 ## Version
-__UNDER DEVELOPMENT__
+__0.1 Beta__
 
 ## Description
 Need electrons to run you car? This Android app will locate which charging station you should use when and where you need one.
 A lot of the current apps with electric vehicle charging maps rely on slow web based map backends, and many of them lack a collection of all the suppliers of free and non-free charging stations for electric vehicles. 
 
 This is an easy to use app that utilize the growing open charge map api to find charging stations nearby and display them using Google Maps.
+
+Powered by open charge map. http://openchargemap.org. 
 
 ## Intended User
 For everyone driving an electric car. Ranging from the EV-enthusiast to the first-time fully electric traveller.
