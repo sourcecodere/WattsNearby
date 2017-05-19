@@ -15,6 +15,7 @@
     <!-- Image desctiptions -->
     <string name="img_electric_car">Electric car</string>
     <string name="img_fast">Fast charger</string>
+
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
 
@@ -25,7 +26,7 @@
 
     <!-- Error strings -->
     <string name="error_OCM_sync_failure">Error in syncing data from openchargmap.org, please try again later. Error: </string>
-
+    <string name="error_not_online">The phone is not online. WattsApp need a working internet connection.</string>
     <!-- String transitions -->
     <string name="transition_name_my_location" translatable="false">MYLOCATION</string>
 

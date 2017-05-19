@@ -1,10 +1,13 @@
 package re.sourcecode.android.wattsnearby;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,6 +50,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
@@ -118,6 +122,27 @@ public class MainMapActivity extends AppCompatActivity implements
             finish();
         } else {
             Log.d("onCreate", "Google Play Services available.");
+        }
+        if (!isOnline()) {
+            Snackbar.make(
+                    MainMapActivity.this.findViewById(R.id.main_layout),
+                    getString(R.string.error_not_online),
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(
+                    getString(R.string.permission_explanation_snackbar_button),
+                    new View.OnClickListener() {
+                        /**
+                         * Called when a view has been clicked.
+                         *
+                         * @param v The view that was clicked.
+                         */
+                        @Override
+                        public void onClick(View v) {
+                            //exit
+                            finish();
+                        }
+                    })
+                    .show();
         }
 
 
@@ -703,6 +728,21 @@ public class MainMapActivity extends AppCompatActivity implements
             // You can add here other case statements according to your requirement.
         }
     }
+
+    /**
+     * Check if the is online.
+     *
+     * From https://stackoverflow.com/a/4009133
+     *
+     * @return True or False
+     */
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
 
     /**
      * Check if the user allows Google play services. Prerequisite for this app, bail if denied.
