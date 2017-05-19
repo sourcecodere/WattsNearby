@@ -108,7 +108,6 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_map);
 
@@ -190,7 +189,6 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
         mGoogleApiClient.connect();
 
@@ -202,7 +200,6 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart");
         buildGoogleApiClient(); // Get connection to google services.
         super.onStart();
 
@@ -226,7 +223,6 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
@@ -318,7 +314,6 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "onMapReady");
         mMap = googleMap;
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -407,7 +402,6 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "GoogleApiClient onConnectionFailed");
     }
 
     /**

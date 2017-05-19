@@ -83,7 +83,7 @@ obj/
 .idea/uiDesigner.xml
 
 # Keystore files
-*.jks
+#*.jks
 
 # OS-specific files
 .DS_Store
