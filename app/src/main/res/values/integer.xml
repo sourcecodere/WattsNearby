@@ -20,9 +20,9 @@
     <!-- In meters. -->
     <integer name="delta_trigger_location_significantly_changed">500</integer>
     <integer name="delta_trigger_camera_significantly_changed">1000</integer>
-
-
+    
     <!-- OpenChargeMap values -->
-    <integer name="ocm_radius_km">2</integer>
+    <integer name="ocm_radius_km">5</integer>
+    <integer name="ocm_max_results">250</integer>
 
 </resources>

@@ -543,6 +543,7 @@ public class MainMapActivity extends AppCompatActivity implements
                 latitude,
                 longitude,
                 (double) getResources().getInteger(R.integer.ocm_radius_km),
+                getResources().getInteger(R.integer.ocm_max_results),
                 new WattsOCMSyncTaskListener() {
                     @Override
                     public void onOCMSyncSuccess(Object object) {

@@ -27,8 +27,6 @@ public final class WattsOCMNetworkUtils {
     private static final String output = "json";
     /* The distanceunit we want the OCM API to return */
     private static final String distance_unit = "km";
-    /* The maximum results we want the OCM API to return, default 100 */
-    private static final Integer max_results = 100;
 
     /* The position parameters query */
     private static final String LAT_PARAM = "latitude";
@@ -49,7 +47,7 @@ public final class WattsOCMNetworkUtils {
      * @param distance The distance/zoom level of the current location
      * @return URL to query ocm service
      */
-    public static URL getUrl(Double latitude, Double longitude, Double distance) {
+    public static URL getUrl(Double latitude, Double longitude, Double distance, int max_results) {
             Uri ocmQueryUri = Uri.parse(OCM_BASE_URL).buildUpon()
                     .appendQueryParameter(LAT_PARAM, String.valueOf(latitude))
                     .appendQueryParameter(LON_PARAM, String.valueOf(longitude))

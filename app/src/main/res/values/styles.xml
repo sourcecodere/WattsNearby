@@ -37,6 +37,11 @@
         <item name="android:textSize">@dimen/text_size_caption</item>
     </style>
 
+    <style name="AppTheme.Caption.Dark" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textColor">@color/primary_dark_text</item>
+        <item name="android:textSize">@dimen/text_size_caption</item>
+    </style>
+
     <style name="AppTheme.Caption.Small" parent="@style/TextAppearance.AppCompat.Caption">
         <item name="android:textColor">@color/primary_light</item>
         <item name="android:textSize">@dimen/text_size_caption_small</item>

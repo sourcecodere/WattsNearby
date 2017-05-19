@@ -85,6 +85,9 @@
     <string name="about_developer" translatable="false">Copyright \u00A9 2017 sourcecode.re</string>
 
     <!-- Credits -->
+    <string name="credit_ocm">Powered by open charge map:</string>
+    <string name="credit_ocm_url" translatable="false">http://openchargemap.org.</string>
+    <string name="credit_ocm_licence" translatable="false">CC BY-SA 4.0.</string>
     <!-- IC launcher icon -->
     <string name="credit_ic">Credits for icons used in WattsNearby:</string>
     <string name="credit_ic_launcher">By www.freepik.com - CC BY-SA 3.0, www.flaticon.com</string>

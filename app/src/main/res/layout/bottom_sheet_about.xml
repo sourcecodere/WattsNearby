@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/about_sheet_developer"
-            style="@style/AppTheme.Caption"
+            style="@style/AppTheme.Caption.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.8"
@@ -31,6 +31,35 @@
             android:text="@string/about_developer"
             android:textAlignment="center" />
 
+        <TextView
+            android:id="@+id/about_sheet_powered_by"
+            style="@style/AppTheme.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:paddingBottom="@dimen/padding_small"
+            android:text="@string/credit_ocm"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/about_sheet_powered_by_url"
+            style="@style/AppTheme.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:paddingBottom="@dimen/padding_small"
+            android:text="@string/credit_ocm_url"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/about_sheet_powered_by_licence"
+            style="@style/AppTheme.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:paddingBottom="@dimen/padding_small"
+            android:text="@string/credit_ocm_licence"
+            android:textAlignment="center" />
     </LinearLayout>
 
     <TextView

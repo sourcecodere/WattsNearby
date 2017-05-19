@@ -101,7 +101,7 @@ public class WattsMapUtils {
                                 CONNECTION_ID_PROJECTION);
                         try {
                             if (connectionCursor.getCount() > 0) {
-                                Log.d(TAG, "station" + stationId + " has " + connectionCursor.getCount() + " matching connections");
+                                //Log.d(TAG, "station" + stationId + " has " + connectionCursor.getCount() + " matching connections");
                                 // we have matching connections, add it to the map
                                 Marker tmpMarker;
                                 if (WattsDataUtils.checkFastChargingAtStation(wattsContentResolver, stationId)) {

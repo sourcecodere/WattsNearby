@@ -30,6 +30,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
     private Double mLatitude;
     private Double mLongitude;
     private Double mDistance;
+    private int mMaxResults;
 
     /* ContentResolver for query, updates and inserts */
     private static ContentResolver mWattsContentResolver;
@@ -51,11 +52,12 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
 
 
 
-    public WattsOCMSyncTask(Context context, Double latitude, Double longitude, Double distance, WattsOCMSyncTaskListener callback) {
+    public WattsOCMSyncTask(Context context, Double latitude, Double longitude, Double distance, int max_results, WattsOCMSyncTaskListener callback) {
         this.mContext = context;
         this.mLatitude = latitude;
         this.mLongitude = longitude;
         this.mDistance = distance;
+        this.mMaxResults = max_results;
         this.mCallback = callback;
 
     }
@@ -79,7 +81,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
         try {
             if (android.os.Debug.isDebuggerConnected())
                 android.os.Debug.waitForDebugger();
-            syncStations(this.mContext, this.mLatitude, this.mLongitude, this.mDistance);
+            syncStations(this.mContext, this.mLatitude, this.mLongitude, this.mDistance, this.mMaxResults);
         } catch (Exception e) {
             mException = e;
         }
@@ -116,7 +118,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
      * @param latitude  The current position latitude
      * @param context   Used to access utility methods and the ContentResolver
      */
-    synchronized public static void syncStations(Context context, Double latitude, Double longitude, Double distance) {
+    synchronized public static void syncStations(Context context, Double latitude, Double longitude, Double distance, int max_results) {
         try {
             /* Get a handle on the ContentResolver to update and insert data */
             mWattsContentResolver = context.getContentResolver();
@@ -126,7 +128,7 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
             * nearby charging stations. It will create a URL based off of the latitude,
             * longitude and distance (the current map zoom level)
             */
-            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(latitude, longitude, distance);
+            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(latitude, longitude, distance, max_results);
 
             /* Use the URL to retrieve the JSON */
             String jsonOcmResponse = WattsOCMNetworkUtils.getResponseFromHttpUrl(ocmRequestUrl);
