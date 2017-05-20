@@ -114,7 +114,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
      */
     @Override
     public int getItemCount() {
-        if (null == mCursor) return 0;
+        if (mCursor == null) return 0;
         return mCursor.getCount();
     }
 
