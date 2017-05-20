@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -36,7 +37,7 @@
                 android:layout_weight="0.8"
                 android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginLeft="@dimen/margin_small"
-                android:text="CHAdeMO" />
+                tools:text="CHAdeMO" />
 
             <ImageView
                 android:id="@+id/connection_fast"
@@ -46,7 +47,7 @@
                 android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginLeft="@dimen/margin_medium"
                 android:layout_marginEnd="@dimen/margin_medium"
-                android:src="@drawable/ic_fast"
+                tools:src="@drawable/ic_fast"
                 android:layout_gravity="end"
                 android:contentDescription="@string/img_fast"/>
 
@@ -58,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_small"
-            android:text="Level 3: High (Over 40kW)" />
+            tools:text="Level 3: High (Over 40kW)" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,7 +75,7 @@
                 android:layout_weight="0.2"
                 android:paddingLeft="@dimen/padding_small"
                 android:paddingStart="@dimen/padding_small"
-                android:text="DC" />
+                tools:text="DC" />
 
             <TextView
                 android:id="@+id/connection_power"

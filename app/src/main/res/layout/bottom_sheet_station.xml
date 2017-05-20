@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,7 +26,7 @@
                 style="@style/AppTheme.SubTitle.Dark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kiwi Fjellbo"
+                tools:text="Kiwi Fjellbo"
                 android:textStyle="bold" />
 
             <TextView
@@ -33,7 +34,7 @@
                 style="@style/AppTheme.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fjellbovegen 6" />
+                tools:text="Fjellbovegen 6" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -63,7 +64,7 @@
                             android:layout_height="wrap_content"
                             android:paddingEnd="@dimen/padding_small"
                             android:paddingRight="@dimen/padding_small"
-                            android:text="2016" />
+                            tools:text="2016" />
 
                         <TextView
                             android:id="@+id/sheet_station_addr_town"
@@ -72,7 +73,7 @@
                             android:layout_height="wrap_content"
                             android:paddingEnd="@dimen/padding_small"
                             android:paddingRight="@dimen/padding_small"
-                            android:text="FROGNER" />
+                            tools:text="FROGNER" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -87,7 +88,7 @@
                             android:layout_height="wrap_content"
                             android:paddingEnd="@dimen/padding_small"
                             android:paddingRight="@dimen/padding_small"
-                            android:text="Akershus" />
+                            tools:text="Akershus" />
 
                         <TextView
                             android:id="@+id/sheet_station_addr_country"
@@ -96,7 +97,7 @@
                             android:layout_height="wrap_content"
                             android:paddingEnd="@dimen/padding_small"
                             android:paddingRight="@dimen/padding_small"
-                            android:text="NO" />
+                            tools:text="NO" />
                     </LinearLayout>
 
                     <TextView
@@ -104,7 +105,7 @@
                         style="@style/AppTheme.Caption"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Public - Pay At Location" />
+                        tools:text="Public - Pay At Location" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -148,7 +149,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/btn_favorite"
                 android:padding="@dimen/padding_medium"
-                android:text="@string/switch_favorite"
+                tools:text="@string/switch_favorite"
                 android:textColor="@color/primary_light"
                 android:theme="@style/AppTheme.CustomSwitch" />
         </LinearLayout>
@@ -169,7 +170,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
-            android:text="MEMBERSHIP" />
+            tools:text="MEMBERSHIP" />
 
         <TextView
             android:id="@+id/sheet_station_key"
@@ -177,7 +178,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
-            android:text="ACCESS KEY" />
+            tools:text="ACCESS KEY" />
 
         <TextView
             android:id="@+id/sheet_pay_on_site"
@@ -185,7 +186,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
-            android:text="PAY ON SITE" />
+            tools:text="PAY ON SITE" />
 
     </LinearLayout>
 
@@ -202,7 +203,7 @@
         android:paddingLeft="@dimen/padding_small"
         android:paddingRight="@dimen/padding_medium"
         android:paddingStart="@dimen/padding_medium"
-        android:text="http://www.fortum.no/hurtigladere" />
+        tools:text="http://www.fortum.no/hurtigladere" />
 
     <!-- no support for ListView in CoordinatorLayout!!-->
     <android.support.v7.widget.RecyclerView
