@@ -44,10 +44,10 @@ public class BottomSheetGenericFragment extends BottomSheetDialogFragment {
 
         if ((getArguments()!=null) && getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_ABOUT)) {
             // about from appbar
-            contentView = View.inflate(getContext(), R.layout.bottom_sheet_about, null);
+            contentView = View.inflate(getContext(), R.layout.fragment_about, null);
 
         } else { // user pushed the car marker
-            contentView = View.inflate(getContext(), R.layout.bottom_sheet_car, null);
+            contentView = View.inflate(getContext(), R.layout.fragment_car, null);
             TextView title = (TextView) contentView.findViewById(R.id.car_sheet_title);
             title.setText(getResources().getString(R.string.marker_current));
             ImageButton settingsBtn = (ImageButton) contentView.findViewById(R.id.btn_settings);

@@ -29,7 +29,7 @@
     </RelativeLayout>
 
     <!-- Bottom Sheet
-    <include layout="@layout/bottom_sheet_station" /> -->
+    <include layout="@layout/fragment_station" /> -->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_my_location"

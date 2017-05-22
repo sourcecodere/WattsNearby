@@ -48,7 +48,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
     public ConnectionAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View itemView = inflater.inflate(R.layout.bottom_sheet_station_adapter, viewGroup, false);
+        View itemView = inflater.inflate(R.layout.adapter_connections, viewGroup, false);
 
         itemView.setFocusable(true);
         return new ConnectionAdapterViewHolder(itemView);

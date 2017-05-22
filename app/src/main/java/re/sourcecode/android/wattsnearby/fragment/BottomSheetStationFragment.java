@@ -164,7 +164,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if ((getArguments() != null) && (getArguments().containsKey(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID))) { //user pushed a station
 
-            View rootView = inflater.inflate(R.layout.bottom_sheet_station, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_station, container, false);
 
             mStationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
             mStationUri = ChargingStationContract.StationEntry.buildStationUri(mStationId);
