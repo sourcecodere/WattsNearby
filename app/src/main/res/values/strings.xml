@@ -5,6 +5,9 @@
     <!-- Content provider -->
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
+    <!-- Banner ad unit id -->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
     <!-- Button descriptions -->
     <string name="btn_my_location">Move map to my location</string>
     <string name="btn_settings">Open settings</string>

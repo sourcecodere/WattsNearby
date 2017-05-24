@@ -39,9 +39,13 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:preference-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
+    compile 'com.google.maps.android:android-maps-utils:0.5'
     compile 'com.google.android.gms:play-services-location:10.2.6'
     compile 'com.google.android.gms:play-services-maps:10.2.6'
     compile 'com.google.android.gms:play-services-places:10.2.6'
-    compile 'com.google.maps.android:android-maps-utils:0.5'
+    compile 'com.google.firebase:firebase-ads:10.2.6'
     testCompile 'junit:junit:4.12'
 }
+
+
+apply plugin: 'com.google.gms.google-services'

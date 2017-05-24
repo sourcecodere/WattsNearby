@@ -28,6 +28,9 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -105,6 +108,8 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private SharedPreferences mSharedPrefs; // for onSharedPreferenceChangeListener
 
+    private AdView mAdView; // for banner add
+
     /**
      * First call in the lifecycle. This is followed by onStart().
      *
@@ -181,7 +186,13 @@ public class MainMapActivity extends AppCompatActivity implements
             mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0l);
         }
 
+        // Get shared preferences for the OnSharedPreferenceChangeListener
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Setup the banner ad
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     /**
@@ -384,6 +395,9 @@ public class MainMapActivity extends AppCompatActivity implements
 
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         }
+        int height = AdSize.BANNER.getHeightInPixels(this);
+        int width = AdSize.BANNER.getWidthInPixels(this);
+        mMap.setPadding(0,0,0, AdSize.BANNER.getHeightInPixels(this));
     }
 
     /**

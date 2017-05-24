@@ -18,11 +18,11 @@
 
     <!-- Triggers for calling the AsyncTask to sync with OpenChargeMap.io. -->
     <!-- In meters. -->
-    <integer name="delta_trigger_location_significantly_changed">500</integer>
-    <integer name="delta_trigger_camera_significantly_changed">1000</integer>
+    <integer name="delta_trigger_location_significantly_changed">1000</integer>
+    <integer name="delta_trigger_camera_significantly_changed">1500</integer>
     
     <!-- OpenChargeMap values -->
     <integer name="ocm_radius_km">5</integer>
-    <integer name="ocm_max_results">250</integer>
+    <integer name="ocm_max_results">500</integer>
 
 </resources>
