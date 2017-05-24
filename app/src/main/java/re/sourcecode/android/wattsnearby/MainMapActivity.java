@@ -52,13 +52,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
-import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTask;
-import re.sourcecode.android.wattsnearby.sync.WattsOCMSyncTaskListener;
+import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
+import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
@@ -570,12 +569,12 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     protected synchronized void executeOCMSync(Double latitude, Double longitude) {
         // TODO: add some more rate limiting?
-        WattsOCMSyncTask wattsOCMSyncTask = new WattsOCMSyncTask(this,
+        OCMSyncTask OCMSyncTask = new OCMSyncTask(this,
                 latitude,
                 longitude,
                 (double) getResources().getInteger(R.integer.ocm_radius_km),
                 getResources().getInteger(R.integer.ocm_max_results),
-                new WattsOCMSyncTaskListener() {
+                new OCMSyncTaskListener() {
                     @Override
                     public void onOCMSyncSuccess(Object object) {
 
@@ -592,7 +591,7 @@ public class MainMapActivity extends AppCompatActivity implements
                 }
         );
 
-        wattsOCMSyncTask.execute();
+        OCMSyncTask.execute();
     }
 
     /**

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,9 +21,9 @@ import re.sourcecode.android.wattsnearby.utilities.WattsOCMJsonUtils;
  * Created by olem on 3/31/17.
  */
 
-public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
+public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = WattsOCMSyncTask.class.getSimpleName();
+    private static final String TAG = OCMSyncTask.class.getSimpleName();
 
     private Context mContext;
     private Double mLatitude;
@@ -46,13 +45,13 @@ public class WattsOCMSyncTask extends AsyncTask<Void, Void, Void> {
      */
     public static final int INDEX_TIME_UPDATED = 0;
 
-    private WattsOCMSyncTaskListener mCallback;
+    private OCMSyncTaskListener mCallback;
     public Exception mException;
 
 
 
 
-    public WattsOCMSyncTask(Context context, Double latitude, Double longitude, Double distance, int max_results, WattsOCMSyncTaskListener callback) {
+    public OCMSyncTask(Context context, Double latitude, Double longitude, Double distance, int max_results, OCMSyncTaskListener callback) {
         this.mContext = context;
         this.mLatitude = latitude;
         this.mLongitude = longitude;
