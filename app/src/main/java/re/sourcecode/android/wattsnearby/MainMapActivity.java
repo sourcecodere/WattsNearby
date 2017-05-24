@@ -503,29 +503,34 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public void onCameraIdle() {
 
-        // Init sync from OCM
-        float[] results = new float[3];
-        if ((mLastCameraCenter != null) && (mLastOCMCameraCenter != null)) {
-            Location.distanceBetween(
-                    mLastCameraCenter.latitude,
-                    mLastCameraCenter.longitude,
-                    mLastOCMCameraCenter.latitude,
-                    mLastOCMCameraCenter.longitude,
-                    results);
+        // first check that the zoom level is high enough to make it reasonable to trigger a sync
+        if (mMap.getCameraPosition().zoom > (float) getResources().getInteger(R.integer.trigger_zoom_level)) {
+            // Init sync from OCM
+            float[] results = new float[3];
 
-            float ocmCameraDelta = results[0]; //
-            Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
-            // update content provider if significant movement
-            if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed)) {
+            if ((mLastCameraCenter != null) && (mLastOCMCameraCenter != null)) {
+                Location.distanceBetween(
+                        mLastCameraCenter.latitude,
+                        mLastCameraCenter.longitude,
+                        mLastOCMCameraCenter.latitude,
+                        mLastOCMCameraCenter.longitude,
+                        results);
 
-                mLastOCMCameraCenter = mLastCameraCenter;
+                float ocmCameraDelta = results[0]; //
+                //Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
 
-                executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
+                /// Then check if the camera movement is large enough to trigger a sync
+                if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed)) {
 
+                    mLastOCMCameraCenter = mLastCameraCenter;
+
+                    executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
+
+                }
+
+                // Add and update markers for stations in the current visible area
+                WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
             }
-
-            // Add and update markers for stations in the current visible area
-            WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
         }
     }
 
