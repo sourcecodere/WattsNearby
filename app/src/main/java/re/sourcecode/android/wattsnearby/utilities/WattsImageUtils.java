@@ -44,12 +44,11 @@ public class WattsImageUtils {
     /**
      * @return MarkerOptions for the car
      */
-    public static MarkerOptions getCarMarkerOptions(LatLng position, String title, BitmapDescriptor markerIcon) {
+    public static MarkerOptions getCarMarkerOptions(String title, BitmapDescriptor markerIcon) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(title);
         markerOptions.icon(markerIcon);
         markerOptions.anchor(0.38f, 0.6f);
-        markerOptions.position(position);
         return markerOptions;
     }
 

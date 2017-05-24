@@ -97,11 +97,13 @@ public class MainMapActivity extends AppCompatActivity implements
     private LatLng mLastCameraCenter; // Latitude and longitude of last camera center.
     private LatLng mLastOCMCameraCenter; // Latitude and longitude of last camera center where the OCM api was synced against the content provider.
 
-    private BitmapDescriptor mMarkerIconCar; // Icon for the car.
     private BitmapDescriptor mMarkerIconStation; // Icon for charging stations.
     private BitmapDescriptor mMarkerIconStationFast; // Icon for fast charging stations.
 
+    private MarkerOptions mMarkerOptionsCar; // Icon for the car.
     private Marker mCurrentLocationMarker; // car marker with position
+
+
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
     private Long mStationIdFromIntent; // for intent
@@ -174,8 +176,16 @@ public class MainMapActivity extends AppCompatActivity implements
         });
 
 
-        // Create the car location marker bitmap
-        mMarkerIconCar = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_car_color_sharp, getResources().getInteger(R.integer.car_icon_add_to_size));
+        // Create the car location marker, set position later
+        mMarkerOptionsCar =  WattsImageUtils.getCarMarkerOptions(
+                getString(R.string.marker_current),
+                WattsImageUtils.vectorToBitmap(
+                        this, 
+                        R.drawable.ic_car_color_sharp, 
+                        getResources().getInteger(R.integer.car_icon_add_to_size)
+                )
+        );
+        
         // Create the charging station marker bitmap
         mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
         // Create the charging station marker bitmap
@@ -434,23 +444,20 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location) {
 
-
         // Update last location the the new location
         mLastLocation = location;
 
-        // Remove the old car marker
-        if (mCurrentLocationMarker != null) {
-            mCurrentLocationMarker.remove();
-        }
-
         // Place current location car marker.
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = WattsImageUtils.getCarMarkerOptions(
-                latLng,
-                getString(R.string.marker_current),
-                mMarkerIconCar
-        );
-        mCurrentLocationMarker = mMap.addMarker(markerOptions);
+        mMarkerOptionsCar.position(latLng);
+        // Move the car markers current position if we already have it in the map
+        if (mCurrentLocationMarker != null) {
+            mCurrentLocationMarker.setPosition(latLng);
+
+        } else { //else add it to the map
+            mMarkerOptionsCar.position(latLng);
+            mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
+        }
 
 
     }
@@ -502,9 +509,10 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraIdle() {
-
-        // first check that the zoom level is high enough to make it reasonable to trigger a sync
-        if (mMap.getCameraPosition().zoom > (float) getResources().getInteger(R.integer.trigger_zoom_level)) {
+        Float currentZoom = mMap.getCameraPosition().zoom;
+        Log.d(TAG, currentZoom.toString());
+        // first check that the zoom level is high enough to make it reasonable to trigger a sync at all
+        if (currentZoom > (float) getResources().getInteger(R.integer.trigger_zoom_level)) {
             // Init sync from OCM
             float[] results = new float[3];
 
@@ -519,17 +527,31 @@ public class MainMapActivity extends AppCompatActivity implements
                 float ocmCameraDelta = results[0]; //
                 //Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
 
-                /// Then check if the camera movement is large enough to trigger a sync
-                if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed)) {
+                /// Then check if the camera movement is large enough to trigger a sync on high zoom levels
+                if (currentZoom < (float) getResources().getInteger(R.integer.trigger_high_zoom)) {
+                    Log.d(TAG, "high zoom");
+                    if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_high_zoom)) {
 
-                    mLastOCMCameraCenter = mLastCameraCenter;
+                        mLastOCMCameraCenter = mLastCameraCenter;
 
-                    executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
+                        executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
 
+
+                    }
+                } else {
+                    // Or check if the camera movement is large enough to trigger a sync on low zoom levels
+                    Log.d(TAG, "low zoom");
+                    if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_low_zoom)) {
+
+                        mLastOCMCameraCenter = mLastCameraCenter;
+
+                        executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
+
+                    }
                 }
-
                 // Add and update markers for stations in the current visible area
                 WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+
             }
         }
     }
@@ -650,16 +672,15 @@ public class MainMapActivity extends AppCompatActivity implements
                 if (mLastLocation != null) {
 
                     LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                    MarkerOptions markerOptions = WattsImageUtils.getCarMarkerOptions(
-                            latLng,
-                            getString(R.string.marker_current),
-                            mMarkerIconCar
-                    );
-                    // Remove the old car marker
+                    //mMarkerOptionsCar.position(latLng);
+                    
+                    // Move the car markers current position
                     if (mCurrentLocationMarker != null) {
-                        mCurrentLocationMarker.remove();
+                        mCurrentLocationMarker.setPosition(latLng);
+                    } else {
+                        mMarkerOptionsCar.position(latLng);
+                        mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
                     }
-                    mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
                     if (moveCamera) {
                         // move the camera
