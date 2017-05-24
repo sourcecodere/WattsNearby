@@ -119,6 +119,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_map);
 
@@ -216,6 +217,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
         mGoogleApiClient.connect();
 
@@ -226,11 +228,12 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onPause() {
-        super.onPause();
+        Log.d(TAG, "onPause");
         if(mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+        super.onPause();
 
     }
 
@@ -240,6 +243,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onStart() {
+        Log.d(TAG, "onStart");
         buildGoogleApiClient(); // Get connection to google services.
         super.onStart();
     }
@@ -249,6 +253,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop");
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
@@ -265,17 +270,20 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu");
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected");
         int id = item.getItemId();
         if (id == R.id.action_search) {
             try {
@@ -318,6 +326,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         if (requestCode == INTENT_PLACE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
@@ -345,6 +354,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "onMapReady");
         mMap = googleMap;
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -405,8 +415,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         }
-        int height = AdSize.BANNER.getHeightInPixels(this);
-        int width = AdSize.BANNER.getWidthInPixels(this);
+
         mMap.setPadding(0,0,0, AdSize.BANNER.getHeightInPixels(this));
     }
 
@@ -415,6 +424,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "onConnected");
 
         // Create location requests and setup location services.
         setupLocationServices();
@@ -428,7 +438,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d(TAG, "onConnectionSuspended");
     }
 
     /**
@@ -436,6 +446,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed");
     }
 
     /**
@@ -443,7 +454,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onLocationChanged(Location location) {
-
+        Log.d(TAG, "onLocationChanged");
         // Update last location the the new location
         mLastLocation = location;
 
@@ -469,7 +480,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
-
+        Log.d(TAG, "onMarkerClick");
         Long stationId = (Long) marker.getTag();
 
         if (stationId != null) { //every station marker should have data (stationId), only the car does not
@@ -494,11 +505,12 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraMove() {
-
+        Log.d(TAG, "onCameraMove");
         // Get the current visible region of the map
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
         // Get the center of current map view
         mLastCameraCenter = visibleRegion.latLngBounds.getCenter();
+        //mLastCameraCenter = mMap.getCameraPosition().target;
 
     }
 
@@ -509,6 +521,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraIdle() {
+        Log.d(TAG, "onCameraIdle");
         Float currentZoom = mMap.getCameraPosition().zoom;
         Log.d(TAG, currentZoom.toString());
         // first check that the zoom level is high enough to make it reasonable to trigger a sync at all
@@ -525,12 +538,12 @@ public class MainMapActivity extends AppCompatActivity implements
                         results);
 
                 float ocmCameraDelta = results[0]; //
-                //Log.d(TAG, "onCameraIdle camera delta: " + results[0] + ", " + results[1] + ", " + results[2]);
+                Log.d(TAG, "onCameraIdle camera delta: " + results[0]);
 
                 /// Then check if the camera movement is large enough to trigger a sync on high zoom levels
                 if (currentZoom < (float) getResources().getInteger(R.integer.trigger_high_zoom)) {
                     Log.d(TAG, "high zoom");
-                    if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_high_zoom)) {
+                    if (ocmCameraDelta > (float) getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_high_zoom)) {
 
                         mLastOCMCameraCenter = mLastCameraCenter;
 
@@ -541,7 +554,7 @@ public class MainMapActivity extends AppCompatActivity implements
                 } else {
                     // Or check if the camera movement is large enough to trigger a sync on low zoom levels
                     Log.d(TAG, "low zoom");
-                    if (ocmCameraDelta > getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_low_zoom)) {
+                    if (ocmCameraDelta > (float) getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_low_zoom)) {
 
                         mLastOCMCameraCenter = mLastCameraCenter;
 
@@ -583,7 +596,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        //Log.d(TAG, "onSharedPreferenceChanged");
+        Log.d(TAG, "onSharedPreferenceChanged");
         for (Marker marker: mVisibleStationMarkers.values()) {
             marker.remove();
         }
@@ -609,6 +622,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * Trigger the async task for OCM updates
      */
     protected synchronized void executeOCMSync(Double latitude, Double longitude) {
+        Log.d(TAG, "executeOCMSync");
         // TODO: add some more rate limiting?
         OCMSyncTask OCMSyncTask = new OCMSyncTask(this,
                 latitude,
@@ -639,6 +653,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * Set up the location requests
      */
     protected void createLocationRequest() {
+        Log.d(TAG, "createLocationRequest");
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(getResources().getInteger(R.integer.preferred_location_interval)); // ideal interval
         mLocationRequest.setFastestInterval(getResources().getInteger(R.integer.fastest_location_interval)); // the fastest interval my app can handle
@@ -646,6 +661,7 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     protected void setupLocationServices() {
+        Log.d(TAG, "setupLocationServices");
         // Handle locations of handset
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
 
@@ -662,7 +678,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     protected void updateCurrentLocation(Boolean moveCamera) {
         // Handle locations of handset
-        Log.d(TAG, "updateCurrentLocation called");
+        Log.d(TAG, "updateCurrentLocation");
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
 
             if (mGoogleApiClient != null) {
@@ -708,6 +724,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * @return True or False
      */
     public boolean checkLocationPermission() {
+        Log.d(TAG, "checkLocationPermission");
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -763,6 +780,7 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -802,6 +820,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * @return True or False
      */
     public boolean isOnline() {
+        Log.d(TAG, "isOnline");
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -815,6 +834,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * @return True or False
      */
     private boolean checkGooglePlayServices() {
+        Log.d(TAG, "checkGooglePlayServices");
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
         if (result != ConnectionResult.SUCCESS) {
