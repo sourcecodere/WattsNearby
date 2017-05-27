@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.design.widget.Snackbar;
 
@@ -75,9 +76,8 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
         PlaceSelectionListener,
-        SharedPreferences.OnSharedPreferenceChangeListener
-        // TODO loader for markers: LoaderManager.LoaderCallbacks<Cursor>
-        {
+        SharedPreferences.OnSharedPreferenceChangeListener {
+    //LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -111,6 +111,8 @@ public class MainMapActivity extends AppCompatActivity implements
     private SharedPreferences mSharedPrefs; // for onSharedPreferenceChangeListener
 
     /**
+     * AppCompatActivity override
+     * <p>
      * First call in the lifecycle. This is followed by onStart().
      *
      * @param savedInstanceState contains the activity previous frozen state.
@@ -205,6 +207,8 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * AppCompatActivity override
+     * <p>
      * Dispatch onResume() to fragments.  Note that for better inter-operation
      * with older versions of the platform, at the point of this call the
      * fragments attached to the activity are <em>not</em> resumed.  This means
@@ -221,6 +225,8 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * AppCompatActivity override
+     * <p>
      * Dispatch onPause() to fragments.
      */
     @Override
@@ -234,6 +240,8 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * AppCompatActivity override
+     * <p>
      * Dispatch onStart() to all fragments.  Ensure any created loaders are
      * now started.
      */
@@ -245,6 +253,8 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * AppCompatActivity override
+     * <p>
      * Dispatch onStop() to all fragments.  Ensure all loaders are stopped.
      */
     @Override
@@ -260,6 +270,8 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * AppCompatActivity override
+     * <p>
      * Save all appropriate fragment state.
      *
      * @param savedInstanceState
@@ -270,6 +282,13 @@ public class MainMapActivity extends AppCompatActivity implements
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    /**
+     * AppCompatActivity override
+     * <p>
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "onCreateOptionsMenu");
@@ -277,6 +296,13 @@ public class MainMapActivity extends AppCompatActivity implements
         return true;
     }
 
+    /**
+     * AppCompatActivity override
+     * <p>
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected");
@@ -310,31 +336,6 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-    /**
-     * Dispatch incoming result to the correct fragment. startActivityForResult
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult");
-        if (requestCode == INTENT_PLACE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                this.onPlaceSelected(place);
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                this.onError(status);
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
 
     /**
      * OnMapReadyCallback
@@ -558,7 +559,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     initiateOCMSync(mLastCameraCenter);
 
                 } else {
-                    Log.d(TAG, "Need to move the camera more to sync.." );
+                    Log.d(TAG, "Need to move the camera more to sync..");
                 }
             }
 
@@ -567,6 +568,31 @@ public class MainMapActivity extends AppCompatActivity implements
         }
     }
 
+
+    /**
+     * Get result from places activity
+     * <p>
+     * Dispatch incoming result to the correct fragment. startActivityForResult
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
+        if (requestCode == INTENT_PLACE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                this.onPlaceSelected(place);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                this.onError(status);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     /**
      * Places API
@@ -581,6 +607,19 @@ public class MainMapActivity extends AppCompatActivity implements
         // move the camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_places_search)));
+    }
+
+    /**
+     * Places API
+     * <p>
+     * Callback invoked when PlaceAutocompleteFragment encounters an error.
+     */
+    @Override
+    public void onError(Status status) {
+        Log.e(TAG, "onError: Status = " + status.toString());
+
+        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
+                Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -605,19 +644,47 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
-     * Places API
-     * <p>
-     * Callback invoked when PlaceAutocompleteFragment encounters an error.
+     * Callback for result of permission request.
+     *
+     * @param requestCode
+     * @param permissions  list of permissions
+     * @param grantResults
      */
     @Override
-    public void onError(Status status) {
-        Log.e(TAG, "onError: Status = " + status.toString());
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult");
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
-                Toast.LENGTH_SHORT).show();
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+                    // Permission denied, exit the app and show explanation toast.
+                    Toast.makeText(this, getString(R.string.permission_denied_toast), Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other permissions this app might request.
+            // You can add here other case statements according to your requirement.
+        }
     }
-
-
+    
     /**
      * Trigger the async task for OCM updates
      */
@@ -713,7 +780,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
                     // OCM camera center to something at this point
                     // to trigger a sync
-                    mLastOCMCameraCenter = new LatLng(0d,0d);
+                    mLastOCMCameraCenter = new LatLng(0d, 0d);
                 }
             } else {
                 Log.d(TAG, "GoogleApiClient not connected");
@@ -773,48 +840,6 @@ public class MainMapActivity extends AppCompatActivity implements
             return false;
         } else {
             return true;
-        }
-    }
-
-    /**
-     * Callback for result of permission request.
-     *
-     * @param requestCode
-     * @param permissions  list of permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult");
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-                    // Permission denied, exit the app and show explanation toast.
-                    Toast.makeText(this, getString(R.string.permission_denied_toast), Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
         }
     }
 
