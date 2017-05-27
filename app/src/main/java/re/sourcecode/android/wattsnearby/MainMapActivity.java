@@ -53,7 +53,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.util.HashMap;
 
@@ -83,17 +82,16 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private static final int INTENT_PLACE = 1; // For places search
 
-    public static final String ARG_DETAIL_SHEET_STATION_ID = "stationid"; // Key for argument passed to the bottom sheet fragment
+    public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
-    public static final String ARG_WIDGET_INTENT_KEY = "stationid";
+    public static final String ARG_WIDGET_INTENT_KEY = "station_id";
 
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.
 
     private GoogleMap mMap; // The map object.
 
-    private Location mLastLocation; // Last known position on the phone/car.
-
+    private LatLng mLastLocation; // Last known position on the phone/car.
     private LatLng mLastCameraCenter; // Latitude and longitude of last camera center.
     private LatLng mLastOCMCameraCenter; // Latitude and longitude of last camera center where the OCM api was synced against the content provider.
 
@@ -103,14 +101,11 @@ public class MainMapActivity extends AppCompatActivity implements
     private MarkerOptions mMarkerOptionsCar; // Icon for the car.
     private Marker mCurrentLocationMarker; // car marker with position
 
-
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
     private Long mStationIdFromIntent; // for intent
 
     private SharedPreferences mSharedPrefs; // for onSharedPreferenceChangeListener
-
-    private AdView mAdView; // for banner add
 
     /**
      * First call in the lifecycle. This is followed by onStart().
@@ -140,19 +135,19 @@ public class MainMapActivity extends AppCompatActivity implements
                     getString(R.string.error_not_online),
                     Snackbar.LENGTH_INDEFINITE)
                     .setAction(
-                    getString(R.string.permission_explanation_snackbar_button),
-                    new View.OnClickListener() {
-                        /**
-                         * Called when a view has been clicked.
-                         *
-                         * @param v The view that was clicked.
-                         */
-                        @Override
-                        public void onClick(View v) {
-                            //exit
-                            finish();
-                        }
-                    })
+                            getString(R.string.permission_explanation_snackbar_button),
+                            new View.OnClickListener() {
+                                /**
+                                 * Called when a view has been clicked.
+                                 *
+                                 * @param v The view that was clicked.
+                                 */
+                                @Override
+                                public void onClick(View v) {
+                                    //exit
+                                    finish();
+                                }
+                            })
                     .show();
         }
 
@@ -178,15 +173,15 @@ public class MainMapActivity extends AppCompatActivity implements
 
 
         // Create the car location marker, set position later
-        mMarkerOptionsCar =  WattsImageUtils.getCarMarkerOptions(
+        mMarkerOptionsCar = WattsImageUtils.getCarMarkerOptions(
                 getString(R.string.marker_current),
                 WattsImageUtils.vectorToBitmap(
-                        this, 
-                        R.drawable.ic_car_color_sharp, 
+                        this,
+                        R.drawable.ic_car_color_sharp,
                         getResources().getInteger(R.integer.car_icon_add_to_size)
                 )
         );
-        
+
         // Create the charging station marker bitmap
         mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
         // Create the charging station marker bitmap
@@ -201,9 +196,9 @@ public class MainMapActivity extends AppCompatActivity implements
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Setup the banner ad
-        mAdView = (AdView) findViewById(R.id.adView);
+        AdView adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        adView.loadAd(adRequest);
     }
 
     /**
@@ -229,7 +224,7 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
-        if(mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
@@ -416,7 +411,7 @@ public class MainMapActivity extends AppCompatActivity implements
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         }
 
-        mMap.setPadding(0,0,0, AdSize.BANNER.getHeightInPixels(this));
+        mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
     }
 
     /**
@@ -456,20 +451,17 @@ public class MainMapActivity extends AppCompatActivity implements
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged");
         // Update last location the the new location
-        mLastLocation = location;
+        mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-        // Place current location car marker.
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMarkerOptionsCar.position(latLng);
+
         // Move the car markers current position if we already have it in the map
         if (mCurrentLocationMarker != null) {
-            mCurrentLocationMarker.setPosition(latLng);
+            mCurrentLocationMarker.setPosition(mLastLocation);
 
         } else { //else add it to the map
-            mMarkerOptionsCar.position(latLng);
+            mMarkerOptionsCar.position(mLastLocation);
             mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
         }
-
 
     }
 
@@ -505,13 +497,9 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraMove() {
-        Log.d(TAG, "onCameraMove");
-        // Get the current visible region of the map
-        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
-        // Get the center of current map view
-        mLastCameraCenter = visibleRegion.latLngBounds.getCenter();
-        //mLastCameraCenter = mMap.getCameraPosition().target;
-
+        //Log.d(TAG, "onCameraMove");
+        // Get the current visible region of the map, and save the center LatLng
+        mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
     }
 
     /**
@@ -521,12 +509,20 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraIdle() {
-        Log.d(TAG, "onCameraIdle");
-        Float currentZoom = mMap.getCameraPosition().zoom;
-        Log.d(TAG, currentZoom.toString());
-        // first check that the zoom level is high enough to make it reasonable to trigger a sync at all
-        if (currentZoom > (float) getResources().getInteger(R.integer.trigger_zoom_level)) {
-            // Init sync from OCM
+        //Log.d(TAG, "onCameraIdle");
+
+        Resources resources = getResources();
+
+        int currentZoom = Math.round(mMap.getCameraPosition().zoom);
+        //Log.d(TAG, currentZoom.toString());
+
+        // First check that the zoom level is high enough
+        // to make it reasonable to trigger a sync at all
+        if (currentZoom > getResources().getInteger(R.integer.min_zoom_level)) {
+
+            // The computed distance is stored in results[0].
+            // If results has length 2 or greater, the initial bearing is stored in results[1].
+            // If results has length 3 or greater, the final bearing is stored in results[2].
             float[] results = new float[3];
 
             if ((mLastCameraCenter != null) && (mLastOCMCameraCenter != null)) {
@@ -537,37 +533,42 @@ public class MainMapActivity extends AppCompatActivity implements
                         mLastOCMCameraCenter.longitude,
                         results);
 
-                float ocmCameraDelta = results[0]; //
-                Log.d(TAG, "onCameraIdle camera delta: " + results[0]);
+                // Get the distance from last sync.
+                int distanceFromLastOCMSync = Math.round(results[0]);
+                Log.d(TAG, "Distance from last OCM sync: " + distanceFromLastOCMSync);
+                Log.d(TAG, "Current zoom level: " + currentZoom);
 
-                /// Then check if the camera movement is large enough to trigger a sync on high zoom levels
-                if (currentZoom < (float) getResources().getInteger(R.integer.trigger_high_zoom)) {
-                    Log.d(TAG, "high zoom");
-                    if (ocmCameraDelta > (float) getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_high_zoom)) {
+                // If zoom is between min_zoom_level and zoom_level_near
+                // and the camera movement distance is more than significant_cam_move_far
+                if ((currentZoom < resources.getInteger(R.integer.zoom_level_near))
+                        && (distanceFromLastOCMSync > resources.getInteger(R.integer.significant_cam_move_far))) {
+                    Log.d(TAG, "Far zoom.");
 
-                        mLastOCMCameraCenter = mLastCameraCenter;
+                    mLastOCMCameraCenter = mLastCameraCenter;
 
-                        executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
+                    initiateOCMSync(mLastCameraCenter);
 
+                    // If zoom is more than zoom_level_near
+                    // and the camera movement distance is more than significant_cam_move_near
+                } else if ((currentZoom >= resources.getInteger(R.integer.zoom_level_near))
+                        && (distanceFromLastOCMSync >= resources.getInteger(R.integer.significant_cam_move_near))) {
+                    Log.d(TAG, "Near zoom.");
 
-                    }
+                    mLastOCMCameraCenter = mLastCameraCenter;
+
+                    initiateOCMSync(mLastCameraCenter);
+
                 } else {
-                    // Or check if the camera movement is large enough to trigger a sync on low zoom levels
-                    Log.d(TAG, "low zoom");
-                    if (ocmCameraDelta > (float) getResources().getInteger(R.integer.delta_trigger_camera_significantly_changed_low_zoom)) {
-
-                        mLastOCMCameraCenter = mLastCameraCenter;
-
-                        executeOCMSync(mLastCameraCenter.latitude, mLastCameraCenter.longitude);
-
-                    }
+                    Log.d(TAG, "Need to move the camera more to sync.." );
                 }
-                // Add and update markers for stations in the current visible area
-                WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
-
             }
+
+            // Add and update markers for stations in the current visible area
+            WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+
         }
     }
+
 
     /**
      * Places API
@@ -597,9 +598,10 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "onSharedPreferenceChanged");
-        for (Marker marker: mVisibleStationMarkers.values()) {
+        for (Marker marker : mVisibleStationMarkers.values()) {
             marker.remove();
         }
+
         mVisibleStationMarkers = new HashMap<Long, Marker>();
         WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
     }
@@ -621,12 +623,12 @@ public class MainMapActivity extends AppCompatActivity implements
     /**
      * Trigger the async task for OCM updates
      */
-    protected synchronized void executeOCMSync(Double latitude, Double longitude) {
-        Log.d(TAG, "executeOCMSync");
+    protected void initiateOCMSync(LatLng latLng) {
+        Log.d(TAG, "initiateOCMSync");
+
         // TODO: add some more rate limiting?
         OCMSyncTask OCMSyncTask = new OCMSyncTask(this,
-                latitude,
-                longitude,
+                latLng,
                 (double) getResources().getInteger(R.integer.ocm_radius_km),
                 getResources().getInteger(R.integer.ocm_max_results),
                 new OCMSyncTaskListener() {
@@ -635,7 +637,12 @@ public class MainMapActivity extends AppCompatActivity implements
 
                         // Also Add and update markers for stations in the current visible area
                         // every time an ocm sync if finished in case of slow updates
-                        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+                        WattsMapUtils.updateStationMarkers(
+                                MainMapActivity.this,
+                                mMap,
+                                mVisibleStationMarkers,
+                                mMarkerIconStation,
+                                mMarkerIconStationFast);
                     }
 
                     @Override
@@ -682,32 +689,33 @@ public class MainMapActivity extends AppCompatActivity implements
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
 
             if (mGoogleApiClient != null) {
-                // Get the last location, and center the map
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-                if (mLastLocation != null) {
+                // Set the last location from the LocationServices
+                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-                    LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                    //mMarkerOptionsCar.position(latLng);
-                    
+                if (location != null) {
+
+                    mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
                     // Move the car markers current position
                     if (mCurrentLocationMarker != null) {
-                        mCurrentLocationMarker.setPosition(latLng);
+                        mCurrentLocationMarker.setPosition(mLastLocation);
                     } else {
-                        mMarkerOptionsCar.position(latLng);
+                        mMarkerOptionsCar.position(mLastLocation);
                         mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
                     }
 
                     if (moveCamera) {
                         // move the camera
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLastLocation));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
                     }
                     // save camera center
                     mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
 
-                    // OCM camera center is the same as last camera center at this point.
-                    mLastOCMCameraCenter = mLastCameraCenter;
+                    // OCM camera center to something at this point
+                    // to trigger a sync
+                    mLastOCMCameraCenter = new LatLng(0d,0d);
                 }
             } else {
                 Log.d(TAG, "GoogleApiClient not connected");
@@ -814,7 +822,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Check if the is online.
-     *
+     * <p>
      * From https://stackoverflow.com/a/4009133
      *
      * @return True or False

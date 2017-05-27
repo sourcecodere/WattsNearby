@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -42,15 +44,14 @@ public final class WattsOCMNetworkUtils {
     /**
      * Retrieves the proper URL to query for the OCM data.
      *
-     * @param latitude  The latitude of the location
-     * @param longitude The longitude of the location
-     * @param distance The distance/zoom level of the current location
-     * @return URL to query ocm service
+     * @param latLng    The current LatLng position
+     * @param distance  The distance/zoom level of the current location
+     * @return          URL to query ocm service
      */
-    public static URL getUrl(Double latitude, Double longitude, Double distance, int max_results) {
+    public static URL getUrl(LatLng latLng, Double distance, int max_results) {
             Uri ocmQueryUri = Uri.parse(OCM_BASE_URL).buildUpon()
-                    .appendQueryParameter(LAT_PARAM, String.valueOf(latitude))
-                    .appendQueryParameter(LON_PARAM, String.valueOf(longitude))
+                    .appendQueryParameter(LAT_PARAM, String.valueOf(latLng.latitude))
+                    .appendQueryParameter(LON_PARAM, String.valueOf(latLng.longitude))
                     .appendQueryParameter(DISTANCE_PARAM, String.valueOf(distance))
                     .appendQueryParameter(OUTPUT_PARAM, output)
                     .appendQueryParameter(DISTANCE_UNIT_PARAM, distance_unit)

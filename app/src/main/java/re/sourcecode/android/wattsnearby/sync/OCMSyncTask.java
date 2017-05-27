@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,8 +28,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
     private static final String TAG = OCMSyncTask.class.getSimpleName();
 
     private Context mContext;
-    private Double mLatitude;
-    private Double mLongitude;
+    private LatLng mLatLng;
     private Double mDistance;
     private int mMaxResults;
 
@@ -51,14 +52,12 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
 
 
-    public OCMSyncTask(Context context, Double latitude, Double longitude, Double distance, int max_results, OCMSyncTaskListener callback) {
+    public OCMSyncTask(Context context, LatLng latLng, Double distance, int max_results, OCMSyncTaskListener callback) {
         this.mContext = context;
-        this.mLatitude = latitude;
-        this.mLongitude = longitude;
+        this.mLatLng = latLng;
         this.mDistance = distance;
         this.mMaxResults = max_results;
         this.mCallback = callback;
-
     }
 
     /**
@@ -80,7 +79,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
         try {
             if (android.os.Debug.isDebuggerConnected())
                 android.os.Debug.waitForDebugger();
-            syncStations(this.mContext, this.mLatitude, this.mLongitude, this.mDistance, this.mMaxResults);
+            syncStations(this.mContext, this.mLatLng, this.mDistance, this.mMaxResults);
         } catch (Exception e) {
             mException = e;
         }
@@ -113,11 +112,10 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      * inserts the new station information into our ContentProvider.
      *
      * @param distance  The current map zoom level
-     * @param longitude The current position longitude
-     * @param latitude  The current position latitude
+     * @param latLng    The current LatLng position
      * @param context   Used to access utility methods and the ContentResolver
      */
-    synchronized public static void syncStations(Context context, Double latitude, Double longitude, Double distance, int max_results) {
+    public static void syncStations(Context context, LatLng latLng, Double distance, int max_results) {
         try {
             /* Get a handle on the ContentResolver to update and insert data */
             mWattsContentResolver = context.getContentResolver();
@@ -127,7 +125,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
             * nearby charging stations. It will create a URL based off of the latitude,
             * longitude and distance (the current map zoom level)
             */
-            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(latitude, longitude, distance, max_results);
+            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(latLng, distance, max_results);
 
             /* Use the URL to retrieve the JSON */
             String jsonOcmResponse = WattsOCMNetworkUtils.getResponseFromHttpUrl(ocmRequestUrl);
@@ -145,7 +143,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    synchronized private static void cacheStation(JSONObject jsonStation) {
+    private static void cacheStation(JSONObject jsonStation) {
         try {
             /* get the OCM id */
             Long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
@@ -183,7 +181,8 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
                 /* new connection data, insert it */
                 for (int i = 0; i < connectionsValues.length; i++) {
-                    mWattsContentResolver.insert(ChargingStationContract.ConnectionEntry.CONTENT_URI,
+                    mWattsContentResolver.insert(
+                            ChargingStationContract.ConnectionEntry.CONTENT_URI,
                             connectionsValues[i]
                     );
                 }
