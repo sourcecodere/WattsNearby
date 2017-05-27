@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -74,7 +75,9 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
         PlaceSelectionListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener
+        // TODO loader for markers: LoaderManager.LoaderCallbacks<Cursor>
+        {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -215,7 +218,6 @@ public class MainMapActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume");
         super.onResume();
         mGoogleApiClient.connect();
-
     }
 
     /**
@@ -229,7 +231,6 @@ public class MainMapActivity extends AppCompatActivity implements
             mGoogleApiClient.disconnect();
         }
         super.onPause();
-
     }
 
     /**
@@ -306,7 +307,6 @@ public class MainMapActivity extends AppCompatActivity implements
 
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
             return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -394,7 +394,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Intent handling.
         if (mStationIdFromIntent != null) {
-            // Todo zoom to position
+            // TODO: move center a bit when bottom sheet opens.
 
             // Move the camera to station position
             LatLng stationLatLng = WattsDataUtils.getStationLatLng(getApplicationContext(), mStationIdFromIntent);
@@ -411,6 +411,7 @@ public class MainMapActivity extends AppCompatActivity implements
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         }
 
+        // Moves the bottom map elements up a bit to fit the adView.
         mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
     }
 
@@ -453,7 +454,6 @@ public class MainMapActivity extends AppCompatActivity implements
         // Update last location the the new location
         mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-
         // Move the car markers current position if we already have it in the map
         if (mCurrentLocationMarker != null) {
             mCurrentLocationMarker.setPosition(mLastLocation);
@@ -462,7 +462,6 @@ public class MainMapActivity extends AppCompatActivity implements
             mMarkerOptionsCar.position(mLastLocation);
             mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
         }
-
     }
 
     /**
@@ -565,7 +564,6 @@ public class MainMapActivity extends AppCompatActivity implements
 
             // Add and update markers for stations in the current visible area
             WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
-
         }
     }
 
@@ -855,7 +853,6 @@ public class MainMapActivity extends AppCompatActivity implements
         return true;
     }
 
-
     /**
      * Setup the GoogleApiClient for play services (maps)
      */
@@ -872,5 +869,4 @@ public class MainMapActivity extends AppCompatActivity implements
             mGoogleApiClient.connect();
         }
     }
-
 }
