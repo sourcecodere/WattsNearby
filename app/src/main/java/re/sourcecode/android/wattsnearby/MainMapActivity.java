@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.design.widget.Snackbar;
 
 import android.os.Bundle;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -50,7 +50,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -64,7 +63,6 @@ import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
 
 
 public class MainMapActivity extends AppCompatActivity implements
@@ -76,8 +74,8 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
         PlaceSelectionListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
-    //LoaderManager.LoaderCallbacks<Cursor> {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LoaderManager.LoaderCallbacks<HashMap<Long, MarkerOptions>> {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
@@ -85,9 +83,12 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private static final int INTENT_PLACE = 1; // For places search
 
+    private static final int MARKER_LOADER = 123; // For loading markers on async thread
+
     public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_WIDGET_INTENT_KEY = "station_id";
+    public static final String ARG_MAP_VISIBLE_BOUNDS = "visible_bounds";
 
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.
@@ -98,21 +99,19 @@ public class MainMapActivity extends AppCompatActivity implements
     private LatLng mLastCameraCenter; // Latitude and longitude of last camera center.
     private LatLng mLastOCMCameraCenter; // Latitude and longitude of last camera center where the OCM api was synced against the content provider.
 
-    private BitmapDescriptor mMarkerIconStation; // Icon for charging stations.
-    private BitmapDescriptor mMarkerIconStationFast; // Icon for fast charging stations.
-
     private MarkerOptions mMarkerOptionsCar; // Icon for the car.
-    private Marker mCurrentLocationMarker; // car marker with position
+    private Marker mCurrentLocationMarker; // Car marker with position
 
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
-    private Long mStationIdFromIntent; // for intent
+    private Long mStationIdFromIntent; // For intent
 
-    private SharedPreferences mSharedPrefs; // for onSharedPreferenceChangeListener
+    private SharedPreferences mSharedPrefs; // For onSharedPreferenceChangeListener
+
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      * First call in the lifecycle. This is followed by onStart().
      *
      * @param savedInstanceState contains the activity previous frozen state.
@@ -188,9 +187,13 @@ public class MainMapActivity extends AppCompatActivity implements
         );
 
         // Create the charging station marker bitmap
-        mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
+        //mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
         // Create the charging station marker bitmap
-        mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station_fast, getResources().getInteger(R.integer.station_icon_add_to_size));
+        //mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station_fast, getResources().getInteger(R.integer.station_icon_add_to_size));
+
+        // Init loader for markers. No args, means it returns null in onLoadFinished
+        // use restartLoader for updating map markers.
+        getSupportLoaderManager().initLoader(MARKER_LOADER, null, this);
 
         // Intent with stationId (e.g. from widget list item click)
         if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
@@ -208,7 +211,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      * Dispatch onResume() to fragments.  Note that for better inter-operation
      * with older versions of the platform, at the point of this call the
      * fragments attached to the activity are <em>not</em> resumed.  This means
@@ -226,7 +229,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      * Dispatch onPause() to fragments.
      */
     @Override
@@ -241,7 +244,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      * Dispatch onStart() to all fragments.  Ensure any created loaders are
      * now started.
      */
@@ -254,7 +257,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      * Dispatch onStop() to all fragments.  Ensure all loaders are stopped.
      */
     @Override
@@ -271,7 +274,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      * Save all appropriate fragment state.
      *
      * @param savedInstanceState
@@ -284,7 +287,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      *
      * @param menu
      * @return
@@ -298,7 +301,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * AppCompatActivity override
-     * <p>
+     * <p/>
      *
      * @param item
      * @return
@@ -339,7 +342,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * OnMapReadyCallback
-     * <p>
+     * <p/>
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
@@ -418,6 +421,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleApiClient.ConnectionCallbacks
+     * </p>
      */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -432,6 +436,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleApiClient.ConnectionCallbacks
+     * </p>
      */
     @Override
     public void onConnectionSuspended(int i) {
@@ -440,6 +445,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleApiClient.OnConnectionFailedListener
+     * </p>
      */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -448,6 +454,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * LocationListener
+     * </p>
      */
     @Override
     public void onLocationChanged(Location location) {
@@ -467,6 +474,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleMap.onMarkerClick called when marker is clicked
+     * </p>
      *
      * @param marker clicked
      */
@@ -494,6 +502,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleMap.onCameraMove callback. Updates the center of the map
+     * </p>
      */
     @Override
     public void onCameraMove() {
@@ -504,7 +513,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * GoogleMap.onCameraIdle
-     * <p>
+     * <p/>
      * Callback. Checks if the new idle position of the map camera should initiate a OCM sync
      */
     @Override
@@ -564,14 +573,18 @@ public class MainMapActivity extends AppCompatActivity implements
             }
 
             // Add and update markers for stations in the current visible area
-            WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+            //WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+            Bundle args = new Bundle();
+            args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
+            getSupportLoaderManager().restartLoader(MARKER_LOADER, args, this).forceLoad();
+            //markerLoader.forceLoad();
         }
     }
 
 
     /**
      * Get result from places activity
-     * <p>
+     * <p/>
      * Dispatch incoming result to the correct fragment. startActivityForResult
      *
      * @param requestCode
@@ -596,7 +609,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Places API
-     * <p>
+     * <p/>
      * Callback invoked when a place has been selected from the PlaceAutocompleteFragment.
      */
     @Override
@@ -611,7 +624,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Places API
-     * <p>
+     * <p/>
      * Callback invoked when PlaceAutocompleteFragment encounters an error.
      */
     @Override
@@ -622,11 +635,65 @@ public class MainMapActivity extends AppCompatActivity implements
                 Toast.LENGTH_SHORT).show();
     }
 
+
+    /**
+     * Instantiate and return a new Loader for the given ID.
+     *
+     * @param id   The ID whose loader is to be created.
+     * @param args Any arguments supplied by the caller.
+     * @return Return a new Loader instance that is ready to start loading.
+     */
+    @Override
+    public Loader<HashMap<Long, MarkerOptions>> onCreateLoader(int id, Bundle args) {
+
+        return new StationMarkersLoader(getApplicationContext(), args);
+
+    }
+
+    /**
+     * Called when a previously created loader has finished its load.
+     *
+     * @param loader The Loader that has finished.
+     * @param data   The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<HashMap<Long, MarkerOptions>> loader, HashMap<Long, MarkerOptions> data) {
+
+        Log.d(TAG, "onLoadFinished");
+
+        mVisibleStationMarkers.keySet().retainAll(data.keySet()); //filters out not visible stations
+        //for (Marker marker : mVisibleStationMarkers.values()) {
+        //    marker.remove();
+        //}
+
+
+        for (HashMap.Entry<Long, MarkerOptions> entry : data.entrySet()) {
+            Long stationId = entry.getKey();
+            MarkerOptions markerOptions = entry.getValue();
+            if ((mMap != null) && (!mVisibleStationMarkers.containsKey(stationId))) {
+                mMap.addMarker(markerOptions).setTag(stationId);
+            }
+
+        }
+    }
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.  The application should at this point
+     * remove any references it has to the Loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<HashMap<Long, MarkerOptions>> loader) {
+        Log.d(TAG, "onLoadReset");
+    }
+
     /**
      * Called when a shared preference is changed, added, or removed. This
      * may be called even if a preference is set to its existing value.
-     * <p>
-     * <p>This callback will be run on your main thread.
+     * <p/>
+     * This callback will be run on your main thread.
      *
      * @param sharedPreferences The {@link SharedPreferences} that received
      *                          the change.
@@ -640,11 +707,16 @@ public class MainMapActivity extends AppCompatActivity implements
         }
 
         mVisibleStationMarkers = new HashMap<Long, Marker>();
-        WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+        //WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
+        getSupportLoaderManager().restartLoader(MARKER_LOADER, args, this).forceLoad();
+        //markerLoader.forceLoad();
     }
 
     /**
      * Callback for result of permission request.
+     * <p/>
      *
      * @param requestCode
      * @param permissions  list of permissions
@@ -684,9 +756,10 @@ public class MainMapActivity extends AppCompatActivity implements
             // You can add here other case statements according to your requirement.
         }
     }
-    
+
     /**
      * Trigger the async task for OCM updates
+     * <p/>
      */
     protected void initiateOCMSync(LatLng latLng) {
         Log.d(TAG, "initiateOCMSync");
@@ -702,12 +775,11 @@ public class MainMapActivity extends AppCompatActivity implements
 
                         // Also Add and update markers for stations in the current visible area
                         // every time an ocm sync if finished in case of slow updates
-                        WattsMapUtils.updateStationMarkers(
-                                MainMapActivity.this,
-                                mMap,
-                                mVisibleStationMarkers,
-                                mMarkerIconStation,
-                                mMarkerIconStationFast);
+                        //WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
+                        Bundle args = new Bundle();
+                        args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
+                        getSupportLoaderManager().restartLoader(MARKER_LOADER, args, MainMapActivity.this).forceLoad();
+                        //markerLoader.forceLoad();
                     }
 
                     @Override
@@ -723,6 +795,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Set up the location requests
+     * <p/>
      */
     protected void createLocationRequest() {
         Log.d(TAG, "createLocationRequest");
@@ -793,6 +866,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Check if the user allows location (fine)
+     * <p/>
      *
      * @return True or False
      */
@@ -845,7 +919,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Check if the is online.
-     * <p>
+     * <p/>
      * From https://stackoverflow.com/a/4009133
      *
      * @return True or False
@@ -861,6 +935,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Check if the user allows Google play services. Prerequisite for this app, bail if denied.
+     * <p/>
      *
      * @return True or False
      */
@@ -880,6 +955,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     /**
      * Setup the GoogleApiClient for play services (maps)
+     * <p/>
      */
     protected synchronized void buildGoogleApiClient() {
         Log.d(TAG, "buildGoogleApiClient");
