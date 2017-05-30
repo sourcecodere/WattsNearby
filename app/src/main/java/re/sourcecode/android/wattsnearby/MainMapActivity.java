@@ -10,7 +10,6 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -23,7 +22,6 @@ import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -142,7 +140,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     getString(R.string.error_not_online),
                     Snackbar.LENGTH_INDEFINITE)
                     .setAction(
-                            getString(R.string.permission_explanation_snackbar_button),
+                            getString(R.string.snackbar_permission_explanation_btn),
                             new View.OnClickListener() {
                                 /**
                                  * Called when a view has been clicked.
@@ -753,7 +751,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
                 } else {
                     // Permission denied, exit the app and show explanation toast.
-                    Toast.makeText(this, getString(R.string.permission_denied_toast), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG).show();
                     finish();
                 }
                 return;
@@ -830,6 +828,25 @@ public class MainMapActivity extends AppCompatActivity implements
 
         } else {
             Log.d(TAG, "Could not setup location services");
+            Snackbar.make(
+                    MainMapActivity.this.findViewById(R.id.main_layout),
+                    getString(R.string.snackbar_service_not_connected),
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(
+                            getString(R.string.snackbar_service_not_connected_btn),
+                            new View.OnClickListener() {
+                                /**
+                                 * Called when a view has been clicked.
+                                 *
+                                 * @param v The view that was clicked.
+                                 */
+                                @Override
+                                public void onClick(View v) {
+                                    //exit
+                                    finish();
+                                }
+                            })
+                    .show();
         }
     }
 
@@ -897,10 +914,10 @@ public class MainMapActivity extends AppCompatActivity implements
                 // sees the explanation, try again to request the permission.
                 Snackbar.make(
                         MainMapActivity.this.findViewById(R.id.main_layout),
-                        getString(R.string.permission_explanation_snackbar),
+                        getString(R.string.snackbar_permission_explanation),
                         Snackbar.LENGTH_INDEFINITE)
                         .setAction(
-                                getString(R.string.permission_explanation_snackbar_button),
+                                getString(R.string.snackbar_permission_explanation_btn),
                                 new View.OnClickListener() {
                                     /**
                                      * Called when a view has been clicked.
