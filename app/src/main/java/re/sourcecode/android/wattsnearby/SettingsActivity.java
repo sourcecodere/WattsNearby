@@ -1,7 +1,11 @@
 package re.sourcecode.android.wattsnearby;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.MenuItem;
 
 import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
@@ -23,6 +27,9 @@ import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
  */
 
 public class SettingsActivity extends AppCompatActivity {
+
+    private static final String TAG = SettingsActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -10,6 +10,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -22,6 +23,7 @@ import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -74,7 +76,6 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
         PlaceSelectionListener,
-        SharedPreferences.OnSharedPreferenceChangeListener,
         LoaderManager.LoaderCallbacks<HashMap<Long, MarkerOptions>> {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
@@ -84,11 +85,6 @@ public class MainMapActivity extends AppCompatActivity implements
     private static final int INTENT_PLACE = 1; // For places search
 
     private static final int MARKER_LOADER = 123; // For loading markers on async thread
-
-    public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
-    public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
-    public static final String ARG_WIDGET_INTENT_KEY = "station_id";
-    public static final String ARG_MAP_VISIBLE_BOUNDS = "visible_bounds";
 
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.
@@ -106,7 +102,14 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private Long mStationIdFromIntent; // For intent
 
-    private SharedPreferences mSharedPrefs; // For onSharedPreferenceChangeListener
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener;
+    private Boolean mSharedPreferenceChanged = false;
+
+    public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
+    public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
+    public static final String ARG_WIDGET_INTENT_KEY = "station_id";
+    public static final String ARG_MAP_VISIBLE_BOUNDS = "visible_bounds";
 
 
     /**
@@ -186,11 +189,6 @@ public class MainMapActivity extends AppCompatActivity implements
                 )
         );
 
-        // Create the charging station marker bitmap
-        //mMarkerIconStation = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station, getResources().getInteger(R.integer.station_icon_add_to_size));
-        // Create the charging station marker bitmap
-        //mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(this, R.drawable.ic_station_fast, getResources().getInteger(R.integer.station_icon_add_to_size));
-
         // Init loader for markers. No args, means it returns null in onLoadFinished
         // use restartLoader for updating map markers.
         getSupportLoaderManager().initLoader(MARKER_LOADER, null, this);
@@ -200,13 +198,19 @@ public class MainMapActivity extends AppCompatActivity implements
             mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0l);
         }
 
-        // Get shared preferences for the OnSharedPreferenceChangeListener
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         // Setup the banner ad
         AdView adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener(){
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                Log.d(TAG, "onSharedPreferenceChanged");
+                mSharedPreferenceChanged = true;
+            }
+        };
     }
 
     /**
@@ -222,9 +226,14 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "onResume " + mSharedPreferenceChanged);
         super.onResume();
         mGoogleApiClient.connect();
+        if (mSharedPreferenceChanged) {
+            recreate(); // to redraw the map markers.
+            mSharedPreferenceChanged = false;
+        }
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
     }
 
     /**
@@ -239,7 +248,9 @@ public class MainMapActivity extends AppCompatActivity implements
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
         super.onPause();
+
     }
 
     /**
@@ -282,7 +293,33 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState");
+        //savedInstanceState.putParcelable("my_markers", (Parcelable) mVisibleStationMarkers);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    /**
+     * This method is called after {@link #onStart} when the activity is
+     * being re-initialized from a previously saved state, given here in
+     * <var>savedInstanceState</var>.  Most implementations will simply use {@link #onCreate}
+     * to restore their state, but it is sometimes convenient to do it here
+     * after all of the initialization has been done or to allow subclasses to
+     * decide whether to use your default implementation.  The default
+     * implementation of this method performs a restore of any view state that
+     * had previously been frozen by {@link #onSaveInstanceState}.
+     * <p>
+     * <p>This method is called between {@link #onStart} and
+     * {@link #onPostCreate}.
+     *
+     * @param savedInstanceState the data most recently supplied in {@link #onSaveInstanceState}.
+     * @see #onCreate
+     * @see #onPostCreate
+     * @see #onResume
+     * @see #onSaveInstanceState
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        //mVisibleStationMarkers = (HashMap<Long, Marker>) savedInstanceState.getSerializable("my_markers");
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     /**
@@ -323,9 +360,8 @@ public class MainMapActivity extends AppCompatActivity implements
             }
             return true;
         } else if (id == R.id.action_settings) {
+            mSharedPreferences.registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
             startActivity(new Intent(this, SettingsActivity.class));
-            // Register listener for prefernce changes
-            mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
             return false;
         } else if (id == R.id.action_about) {
             BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetGenericFragment();
@@ -432,6 +468,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Try to set last location, update car marker, and do not zoom to location
         updateCurrentLocation(false);
+        Log.d(TAG, "onconnected len" + mVisibleStationMarkers.size());
     }
 
     /**
@@ -572,12 +609,8 @@ public class MainMapActivity extends AppCompatActivity implements
                 }
             }
 
-            // Add and update markers for stations in the current visible area
-            //WattsMapUtils.updateStationMarkers(this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
-            Bundle args = new Bundle();
-            args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
-            getSupportLoaderManager().restartLoader(MARKER_LOADER, args, this).forceLoad();
-            //markerLoader.forceLoad();
+            refreshMapStationMarkers();
+
         }
     }
 
@@ -661,11 +694,10 @@ public class MainMapActivity extends AppCompatActivity implements
 
         Log.d(TAG, "onLoadFinished");
 
-        mVisibleStationMarkers.keySet().retainAll(data.keySet()); //filters out not visible stations
-        //for (Marker marker : mVisibleStationMarkers.values()) {
-        //    marker.remove();
-        //}
-
+        //mVisibleStationMarkers.keySet().retainAll(data.keySet()); //filters out not visible stations
+        for (Marker marker : mVisibleStationMarkers.values()) {
+            marker.remove();
+        }
 
         for (HashMap.Entry<Long, MarkerOptions> entry : data.entrySet()) {
             Long stationId = entry.getKey();
@@ -687,31 +719,6 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(Loader<HashMap<Long, MarkerOptions>> loader) {
         Log.d(TAG, "onLoadReset");
-    }
-
-    /**
-     * Called when a shared preference is changed, added, or removed. This
-     * may be called even if a preference is set to its existing value.
-     * <p/>
-     * This callback will be run on your main thread.
-     *
-     * @param sharedPreferences The {@link SharedPreferences} that received
-     *                          the change.
-     * @param key               The key of the preference that was changed, added, or
-     */
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(TAG, "onSharedPreferenceChanged");
-        for (Marker marker : mVisibleStationMarkers.values()) {
-            marker.remove();
-        }
-
-        mVisibleStationMarkers = new HashMap<Long, Marker>();
-        //WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
-        getSupportLoaderManager().restartLoader(MARKER_LOADER, args, this).forceLoad();
-        //markerLoader.forceLoad();
     }
 
     /**
@@ -758,6 +765,15 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
+     * Restart the loader for station markers with current LatLngBounds of camera.
+     */
+    public void refreshMapStationMarkers(){
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
+        getSupportLoaderManager().restartLoader(MARKER_LOADER, args, this).forceLoad();
+    }
+
+    /**
      * Trigger the async task for OCM updates
      * <p/>
      */
@@ -775,11 +791,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
                         // Also Add and update markers for stations in the current visible area
                         // every time an ocm sync if finished in case of slow updates
-                        //WattsMapUtils.updateStationMarkers(MainMapActivity.this, mMap, mVisibleStationMarkers, mMarkerIconStation, mMarkerIconStationFast);
-                        Bundle args = new Bundle();
-                        args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
-                        getSupportLoaderManager().restartLoader(MARKER_LOADER, args, MainMapActivity.this).forceLoad();
-                        //markerLoader.forceLoad();
+                        refreshMapStationMarkers();
                     }
 
                     @Override

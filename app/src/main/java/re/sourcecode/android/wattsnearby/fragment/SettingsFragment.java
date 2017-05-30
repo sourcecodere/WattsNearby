@@ -1,4 +1,5 @@
 package re.sourcecode.android.wattsnearby.fragment;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,21 +17,21 @@ import re.sourcecode.android.wattsnearby.R;
 
 /**
  * Created by olem on 4/29/17.
- *
+ * <p>
  * Inspired and code copied from https://github.com/udacity/ud851-Sunshine developed by udacity.com
- *
+ * <p>
  * The SettingsFragment serves as the display for all of the user's settings. In Sunshine, the
  * user will be able to change their preference for units of measurement from metric to imperial,
  * set their preferred weather location, and indicate whether or not they'd like to see
  * notifications.
- *
+ * <p>
  * Please note: If you are using our dummy weather services, the location returned will always be
  * Mountain View, California.
- *
  */
 
-public class SettingsFragment extends PreferenceFragmentCompat
-         {
+public class SettingsFragment extends PreferenceFragmentCompat {
+
+    private static final String TAG = SettingsFragment.class.getSimpleName();
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = value.toString();
@@ -64,5 +66,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             }
         }
     }
+
 }
 
