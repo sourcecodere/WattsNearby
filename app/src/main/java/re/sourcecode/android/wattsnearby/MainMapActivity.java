@@ -59,6 +59,7 @@ import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
+import re.sourcecode.android.wattsnearby.loader.StationMarkersLoader;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;

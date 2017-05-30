@@ -1,4 +1,4 @@
-package re.sourcecode.android.wattsnearby;
+package re.sourcecode.android.wattsnearby.loader;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import re.sourcecode.android.wattsnearby.MainMapActivity;
+import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 import re.sourcecode.android.wattsnearby.data.WattsPreferences;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
