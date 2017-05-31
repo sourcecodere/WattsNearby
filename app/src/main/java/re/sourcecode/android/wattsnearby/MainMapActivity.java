@@ -21,6 +21,7 @@ import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +58,7 @@ import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
+import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
 import re.sourcecode.android.wattsnearby.loader.StationMarkersLoader;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
@@ -103,7 +105,7 @@ public class MainMapActivity extends AppCompatActivity implements
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_WIDGET_INTENT_KEY = "station_id";
     public static final String ARG_MAP_VISIBLE_BOUNDS = "visible_bounds";
-
+    public static final String FILTER_CHANGED_KEY = "changed"; // used in main to check for changes and in settings fragment to set changes
 
     /**
      * AppCompatActivity override
@@ -196,6 +198,10 @@ public class MainMapActivity extends AppCompatActivity implements
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
+        // set the default value of filter changed flag to false
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(FILTER_CHANGED_KEY, false).apply();
+
+
     }
 
     /**
@@ -214,6 +220,13 @@ public class MainMapActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume");
         super.onResume();
         mGoogleApiClient.connect();
+        Boolean changedPrefs = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FILTER_CHANGED_KEY, false);
+        if (changedPrefs == true) {
+            Log.d(TAG, "onResume preferences changed! resetting the markers");
+            // TODO: do something smarter than recreating everything...
+            recreate();
+        }
+
     }
 
     /**
