@@ -10,6 +10,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -55,6 +56,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
@@ -202,14 +204,6 @@ public class MainMapActivity extends AppCompatActivity implements
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        mOnSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener(){
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                Log.d(TAG, "onSharedPreferenceChanged");
-                mSharedPreferenceChanged = true;
-            }
-        };
     }
 
     /**
@@ -228,11 +222,6 @@ public class MainMapActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume " + mSharedPreferenceChanged);
         super.onResume();
         mGoogleApiClient.connect();
-        if (mSharedPreferenceChanged) {
-            recreate(); // to redraw the map markers.
-            mSharedPreferenceChanged = false;
-        }
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
     }
 
     /**
@@ -243,13 +232,12 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
+        Log.d(TAG, "onPause mVisibleStationMarkers: " + mVisibleStationMarkers.size());
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
         super.onPause();
-
     }
 
     /**
@@ -277,7 +265,6 @@ public class MainMapActivity extends AppCompatActivity implements
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
-
         // super
         super.onStop();
     }
@@ -292,7 +279,8 @@ public class MainMapActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState");
-        //savedInstanceState.putParcelable("my_markers", (Parcelable) mVisibleStationMarkers);
+//        savedInstanceState.putSerializable("markers", (Serializable) mVisibleStationMarkers);
+        Log.d(TAG, "onSaveInstanceState mVisibleStationMarkers: " + mVisibleStationMarkers.size());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -317,8 +305,11 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        //mVisibleStationMarkers = (HashMap<Long, Marker>) savedInstanceState.getSerializable("my_markers");
         super.onRestoreInstanceState(savedInstanceState);
+//        if (savedInstanceState != null) {
+//            mVisibleStationMarkers = (HashMap<Long, Marker>) savedInstanceState.getSerializable("markers");
+//        }
+        Log.d(TAG, "onRestoreInstanceState mVisibleStationMarkers:" + mVisibleStationMarkers.size());
     }
 
     /**
@@ -359,7 +350,6 @@ public class MainMapActivity extends AppCompatActivity implements
             }
             return true;
         } else if (id == R.id.action_settings) {
-            mSharedPreferences.registerOnSharedPreferenceChangeListener(mOnSharedPreferenceChangeListener);
             startActivity(new Intent(this, SettingsActivity.class));
             return false;
         } else if (id == R.id.action_about) {
@@ -467,7 +457,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Try to set last location, update car marker, and do not zoom to location
         updateCurrentLocation(false);
-        Log.d(TAG, "onconnected len" + mVisibleStationMarkers.size());
+        Log.d(TAG, "onConnected");
     }
 
     /**
@@ -677,9 +667,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public Loader<HashMap<Long, MarkerOptions>> onCreateLoader(int id, Bundle args) {
-
         return new StationMarkersLoader(getApplicationContext(), args);
-
     }
 
     /**
@@ -692,20 +680,28 @@ public class MainMapActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<HashMap<Long, MarkerOptions>> loader, HashMap<Long, MarkerOptions> data) {
 
         Log.d(TAG, "onLoadFinished");
+        Log.d(TAG, "onLoadFinished mVisibleStationMarkers before clean up:" + mVisibleStationMarkers.size());
 
-        //mVisibleStationMarkers.keySet().retainAll(data.keySet()); //filters out not visible stations
-        for (Marker marker : mVisibleStationMarkers.values()) {
-            marker.remove();
+        // clean up map
+        for (HashMap.Entry<Long, Marker> entry : mVisibleStationMarkers.entrySet()) {
+            Long stationId = entry.getKey();
+            Marker marker = entry.getValue();
+            if (data.get(stationId) == null){
+                marker.remove();
+            }
         }
+        mVisibleStationMarkers.keySet().retainAll(data.keySet()); //filters out not visible stations from hashmap
 
         for (HashMap.Entry<Long, MarkerOptions> entry : data.entrySet()) {
             Long stationId = entry.getKey();
             MarkerOptions markerOptions = entry.getValue();
             if ((mMap != null) && (!mVisibleStationMarkers.containsKey(stationId))) {
-                mMap.addMarker(markerOptions).setTag(stationId);
+                Marker tmpMarker = mMap.addMarker(markerOptions);
+                tmpMarker.setTag(stationId);
+                mVisibleStationMarkers.put(stationId, tmpMarker);
             }
-
         }
+        Log.d(TAG, "onLoadFinished mVisibleStationMarkers after clean up:" + mVisibleStationMarkers.size());
     }
 
     /**
@@ -809,7 +805,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * <p/>
      */
     protected void createLocationRequest() {
-        Log.d(TAG, "createLocationRequest");
+        //Log.d(TAG, "createLocationRequest");
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(getResources().getInteger(R.integer.preferred_location_interval)); // ideal interval
         mLocationRequest.setFastestInterval(getResources().getInteger(R.integer.fastest_location_interval)); // the fastest interval my app can handle
@@ -901,7 +897,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * @return True or False
      */
     public boolean checkLocationPermission() {
-        Log.d(TAG, "checkLocationPermission");
+        //Log.d(TAG, "checkLocationPermission");
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
