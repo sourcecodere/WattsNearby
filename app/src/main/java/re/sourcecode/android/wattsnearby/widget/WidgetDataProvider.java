@@ -1,10 +1,8 @@
 package re.sourcecode.android.wattsnearby.widget;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Binder;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -24,9 +22,9 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     private static final String TAG = "WidgetDataProvider";
 
-    List<String> mCollection = new ArrayList<>();
-    Context mContext = null;
-    Cursor mCursor = null;
+    private List<String> mCollection = new ArrayList<>();
+    private Context mContext = null;
+    private Cursor mCursor = null;
 
     /* The data we need to get for each list item */
     private static final String[] STATION_LIST_PROJECTION = {

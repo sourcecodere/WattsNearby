@@ -21,8 +21,9 @@ import re.sourcecode.android.wattsnearby.utilities.WattsOCMJsonUtils;
 
 /**
  * Created by olem on 3/31/17.
+ *
+ * Async task to sync data from OCM
  */
-
 public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = OCMSyncTask.class.getSimpleName();
@@ -36,7 +37,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
     private static ContentResolver mWattsContentResolver;
 
     /* The data we need to get to check if a station has changed */
-    public static final String[] STATION_LAST_CHANGED_PROJECTION = {
+    private static final String[] STATION_LAST_CHANGED_PROJECTION = {
             ChargingStationContract.StationEntry.COLUMN_TIME_UPDATED,
     };
     /*
@@ -44,10 +45,10 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      * to access the data from our query. If the order of the Strings above changes, these
      * indices must be adjusted to match the order of the Strings.
      */
-    public static final int INDEX_TIME_UPDATED = 0;
+    private static final int INDEX_TIME_UPDATED = 0;
 
     private OCMSyncTaskListener mCallback;
-    public Exception mException;
+    private Exception mException;
 
 
 
@@ -93,9 +94,6 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      * <p>This method won't be invoked if the task was cancelled.</p>
      *
      * @param aVoid The result of the operation computed by {@link #doInBackground}.
-     * @see #onPreExecute
-     * @see #doInBackground
-     * @see #onCancelled(Object)
      */
     @Override
     protected void onPostExecute(Void aVoid) {
@@ -115,7 +113,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      * @param latLng    The current LatLng position
      * @param context   Used to access utility methods and the ContentResolver
      */
-    public static void syncStations(Context context, LatLng latLng, Double distance, int max_results) {
+    private static void syncStations(Context context, LatLng latLng, Double distance, int max_results) {
         try {
             /* Get a handle on the ContentResolver to update and insert data */
             mWattsContentResolver = context.getContentResolver();
@@ -180,10 +178,10 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                 );
 
                 /* new connection data, insert it */
-                for (int i = 0; i < connectionsValues.length; i++) {
+                for (ContentValues connectionsValue : connectionsValues) {
                     mWattsContentResolver.insert(
                             ChargingStationContract.ConnectionEntry.CONTENT_URI,
-                            connectionsValues[i]
+                            connectionsValue
                     );
                 }
 
@@ -217,9 +215,9 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                     );
 
                     /* new connection data, insert it */
-                    for (int i = 0; i < connectionsValues.length; i++) {
+                    for (ContentValues connectionsValue : connectionsValues) {
                         mWattsContentResolver.insert(ChargingStationContract.ConnectionEntry.CONTENT_URI,
-                                connectionsValues[i]
+                                connectionsValue
                         );
                     }
 

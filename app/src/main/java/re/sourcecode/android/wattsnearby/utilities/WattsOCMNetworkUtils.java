@@ -1,6 +1,5 @@
 package re.sourcecode.android.wattsnearby.utilities;
 
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -15,8 +14,9 @@ import java.util.Scanner;
 
 /**
  * Created by olem on 3/31/17.
+ *
+ * Util to handle network requests and response to/from OCM.
  */
-
 public final class WattsOCMNetworkUtils {
 
     private static final String TAG = WattsOCMNetworkUtils.class.getSimpleName();

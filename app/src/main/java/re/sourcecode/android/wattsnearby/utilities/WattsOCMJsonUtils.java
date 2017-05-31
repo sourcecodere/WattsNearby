@@ -13,8 +13,9 @@ import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 
 /**
  * Created by olem on 3/6/17.
+ *
+ * Util to handle json format from OCM
  */
-
 public class WattsOCMJsonUtils {
 
     private static final String TAG = WattsOCMJsonUtils.class.getSimpleName();

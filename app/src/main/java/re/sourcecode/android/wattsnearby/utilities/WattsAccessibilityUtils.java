@@ -7,8 +7,9 @@ import re.sourcecode.android.wattsnearby.R;
 
 /**
  * Created by olem on 5/11/17.
+ *
+ * Util to get strings for accessibility
  */
-
 public class WattsAccessibilityUtils {
     public static String getConnectionDescription(Context context, int connectionId) {
         switch (connectionId) {

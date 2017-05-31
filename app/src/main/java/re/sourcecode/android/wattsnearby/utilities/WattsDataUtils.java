@@ -16,8 +16,9 @@ import re.sourcecode.android.wattsnearby.data.WattsPreferences;
 
 /**
  * Created by olem on 5/5/17.
+ *
+ * Util for simple DB queries
  */
-
 public class WattsDataUtils {
 
 

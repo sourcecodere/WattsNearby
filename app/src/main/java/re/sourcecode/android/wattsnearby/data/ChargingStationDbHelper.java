@@ -6,8 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Created by olem on 3/16/17.
+ *
+ * Db helper for the two tables in WattsMearby. Handles db creation and update.
  */
-
 public class ChargingStationDbHelper extends SQLiteOpenHelper {
 
 

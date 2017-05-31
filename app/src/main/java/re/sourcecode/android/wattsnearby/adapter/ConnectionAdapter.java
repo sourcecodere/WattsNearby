@@ -16,11 +16,11 @@ import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.utilities.WattsAccessibilityUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 
-
 /**
  * Created by olem on 5/8/17.
+ *
+ * Adapter for the RecyclerView of connections on each charging station.
  */
-
 public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.ConnectionAdapterViewHolder> {
 
     /* The context we use to utility methods, app resources and layout inflaters */

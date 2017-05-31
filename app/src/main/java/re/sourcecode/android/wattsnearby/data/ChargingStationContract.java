@@ -6,8 +6,9 @@ import android.provider.BaseColumns;
 
 /**
  * Created by olem on 3/16/17.
+ *
+ * Data contract for charging station with several connections
  */
-
 public class ChargingStationContract {
 
     private static final String TAG = ChargingStationContract.class.getSimpleName();

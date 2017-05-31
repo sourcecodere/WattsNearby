@@ -1,9 +1,5 @@
 package re.sourcecode.android.wattsnearby.data;
 
-/**
- * Created by olem on 3/24/17.
- */
-
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -15,6 +11,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
+ * Created by olem on 3/24/17.
+ *
  * This class serves as the ContentProvider for WattsNearby's data. This class allows us to
  * bulkInsert data, query data, and delete data.
  *

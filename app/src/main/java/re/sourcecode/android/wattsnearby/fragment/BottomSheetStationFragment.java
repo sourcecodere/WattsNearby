@@ -36,8 +36,10 @@ import re.sourcecode.android.wattsnearby.utilities.WattsWidgetUtils;
 
 /**
  * Created by olem on 4/23/17.
+ *
+ * Bottom sheet for station details
+ *
  */
-
 public class BottomSheetStationFragment extends BottomSheetDialogFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -301,19 +303,19 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             boolean keepDetailBar = false;
 
             if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
-                viewAccessKey.setText("ACCESSKEY");
+                viewAccessKey.setText(getText(R.string.ut_accesskey));
                 keepDetailBar = true;
             } else {
                 viewAccessKey.setVisibility(View.INVISIBLE);
             }
             if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
-                viewMembership.setText("MEMBERSHIP");
+                viewMembership.setText(getText(R.string.ut_membership));
                 keepDetailBar = true;
             } else {
                 viewMembership.setVisibility(View.INVISIBLE);
             }
             if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
-                viewPayOnSite.setText("PAY_ON_SITE");
+                viewPayOnSite.setText(getText(R.string.ut_pay_on_site));
                 keepDetailBar = true;
             } else {
                 viewPayOnSite.setVisibility(View.INVISIBLE);

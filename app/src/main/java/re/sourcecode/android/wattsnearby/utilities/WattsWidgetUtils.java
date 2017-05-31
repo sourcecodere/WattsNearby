@@ -9,8 +9,9 @@ import re.sourcecode.android.wattsnearby.widget.CollectionWidget;
 
 /**
  * Created by olem on 5/14/17.
+ *
+ * Util for WattsNearby widget
  */
-
 public class WattsWidgetUtils {
 
     /*

@@ -25,8 +25,10 @@ import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 
 /**
  * Created by olem on 5/29/17.
+ *
+ * Loader to offload database queries from main UI of station markers in map.
+ *
  */
-
 public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOptions>> {
 
     private static final String TAG = StationMarkersLoader.class.getSimpleName();
@@ -64,8 +66,6 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         mContext = context;
         if ((args != null ) && (args.containsKey(MainMapActivity.ARG_MAP_VISIBLE_BOUNDS))) {
             this.mLatLngBounds = args.getParcelable(MainMapActivity.ARG_MAP_VISIBLE_BOUNDS);
-
-            Log.d(TAG, "LAT:" + mLatLngBounds.getCenter().latitude);
         }
 
         mMarkerIconStation = WattsImageUtils.vectorToBitmap(
@@ -157,7 +157,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
     /**
      * Checks database for fast charging capacity at certain station
      *
-     * @param stationId
+     * @param stationId the id of the station from OCM
      * @return true or false
      */
     private static Boolean checkFastChargingAtStation(ContentResolver wattsContentResolver, Long stationId) {
@@ -208,7 +208,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         final Uri getConnectionUri = ChargingStationContract.ConnectionEntry.CONTENT_URI;
 
         //IDs from https://api.openchargemap.io/v2/referencedata/
-        String selection = null;
+        String selection;
         List<String> selectionArgsArray = new ArrayList<>();
 
         // first filter on station id
@@ -305,15 +305,13 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         selectionArgs = selectionArgsArray.toArray(selectionArgs);
 
         // run the query
-        Cursor getConnectionsCursor = wattsContentResolver.query(
+        return wattsContentResolver.query(
                 getConnectionUri,
                 projection,
                 selection,
                 selectionArgs,
                 null
         );
-
-        return getConnectionsCursor;
     }
 
 }

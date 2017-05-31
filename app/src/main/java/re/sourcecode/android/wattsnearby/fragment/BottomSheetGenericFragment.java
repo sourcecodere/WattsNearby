@@ -17,8 +17,10 @@ import re.sourcecode.android.wattsnearby.SettingsActivity;
 
 /**
  * Created by olem on 4/23/17.
+ *
+ * Generic bottom sheet fragment used for car details and about data
+ *
  */
-
 public class BottomSheetGenericFragment extends BottomSheetDialogFragment {
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {

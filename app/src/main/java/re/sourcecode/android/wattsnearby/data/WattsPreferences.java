@@ -37,10 +37,8 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayOnlyFastChargers = sp
-                .getBoolean(displayOnlyFastChargersKey, shouldDisplayOnlyFastChargersByDefault);
 
-        return shouldDisplayOnlyFastChargers;
+        return sp.getBoolean(displayOnlyFastChargersKey, shouldDisplayOnlyFastChargersByDefault);
     }
 
     /**
@@ -62,10 +60,8 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayType2Menneske = sp
-                .getBoolean(displayType2MenneskeKey, shouldDisplayType2MenneskeByDefault);
 
-        return shouldDisplayType2Menneske;
+        return sp.getBoolean(displayType2MenneskeKey, shouldDisplayType2MenneskeByDefault);
     }
 
     /**
@@ -87,10 +83,8 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayComboCcsEu = sp
-                .getBoolean(displayComboCcsEuKey, shouldDisplayComboCcsEuByDefault);
 
-        return shouldDisplayComboCcsEu;
+        return sp.getBoolean(displayComboCcsEuKey, shouldDisplayComboCcsEuByDefault);
     }
 
     /**
@@ -112,10 +106,8 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayType1j1772 = sp
-                .getBoolean(displayType1j1772Key, shouldDisplayType1j1772ByDefault);
 
-        return shouldDisplayType1j1772;
+        return sp.getBoolean(displayType1j1772Key, shouldDisplayType1j1772ByDefault);
     }
 
     /**
@@ -137,10 +129,7 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayType1Ccs = sp
-                .getBoolean(displayType1CcsKey, shouldDisplayType1CcsByDefault);
-
-        return shouldDisplayType1Ccs;
+        return sp.getBoolean(displayType1CcsKey, shouldDisplayType1CcsByDefault);
     }
 
     /**
@@ -162,10 +151,8 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayChademo = sp
-                .getBoolean(displayChademoKey, shouldDisplayChademoByDefault);
 
-        return shouldDisplayChademo;
+        return sp.getBoolean(displayChademoKey, shouldDisplayChademoByDefault);
     }
 
     /**
@@ -187,10 +174,8 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayTeslaHpwc = sp
-                .getBoolean(displayTeslaHpwcKey, shouldDisplayTeslaHpwcByDefault);
 
-        return shouldDisplayTeslaHpwc;
+        return sp.getBoolean(displayTeslaHpwcKey, shouldDisplayTeslaHpwcByDefault);
     }
 
     /**
@@ -212,9 +197,7 @@ public class WattsPreferences {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
         /* If a value is stored with the key, we extract it here. If not, use a default. */
-        boolean shouldDisplayOtherInput = sp
-                .getBoolean(displayOtherInputKey, shouldDisplayOtherInputByDefault);
 
-        return shouldDisplayOtherInput;
+        return sp.getBoolean(displayOtherInputKey, shouldDisplayOtherInputByDefault);
     }
 }

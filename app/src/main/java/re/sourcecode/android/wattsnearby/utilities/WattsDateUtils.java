@@ -6,8 +6,9 @@ import java.util.Date;
 
 /**
  * Created by olem on 4/5/17.
+ *
+ * Util to handle date formats
  */
-
 public class WattsDateUtils {
 
     /**
