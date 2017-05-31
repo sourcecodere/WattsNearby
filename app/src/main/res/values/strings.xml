@@ -31,6 +31,8 @@
     <string name="snackbar_service_not_connected">Can not connect to needed Google Service</string>
     <string name="snackbar_service_not_connected_btn">Can not connect to needed Google Service</string>
 
+    <!-- Google places -->
+    <string name="toast_place_selection_failed">Place selection failed: </string>
 
     <!-- Error strings -->
     <string name="error_OCM_sync_failure">Error in syncing data from openchargmap.org, please try again later. Error: </string>

@@ -3,14 +3,12 @@ package re.sourcecode.android.wattsnearby;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -23,7 +21,6 @@ import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +53,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
@@ -85,7 +81,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private static final int INTENT_PLACE = 1; // For places search
 
-    private static final int MARKER_LOADER = 123; // For loading markers on async thread
+    private static final int MARKER_LOADER = 3; // For loading markers on async thread
 
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.
@@ -102,10 +98,6 @@ public class MainMapActivity extends AppCompatActivity implements
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
     private Long mStationIdFromIntent; // For intent
-
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.OnSharedPreferenceChangeListener mOnSharedPreferenceChangeListener;
-    private Boolean mSharedPreferenceChanged = false;
 
     public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
@@ -196,7 +188,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Intent with stationId (e.g. from widget list item click)
         if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
-            mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0l);
+            mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0L);
         }
 
         // Setup the banner ad
@@ -219,7 +211,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume " + mSharedPreferenceChanged);
+        Log.d(TAG, "onResume");
         super.onResume();
         mGoogleApiClient.connect();
     }
@@ -274,7 +266,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * <p/>
      * Save all appropriate fragment state.
      *
-     * @param savedInstanceState
+     * @param savedInstanceState the saved state
      */
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -316,8 +308,8 @@ public class MainMapActivity extends AppCompatActivity implements
      * AppCompatActivity override
      * <p/>
      *
-     * @param menu
-     * @return
+     * @param menu the options menu
+     * @return boolean true or false
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -330,8 +322,8 @@ public class MainMapActivity extends AppCompatActivity implements
      * AppCompatActivity override
      * <p/>
      *
-     * @param item
-     * @return
+     * @param item the menu item selected
+     * @return boolean true or false
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -609,9 +601,9 @@ public class MainMapActivity extends AppCompatActivity implements
      * <p/>
      * Dispatch incoming result to the correct fragment. startActivityForResult
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode the request code
+     * @param resultCode the result code
+     * @param data the intent data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -642,6 +634,8 @@ public class MainMapActivity extends AppCompatActivity implements
         // move the camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_places_search)));
+        // TODO: could possibly be removed if distance from last OCM sync would work on large distances
+        initiateOCMSync(placeLatLng);
     }
 
     /**
@@ -653,7 +647,7 @@ public class MainMapActivity extends AppCompatActivity implements
     public void onError(Status status) {
         Log.e(TAG, "onError: Status = " + status.toString());
 
-        Toast.makeText(this, "Place selection failed: " + status.getStatusMessage(),
+        Toast.makeText(this, getText(R.string.toast_place_selection_failed) + status.getStatusMessage(),
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -720,13 +714,12 @@ public class MainMapActivity extends AppCompatActivity implements
      * Callback for result of permission request.
      * <p/>
      *
-     * @param requestCode
+     * @param requestCode  the permission request code
      * @param permissions  list of permissions
-     * @param grantResults
+     * @param grantResults the result of the grant
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION: {
@@ -751,7 +744,6 @@ public class MainMapActivity extends AppCompatActivity implements
                     Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG).show();
                     finish();
                 }
-                return;
             }
 
             // other 'case' lines to check for other permissions this app might request.
@@ -815,7 +807,8 @@ public class MainMapActivity extends AppCompatActivity implements
     protected void setupLocationServices() {
         Log.d(TAG, "setupLocationServices");
         // Handle locations of handset
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                && (checkLocationPermission())) {
 
             //setup periodic location requests
             if (mLocationRequest == null) {
@@ -850,7 +843,8 @@ public class MainMapActivity extends AppCompatActivity implements
     protected void updateCurrentLocation(Boolean moveCamera) {
         // Handle locations of handset
         Log.d(TAG, "updateCurrentLocation");
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                && (checkLocationPermission())) {
 
             if (mGoogleApiClient != null) {
 
