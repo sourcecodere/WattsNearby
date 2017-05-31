@@ -1,12 +1,17 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties");
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+
 android {
     signingConfigs {
         customkeystoreconfig {
-            keyAlias 'wattsnearby_key'
-            keyPassword 'rf5Anwsbv0qIQCbfndR8'
+            keyAlias 'wattsnearby_key_20170531'
+            keyPassword keystoreProperties['keyPassword']
             storeFile file('keystore/keystore.jks')
-            storePassword '98xnxVbFYXnQX4eFGj3k'
+            storePassword keystoreProperties['storePassword']
         }
     }
     compileSdkVersion 25

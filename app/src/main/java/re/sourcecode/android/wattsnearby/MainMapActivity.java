@@ -1,7 +1,6 @@
 package re.sourcecode.android.wattsnearby;
 
 import android.Manifest;
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
