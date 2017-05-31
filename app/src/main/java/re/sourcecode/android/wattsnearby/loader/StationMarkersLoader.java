@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
 public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOptions>> {
 
     private static final String TAG = StationMarkersLoader.class.getSimpleName();
+
 
     /* The data we need to get for each marker */
     private static final String[] STATION_MARKER_PROJECTION = {

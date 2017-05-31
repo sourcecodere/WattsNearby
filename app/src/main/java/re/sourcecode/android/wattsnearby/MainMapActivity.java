@@ -1,6 +1,7 @@
 package re.sourcecode.android.wattsnearby;
 
 import android.Manifest;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
@@ -58,7 +60,6 @@ import java.util.HashMap;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
-import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
 import re.sourcecode.android.wattsnearby.loader.StationMarkersLoader;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
@@ -100,6 +101,8 @@ public class MainMapActivity extends AppCompatActivity implements
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
     private Long mStationIdFromIntent; // For intent
+
+    private ProgressBar mProgressBar;
 
     public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
@@ -201,6 +204,8 @@ public class MainMapActivity extends AppCompatActivity implements
         // set the default value of filter changed flag to false
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(FILTER_CHANGED_KEY, false).apply();
 
+        // for progressbar when loading markers to map
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
     }
 
@@ -223,8 +228,12 @@ public class MainMapActivity extends AppCompatActivity implements
         Boolean changedPrefs = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FILTER_CHANGED_KEY, false);
         if (changedPrefs == true) {
             Log.d(TAG, "onResume preferences changed! resetting the markers");
-            // TODO: do something smarter than recreating everything...
-            recreate();
+            // Remove the markers in the map
+            for(Marker value: mVisibleStationMarkers.values()) {
+                value.remove();
+            }
+            mVisibleStationMarkers = new HashMap<Long, Marker>();
+            refreshMapStationMarkers();
         }
 
     }
@@ -708,6 +717,8 @@ public class MainMapActivity extends AppCompatActivity implements
                 mVisibleStationMarkers.put(stationId, tmpMarker);
             }
         }
+        // remove the indeterminate progressbar
+        mProgressBar.setVisibility(View.INVISIBLE);
         Log.d(TAG, "onLoadFinished mVisibleStationMarkers after clean up:" + mVisibleStationMarkers.size());
     }
 
@@ -768,6 +779,9 @@ public class MainMapActivity extends AppCompatActivity implements
      * Restart the loader for station markers with current LatLngBounds of camera.
      */
     public void refreshMapStationMarkers(){
+        // start the indeterminate progressbar
+        mProgressBar.setVisibility(View.VISIBLE);
+        // restart the loader for markers
         Bundle args = new Bundle();
         args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
         getSupportLoaderManager().restartLoader(MARKER_LOADER, args, this).forceLoad();

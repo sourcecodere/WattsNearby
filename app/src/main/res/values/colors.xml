@@ -16,4 +16,6 @@
     <color name="colorCarFrontLight">#F0CE49</color>
     <color name="colorCarRearLight">#FF5050</color>
     <color name="colorCarWindow">#5B5D6E</color>
+    
+    <color name="color_translucent_progress_background">#99FFFFFF</color>
 </resources>

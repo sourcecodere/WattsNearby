@@ -24,6 +24,8 @@
     <!-- Floating action button -->
     <dimen name="fab_margin">16dp</dimen>
 
+    <!-- Progress bar dimens -->
+    <dimen name="progress_margin">-6dp</dimen>
     <!-- Widget dimens -->
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_padding">8dp</dimen>
