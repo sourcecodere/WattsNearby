@@ -116,6 +116,15 @@
     <string name="ut_pay_on_site">PAY_ON_SITE</string>
     <string name="ut_accesskey">ACCESS_KEY</string>
 
+    <!-- Analytics -->
+    <string name="analytics_id_fab">fab</string>
+    <string name="analytics_name_fab_my_location">my_location_fab</string>
+    <string name="analytics_content_type_fab">clicked</string>
+    <string name="analytics_id_snack_bar">snack_bar</string>
+    <string name="analytics_name_snack_bar_no_location_service">no_location_service</string>
+    <string name="analytics_name_snack_bar_not_online">not_online</string>
+    <string name="analytics_content_type_snack_bar">clicked</string>
+
     <!-- Widget top text -->
     <string name="widget_title" translatable="false">WattsNearby</string>
     <string name="widget_top_text">WattsNearby favorites</string>

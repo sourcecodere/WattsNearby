@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.HashMap;
 
@@ -104,6 +105,9 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private ProgressBar mProgressBar;
 
+    // Setup analytics
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_WIDGET_INTENT_KEY = "station_id";
@@ -150,6 +154,11 @@ public class MainMapActivity extends AppCompatActivity implements
                                 @Override
                                 public void onClick(View v) {
                                     //exit
+                                    analyticsLogSelectContent(
+                                            getString(R.string.analytics_id_snack_bar),
+                                            getString(R.string.analytics_name_snack_bar_not_online),
+                                            getString(R.string.analytics_content_type_snack_bar)
+                                    );
                                     finish();
                                 }
                             })
@@ -168,6 +177,10 @@ public class MainMapActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "My location fab clicked!");
+                analyticsLogSelectContent(
+                        getString(R.string.analytics_id_fab),
+                        getString(R.string.analytics_content_type_fab),
+                        getString(R.string.analytics_name_fab_my_location));
                 if ((ContextCompat.checkSelfPermission(MainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
                     // Try to set last location, update car marker, and zoom to location
                     updateCurrentLocation(true);
@@ -195,6 +208,9 @@ public class MainMapActivity extends AppCompatActivity implements
         if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
             mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0L);
         }
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         // Setup the banner ad
         AdView adView = (AdView) findViewById(R.id.adView);
@@ -229,7 +245,7 @@ public class MainMapActivity extends AppCompatActivity implements
         if (changedPrefs == true) {
             Log.d(TAG, "onResume preferences changed! resetting the markers");
             // Remove the markers in the map
-            for(Marker value: mVisibleStationMarkers.values()) {
+            for (Marker value : mVisibleStationMarkers.values()) {
                 value.remove();
             }
             mVisibleStationMarkers = new HashMap<Long, Marker>();
@@ -624,8 +640,8 @@ public class MainMapActivity extends AppCompatActivity implements
      * Dispatch incoming result to the correct fragment. startActivityForResult
      *
      * @param requestCode the request code
-     * @param resultCode the result code
-     * @param data the intent data
+     * @param resultCode  the result code
+     * @param data        the intent data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -702,7 +718,7 @@ public class MainMapActivity extends AppCompatActivity implements
         for (HashMap.Entry<Long, Marker> entry : mVisibleStationMarkers.entrySet()) {
             Long stationId = entry.getKey();
             Marker marker = entry.getValue();
-            if (data.get(stationId) == null){
+            if (data.get(stationId) == null) {
                 marker.remove();
             }
         }
@@ -778,7 +794,7 @@ public class MainMapActivity extends AppCompatActivity implements
     /**
      * Restart the loader for station markers with current LatLngBounds of camera.
      */
-    public void refreshMapStationMarkers(){
+    public void refreshMapStationMarkers() {
         // start the indeterminate progressbar
         mProgressBar.setVisibility(View.VISIBLE);
         // restart the loader for markers
@@ -817,6 +833,8 @@ public class MainMapActivity extends AppCompatActivity implements
         );
 
         OCMSyncTask.execute();
+
+
     }
 
     /**
@@ -860,11 +878,17 @@ public class MainMapActivity extends AppCompatActivity implements
                                 @Override
                                 public void onClick(View v) {
                                     //exit
+                                    analyticsLogSelectContent(
+                                            getString(R.string.analytics_id_snack_bar),
+                                            getString(R.string.analytics_name_snack_bar_no_location_service),
+                                            getString(R.string.analytics_content_type_snack_bar)
+                                    );
                                     finish();
                                 }
                             })
                     .show();
         }
+
     }
 
     protected void updateCurrentLocation(Boolean moveCamera) {
@@ -909,6 +933,20 @@ public class MainMapActivity extends AppCompatActivity implements
         } else {
             Log.d(TAG, "No permissions");
         }
+    }
+
+    /**
+     * Log analytics SELECT_CONTENT event
+     * <p/>
+     *
+     * @return True or False
+     */
+    private void analyticsLogSelectContent(String id, String name, String type) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     /**
