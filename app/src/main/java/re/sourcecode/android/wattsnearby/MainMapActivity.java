@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -211,9 +212,14 @@ public class MainMapActivity extends AppCompatActivity implements
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+
         // Setup the banner ad
+        MobileAds.initialize(getApplicationContext(),
+                getString(R.string.banner_app_id));
         AdView adView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("2B3C903E8A681D2047F678BBCD58B109")
+                .build();
         adView.loadAd(adRequest);
 
         // set the default value of filter changed flag to false

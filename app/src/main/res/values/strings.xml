@@ -6,7 +6,9 @@
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
     <!-- Banner ad unit id -->
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id_test">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id">ca-app-pub-5213087131455295/7575504566</string>
+    <string name="banner_app_id">ca-app-pub-5213087131455295~5217467366</string>
 
     <!-- Button descriptions -->
     <string name="btn_my_location">Move map to my location</string>
@@ -29,7 +31,7 @@
 
     <!-- Google Service not connected -->
     <string name="snackbar_service_not_connected">Can not connect to needed Google Service</string>
-    <string name="snackbar_service_not_connected_btn">Can not connect to needed Google Service</string>
+    <string name="snackbar_service_not_connected_btn">OK</string>
 
     <!-- Google places -->
     <string name="toast_place_selection_failed">Place selection failed: </string>
