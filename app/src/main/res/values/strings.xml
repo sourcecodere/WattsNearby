@@ -25,9 +25,9 @@
     <string name="marker_current">That\'s you!</string>
 
     <!-- Snack bar strings -->
-    <string name="snackbar_permission_explanation">Location access is required to use this app.</string>
+    <string name="snackbar_permission_explanation">Location permission is required. Ask for permission?</string>
     <string name="snackbar_no_last_location">Can\'t get last location, try again?</string>
-    <string name="snackbar_service_not_connected">Can\'t connect to needed Google Service</string>
+    <string name="snackbar_service_not_connected">Can\'t connect location service. Retry?</string>
     <string name="snackbar_ok_btn">OK</string>
 
     <!-- Toast strings -->

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -23,6 +24,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,6 +88,7 @@ public class MainMapActivity extends AppCompatActivity implements
     private static final int INTENT_PLACE = 1; // For places search
 
     private static final int MARKER_LOADER = 3; // For loading markers on async thread
+
 
     private GoogleApiClient mGoogleApiClient; // The google services connection.
     private LocationRequest mLocationRequest; // Periodic location request object.
@@ -795,8 +798,9 @@ public class MainMapActivity extends AppCompatActivity implements
 
                 } else {
                     // Permission denied, exit the app and show explanation toast.
-                    Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG).show();
-                    finish();
+                    Toast toast = Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
                 }
             }
 
@@ -948,7 +952,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     Log.e(TAG, "updateCurrentLocation no getLastLocation from LocationServices");
                     Snackbar.make(
                             MainMapActivity.this.findViewById(R.id.main_layout),
-                            getString(R.string.snackbar_service_not_connected),
+                            getString(R.string.snackbar_no_last_location),
                             Snackbar.LENGTH_INDEFINITE)
                             .setAction(
                                     getString(R.string.snackbar_ok_btn),
@@ -961,6 +965,7 @@ public class MainMapActivity extends AppCompatActivity implements
                                         @Override
                                         public void onClick(View v) {
                                             setupLocationServices();
+
 
                                         }
                                     }).show();
@@ -995,7 +1000,7 @@ public class MainMapActivity extends AppCompatActivity implements
      *
      * @return True or False
      */
-    public boolean checkLocationPermission() {
+    private boolean checkLocationPermission() {
         //Log.d(TAG, "checkLocationPermission");
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -1023,18 +1028,14 @@ public class MainMapActivity extends AppCompatActivity implements
                                     @Override
                                     public void onClick(View v) {
                                         //Prompt the user once explanation has been shown
-                                        ActivityCompat.requestPermissions(MainMapActivity.this,
-                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                                PERMISSIONS_REQUEST_LOCATION);
+                                    askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, PERMISSIONS_REQUEST_LOCATION);
                                     }
                                 }).show();
 
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        PERMISSIONS_REQUEST_LOCATION);
+                askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, PERMISSIONS_REQUEST_LOCATION);
             }
             return false;
         } else {
@@ -1042,6 +1043,23 @@ public class MainMapActivity extends AppCompatActivity implements
         }
     }
 
+
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(MainMapActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainMapActivity.this, permission)) {
+
+                //This is called if user has denied the permission before
+                //In this case I am just asking the permission again
+                ActivityCompat.requestPermissions(MainMapActivity.this, new String[]{permission}, requestCode);
+
+            } else {
+
+                ActivityCompat.requestPermissions(MainMapActivity.this, new String[]{permission}, requestCode);
+            }
+        }
+    }
     /**
      * Check if the is online.
      * <p/>
