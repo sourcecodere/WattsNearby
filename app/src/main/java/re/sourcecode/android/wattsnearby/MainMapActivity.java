@@ -144,7 +144,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     getString(R.string.error_not_online),
                     Snackbar.LENGTH_INDEFINITE)
                     .setAction(
-                            getString(R.string.snackbar_permission_explanation_btn),
+                            getString(R.string.snackbar_ok_btn),
                             new View.OnClickListener() {
                                 /**
                                  * Called when a view has been clicked.
@@ -181,10 +181,10 @@ public class MainMapActivity extends AppCompatActivity implements
                         getString(R.string.analytics_id_fab),
                         getString(R.string.analytics_content_type_fab),
                         getString(R.string.analytics_name_fab_my_location));
-                if ((ContextCompat.checkSelfPermission(MainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) && (checkLocationPermission())) {
+
                     // Try to set last location, update car marker, and zoom to location
                     updateCurrentLocation(true);
-                }
+
 
             }
         });
@@ -842,17 +842,6 @@ public class MainMapActivity extends AppCompatActivity implements
 
     }
 
-    /**
-     * Set up the location requests
-     * <p/>
-     */
-    protected void createLocationRequest() {
-        //Log.d(TAG, "createLocationRequest");
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(getResources().getInteger(R.integer.preferred_location_interval)); // ideal interval
-        mLocationRequest.setFastestInterval(getResources().getInteger(R.integer.fastest_location_interval)); // the fastest interval my app can handle
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // highest accuracy
-    }
 
     protected void setupLocationServices() {
         Log.d(TAG, "setupLocationServices");
@@ -873,7 +862,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     getString(R.string.snackbar_service_not_connected),
                     Snackbar.LENGTH_INDEFINITE)
                     .setAction(
-                            getString(R.string.snackbar_service_not_connected_btn),
+                            getString(R.string.snackbar_ok_btn),
                             new View.OnClickListener() {
                                 /**
                                  * Called when a view has been clicked.
@@ -888,7 +877,7 @@ public class MainMapActivity extends AppCompatActivity implements
                                             getString(R.string.analytics_name_snack_bar_no_location_service),
                                             getString(R.string.analytics_content_type_snack_bar)
                                     );
-                                    finish();
+                                    recreate();
                                 }
                             })
                     .show();
@@ -896,12 +885,28 @@ public class MainMapActivity extends AppCompatActivity implements
 
     }
 
+    /**
+     * Set up the location requests
+     * <p/>
+     */
+    protected void createLocationRequest() {
+        //Log.d(TAG, "createLocationRequest");
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(getResources().getInteger(R.integer.preferred_location_interval)); // ideal interval
+        mLocationRequest.setFastestInterval(getResources().getInteger(R.integer.fastest_location_interval)); // the fastest interval my app can handle
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // highest accuracy
+    }
+
     protected void updateCurrentLocation(Boolean moveCamera) {
         // Handle locations of handset
+        Log.d(TAG, "updateCurrentLocation moveCamera: " + moveCamera);
+        Log.d(TAG, "updateCurrentLocation Location permissions: " + checkLocationPermission());
+        Log.d(TAG, "updateCurrentLocation Access fine location: " + (ContextCompat.checkSelfPermission(MainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED));
+
         Log.d(TAG, "updateCurrentLocation");
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 && (checkLocationPermission())) {
-
+            Log.d(TAG, "updateCurrentLocation mGoogleApiClient: " + mGoogleApiClient);
             if (mGoogleApiClient != null) {
 
                 // Set the last location from the LocationServices
@@ -930,9 +935,30 @@ public class MainMapActivity extends AppCompatActivity implements
                     // OCM camera center to something at this point
                     // to trigger a sync
                     mLastOCMCameraCenter = new LatLng(0d, 0d);
+                } else {
+                    Log.e(TAG, "updateCurrentLocation no getLastLocation from LocationServices");
+                    Snackbar.make(
+                            MainMapActivity.this.findViewById(R.id.main_layout),
+                            getString(R.string.snackbar_service_not_connected),
+                            Snackbar.LENGTH_INDEFINITE)
+                            .setAction(
+                                    getString(R.string.snackbar_ok_btn),
+                                    new View.OnClickListener() {
+                                        /**
+                                         * Called when a view has been clicked.
+                                         *
+                                         * @param v The view that was clicked.
+                                         */
+                                        @Override
+                                        public void onClick(View v) {
+                                            setupLocationServices();
+
+                                        }
+                                    }).show();
+
                 }
             } else {
-                Log.d(TAG, "GoogleApiClient not connected");
+                Log.e(TAG, "GoogleApiClient not connected");
             }
 
         } else {
@@ -978,7 +1004,7 @@ public class MainMapActivity extends AppCompatActivity implements
                         getString(R.string.snackbar_permission_explanation),
                         Snackbar.LENGTH_INDEFINITE)
                         .setAction(
-                                getString(R.string.snackbar_permission_explanation_btn),
+                                getString(R.string.snackbar_ok_btn),
                                 new View.OnClickListener() {
                                     /**
                                      * Called when a view has been clicked.

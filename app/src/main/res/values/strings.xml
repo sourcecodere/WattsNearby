@@ -24,16 +24,14 @@
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
 
-    <!-- Permission strings -->
-    <string name="toast_permission_denied">Sorry this app does not work without location permissions, please allow location permissions</string>
+    <!-- Snack bar strings -->
     <string name="snackbar_permission_explanation">Location access is required to use this app.</string>
-    <string name="snackbar_permission_explanation_btn">OK</string>
+    <string name="snackbar_no_last_location">Can\'t get last location, try again?</string>
+    <string name="snackbar_service_not_connected">Can\'t connect to needed Google Service</string>
+    <string name="snackbar_ok_btn">OK</string>
 
-    <!-- Google Service not connected -->
-    <string name="snackbar_service_not_connected">Can not connect to needed Google Service</string>
-    <string name="snackbar_service_not_connected_btn">OK</string>
-
-    <!-- Google places -->
+    <!-- Toast strings -->
+    <string name="toast_permission_denied">Sorry this app does not work without location permissions, please allow location permissions</string>
     <string name="toast_place_selection_failed">Place selection failed: </string>
 
     <!-- Error strings -->
