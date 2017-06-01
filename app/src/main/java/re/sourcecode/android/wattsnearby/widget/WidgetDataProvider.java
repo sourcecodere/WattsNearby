@@ -91,10 +91,10 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
         if (mCursor.moveToPosition(position)) {
             stationId = mCursor.getLong(INDEX_ID);
-            if (mCursor.getString(INDEX_OPERTOR_TITLE) != null) {
-                title = mCursor.getString(INDEX_OPERTOR_TITLE);
-            } else {
+            if (mCursor.getString(INDEX_ADDR_TITLE) != null) {
                 title = mCursor.getString(INDEX_ADDR_TITLE);
+            } else {
+                title = mCursor.getString(INDEX_OPERTOR_TITLE);
             }
             where = mCursor.getString(INDEX_ADDR_TOWN);
         }

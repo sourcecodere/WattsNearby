@@ -102,8 +102,8 @@ public class CollectionWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_layout_main, titlePendingIntent);
 
         // List item click
-        //Intent intent = new Intent(context, WidgetService.class);
-        //views.setRemoteAdapter(R.id.widget_list, intent);
+        Intent intent = new Intent(context, WidgetService.class);
+        views.setRemoteAdapter(R.id.widget_list, intent);
 
         // template to handle the click listener for each item
         Intent clickIntentTemplate = new Intent(context, MainMapActivity.class);
