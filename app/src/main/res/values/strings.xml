@@ -26,7 +26,7 @@
 
     <!-- Snack bar strings -->
     <string name="snackbar_permission_explanation">Location permission is required. Ask for permission?</string>
-    <string name="snackbar_no_last_location">Can\'t get last location, try again?</string>
+    <string name="snackbar_no_last_location">No location! Make sure you have enable Location in phone settings. Try again?</string>
     <string name="snackbar_service_not_connected">Can\'t connect location service. Retry?</string>
     <string name="snackbar_ok_btn">OK</string>
 
