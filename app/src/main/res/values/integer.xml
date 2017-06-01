@@ -24,7 +24,8 @@
     <integer name="min_zoom_level">8</integer>
     <integer name="zoom_level_near">12</integer>
     <!-- OpenChargeMap values -->
-    <integer name="ocm_radius_km">5</integer>
+    <integer name="ocm_radius_km_near">5</integer>
+    <integer name="ocm_radius_km_far">12</integer>
     <integer name="ocm_max_results">500</integer>
 
 

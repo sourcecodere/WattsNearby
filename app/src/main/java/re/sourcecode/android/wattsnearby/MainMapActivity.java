@@ -616,7 +616,10 @@ public class MainMapActivity extends AppCompatActivity implements
 
                     mLastOCMCameraCenter = mLastCameraCenter;
 
-                    initiateOCMSync(mLastCameraCenter);
+                    initiateOCMSync(
+                            mLastCameraCenter,
+                            (double) getResources().getInteger(R.integer.ocm_radius_km_far)
+                    );
 
                     // If zoom is more than zoom_level_near
                     // and the camera movement distance is more than significant_cam_move_near
@@ -626,7 +629,10 @@ public class MainMapActivity extends AppCompatActivity implements
 
                     mLastOCMCameraCenter = mLastCameraCenter;
 
-                    initiateOCMSync(mLastCameraCenter);
+                    initiateOCMSync(
+                            mLastCameraCenter,
+                            (double) getResources().getInteger(R.integer.ocm_radius_km_near)
+                    );
 
                 } else {
                     Log.d(TAG, "Need to move the camera more to sync..");
@@ -678,7 +684,10 @@ public class MainMapActivity extends AppCompatActivity implements
         mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_places_search)));
         // TODO: could possibly be removed if distance from last OCM sync would work on large distances
-        initiateOCMSync(placeLatLng);
+        initiateOCMSync(
+                placeLatLng,
+                (double) getResources().getInteger(R.integer.ocm_radius_km_near)
+        );
     }
 
     /**
@@ -812,13 +821,13 @@ public class MainMapActivity extends AppCompatActivity implements
      * Trigger the async task for OCM updates
      * <p/>
      */
-    protected void initiateOCMSync(LatLng latLng) {
+    protected void initiateOCMSync(LatLng latLng, double ocm_radius) {
         Log.d(TAG, "initiateOCMSync");
 
         // TODO: add some more rate limiting?
         OCMSyncTask OCMSyncTask = new OCMSyncTask(this,
                 latLng,
-                (double) getResources().getInteger(R.integer.ocm_radius_km),
+                ocm_radius,
                 getResources().getInteger(R.integer.ocm_max_results),
                 new OCMSyncTaskListener() {
                     @Override
