@@ -49,6 +49,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -104,7 +105,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
-    private Long mStationIdFromIntent; // For intent
+    private long mStationIdFromIntent; // For intent
 
     private ProgressBar mProgressBar;
 
@@ -249,7 +250,7 @@ public class MainMapActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume");
         super.onResume();
         mGoogleApiClient.connect();
-        Boolean changedPrefs = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FILTER_CHANGED_KEY, false);
+        boolean changedPrefs = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FILTER_CHANGED_KEY, false);
         if (changedPrefs == true) {
             Log.d(TAG, "onResume preferences changed! resetting the markers");
             // Remove the markers in the map
@@ -439,6 +440,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     == PackageManager.PERMISSION_GRANTED) {
                 // Disable my location button, using own fab for this
                 mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 // Disable Map Toolbar
                 mMap.getUiSettings().setMapToolbarEnabled(false);
                 // Enable zoom control
@@ -460,13 +462,17 @@ public class MainMapActivity extends AppCompatActivity implements
         mMap.setOnMarkerClickListener(this);
 
         // Intent handling.
-        if (mStationIdFromIntent != null) {
+        if (mStationIdFromIntent != 0L) {
             // TODO: move center a bit when bottom sheet opens.
 
             // Move the camera to station position
             LatLng stationLatLng = WattsDataUtils.getStationLatLng(getApplicationContext(), mStationIdFromIntent);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(stationLatLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_station_select)));
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                    stationLatLng,
+                    getResources().getInteger(R.integer.zoom_station_widget)
+            );
+            mMap.animateCamera(cameraUpdate);
+
 
             // Open bottom sheet for station
             BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetStationFragment();
@@ -684,8 +690,11 @@ public class MainMapActivity extends AppCompatActivity implements
         LatLng placeLatLng = place.getLatLng();
 
         // move the camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLatLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_places_search)));
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                placeLatLng,
+                getResources().getInteger(R.integer.zoom_places_search)
+        );
+        mMap.animateCamera(cameraUpdate);
         // TODO: could possibly be removed if distance from last OCM sync would work on large distances
         initiateOCMSync(
                 placeLatLng,
@@ -910,7 +919,7 @@ public class MainMapActivity extends AppCompatActivity implements
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // highest accuracy
     }
 
-    protected void updateCurrentLocation(Boolean moveCamera) {
+    protected void updateCurrentLocation(boolean moveCamera) {
         // Handle locations of handset
         Log.d(TAG, "updateCurrentLocation moveCamera: " + moveCamera);
         Log.d(TAG, "updateCurrentLocation Location permissions: " + checkLocationPermission());
@@ -924,6 +933,13 @@ public class MainMapActivity extends AppCompatActivity implements
 
                 // Set the last location from the LocationServices
                 Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                long locationAge = System.currentTimeMillis() - location.getTime();
+                if (locationAge >= getResources().getInteger(R.integer.max_last_location_age) * 1000) {
+                    // Try again to force a location update
+                    setupLocationServices();
+                    Toast.makeText(this, getText(R.string.toast_old_last_location),
+                            Toast.LENGTH_SHORT).show();
+                }
 
                 if (location != null) {
 
@@ -939,8 +955,11 @@ public class MainMapActivity extends AppCompatActivity implements
 
                     if (moveCamera) {
                         // move the camera
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLastLocation));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.zoom_default)));
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                                mLastLocation,
+                                getResources().getInteger(R.integer.zoom_default)
+                        );
+                        mMap.animateCamera(cameraUpdate);
                     }
                     // save camera center
                     mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();

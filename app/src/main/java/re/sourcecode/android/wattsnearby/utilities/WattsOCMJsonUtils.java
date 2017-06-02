@@ -95,7 +95,7 @@ public class WattsOCMJsonUtils {
      * @return Long of OCM station id
      * @throws JSONException If JSON data cannot be properly parsed
      */
-    public static Long getOCMStationIdFromJson(JSONObject jsonStation)
+    public static long getOCMStationIdFromJson(JSONObject jsonStation)
             throws JSONException {
         return jsonStation.getLong(OCM_ID);
     }
@@ -128,7 +128,7 @@ public class WattsOCMJsonUtils {
         if (android.os.Debug.isDebuggerConnected())
             android.os.Debug.waitForDebugger();
 
-        Long id;
+        long id;
 
         String op_title = null;
         String op_url = null;

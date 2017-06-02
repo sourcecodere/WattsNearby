@@ -4,7 +4,8 @@
     <!-- Default zoom level when centering on current position. -->
     <integer name="zoom_default">10</integer>
     <integer name="zoom_places_search">12</integer>
-    <integer name="zoom_station_select">16</integer>
+    <integer name="zoom_station_select">10</integer>
+    <integer name="zoom_station_widget">18</integer>
 
     <!-- Preferred is the ideal interval for position updates. -->
     <!-- Fastest is the fastest the app can handle.-->
@@ -27,7 +28,9 @@
     <integer name="ocm_radius_km_near">5</integer>
     <integer name="ocm_radius_km_far">15</integer>
     <integer name="ocm_max_results">500</integer>
-
+    <!-- Location -->
+    <!-- Location age in seconds -->
+    <integer name="max_last_location_age">60</integer>
 
 
 </resources>

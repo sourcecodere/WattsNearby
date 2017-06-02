@@ -29,7 +29,7 @@ public class WattsDataUtils {
      * @param stationId
      * @return LatLng of statioin
      */
-    public static LatLng getStationLatLng(Context context, Long stationId) {
+    public static LatLng getStationLatLng(Context context, long stationId) {
 
         /* The data we need to get LatLng of a station */
         final String[] STATION_LATLNG_PROJECTION = {

@@ -108,7 +108,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         try {
             while (getStationsCursor.moveToNext()) {
 
-                Long stationId = getStationsCursor.getLong(INDEX_ID);
+                long stationId = getStationsCursor.getLong(INDEX_ID);
                 LatLng stationPosition = new LatLng(
                         getStationsCursor.getDouble(INDEX_LAT),
                         getStationsCursor.getDouble(INDEX_LON));
@@ -163,7 +163,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
      * @param stationId the id of the station from OCM
      * @return true or false
      */
-    private static Boolean checkFastChargingAtStation(ContentResolver wattsContentResolver, Long stationId) {
+    private static boolean checkFastChargingAtStation(ContentResolver wattsContentResolver, long stationId) {
 
         /* The data we need to check for fast charging capacity */
         final String[] CONNECTION_CAPACITY_PROJECTION = {
@@ -206,7 +206,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
      * @return a filtered cursor of connections at a station
      *
      */
-    private static Cursor getConnectionsFilteredByPrefs(Context context, ContentResolver wattsContentResolver, Long stationId, String[] projection) {
+    private static Cursor getConnectionsFilteredByPrefs(Context context, ContentResolver wattsContentResolver, long stationId, String[] projection) {
 
         final Uri getConnectionUri = ChargingStationContract.ConnectionEntry.CONTENT_URI;
 
@@ -216,7 +216,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
 
         // first filter on station id
         selection = ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "=?";
-        selectionArgsArray.add(stationId.toString());
+        selectionArgsArray.add(String.valueOf(stationId));
 
         //filter out if only fast chargers are enabled
         if(WattsPreferences.areOnlyFastChargersEnabled(context)) {

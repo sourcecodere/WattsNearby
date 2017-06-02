@@ -48,7 +48,7 @@ public final class WattsOCMNetworkUtils {
      * @param distance  The distance/zoom level of the current location
      * @return          URL to query ocm service
      */
-    public static URL getUrl(LatLng latLng, Double distance, int max_results) {
+    public static URL getUrl(LatLng latLng, double distance, int max_results) {
             Uri ocmQueryUri = Uri.parse(OCM_BASE_URL).buildUpon()
                     .appendQueryParameter(LAT_PARAM, String.valueOf(latLng.latitude))
                     .appendQueryParameter(LON_PARAM, String.valueOf(latLng.longitude))

@@ -113,7 +113,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      * @param latLng    The current LatLng position
      * @param context   Used to access utility methods and the ContentResolver
      */
-    private static void syncStations(Context context, LatLng latLng, Double distance, int max_results) {
+    private static void syncStations(Context context, LatLng latLng, double distance, int max_results) {
         try {
             /* Get a handle on the ContentResolver to update and insert data */
             mWattsContentResolver = context.getContentResolver();
@@ -144,7 +144,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
     private static void cacheStation(JSONObject jsonStation) {
         try {
             /* get the OCM id */
-            Long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
+            long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
 
             /* query the cache for the current id */
             Uri stationByIdUri = ChargingStationContract.StationEntry.buildStationUri(id);
@@ -157,7 +157,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                     null,
                     null);
 
-            Boolean stationInDB = currentStationCursor.moveToFirst();
+            boolean stationInDB = currentStationCursor.moveToFirst();
 
             //Log.d(TAG, stationByIdUri.toString() + " " + stationInDB.toString());
             /*
@@ -189,9 +189,9 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
             } else {
             /* update only if timestamp is newer */
 
-                Long station_id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
-                Long db_entry_changed = currentStationCursor.getLong(INDEX_TIME_UPDATED);
-                Long json_entry_changed = WattsDateUtils.dateStringToEpoc(WattsOCMJsonUtils.getOCMLastChangedFromJson(jsonStation));
+                long station_id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
+                long db_entry_changed = currentStationCursor.getLong(INDEX_TIME_UPDATED);
+                long json_entry_changed = WattsDateUtils.dateStringToEpoc(WattsOCMJsonUtils.getOCMLastChangedFromJson(jsonStation));
 
                 if (db_entry_changed < json_entry_changed) {
                     /* delete the old data */
