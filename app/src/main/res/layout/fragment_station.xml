@@ -8,26 +8,35 @@
     android:orientation="vertical"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <LinearLayout
+
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_sheet_peek_height"
         android:background="@color/primary"
+        android:columnCount="10"
         android:orientation="horizontal"
-        android:padding="@dimen/padding_medium">
+        android:paddingBottom="@dimen/padding_small"
+        android:paddingEnd="@dimen/padding_medium"
+        android:paddingLeft="@dimen/padding_medium"
+        android:paddingRight="@dimen/padding_medium"
+        android:paddingStart="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_small">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/sheet_station_title"
+            style="@style/AppTheme.SubTitle.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-            android:orientation="vertical">
+            android:layout_columnSpan="10"
+            android:textStyle="bold"
+            tools:text="Kiwi Fjellbo" />
 
-            <TextView
-                android:id="@+id/sheet_station_title"
-                style="@style/AppTheme.SubTitle.Dark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                tools:text="Kiwi Fjellbo" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="7"
+            android:layout_row="1"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/sheet_station_addr"
@@ -36,176 +45,138 @@
                 android:layout_height="wrap_content"
                 tools:text="Fjellbovegen 6" />
 
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/sheet_station_addr_post_code"
+                style="@style/AppTheme.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"></LinearLayout>
+                android:paddingEnd="@dimen/padding_small"
+                android:paddingRight="@dimen/padding_small"
+                tools:text="2016" />
+
+            <TextView
+                android:id="@+id/sheet_station_addr_town"
+                style="@style/AppTheme.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/padding_small"
+                android:paddingRight="@dimen/padding_small"
+                tools:text="FROGNER" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/sheet_station_addr_state"
+                    style="@style/AppTheme.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6"
-                    android:orientation="vertical">
+                    android:paddingEnd="@dimen/padding_small"
+                    android:paddingRight="@dimen/padding_small"
+                    tools:text="Akershus" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/sheet_station_addr_post_code"
-                            style="@style/AppTheme.Caption"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingEnd="@dimen/padding_small"
-                            android:paddingRight="@dimen/padding_small"
-                            tools:text="2016" />
-
-                        <TextView
-                            android:id="@+id/sheet_station_addr_town"
-                            style="@style/AppTheme.Caption"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingEnd="@dimen/padding_small"
-                            android:paddingRight="@dimen/padding_small"
-                            tools:text="FROGNER" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/sheet_station_addr_state"
-                            style="@style/AppTheme.Caption"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingEnd="@dimen/padding_small"
-                            android:paddingRight="@dimen/padding_small"
-                            tools:text="Akershus" />
-
-                        <TextView
-                            android:id="@+id/sheet_station_addr_country"
-                            style="@style/AppTheme.Caption"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingEnd="@dimen/padding_small"
-                            android:paddingRight="@dimen/padding_small"
-                            tools:text="NO" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/sheet_station_usage_type_title"
-                        style="@style/AppTheme.Caption"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:text="Public - Pay At Location" />
-                </LinearLayout>
-
+                <TextView
+                    android:id="@+id/sheet_station_addr_country"
+                    style="@style/AppTheme.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/padding_small"
+                    android:paddingRight="@dimen/padding_small"
+                    tools:text="NO" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/sheet_station_usage_type_title"
+                style="@style/AppTheme.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Public - Pay At Location" />
+
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_columnSpan="3"
+            android:layout_gravity="end"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/btn_google_maps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/btn_google_maps"
-                    android:padding="@dimen/padding_medium"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingLeft="@dimen/padding_medium"
+                    android:paddingRight="@dimen/padding_medium"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="@dimen/padding_small"
                     android:src="@drawable/ic_map_white" />
 
                 <ImageButton
                     android:id="@+id/btn_google_maps_direction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/btn_navigation"
-                    android:padding="@dimen/padding_medium"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingLeft="@dimen/padding_medium"
+                    android:paddingRight="@dimen/padding_medium"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="@dimen/padding_small"
                     android:src="@drawable/ic_directions_white" />
             </LinearLayout>
-
 
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/favorite_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/btn_favorite"
-                android:padding="@dimen/padding_medium"
-                android:textColor="@color/primary_light"
-                android:theme="@style/AppTheme.CustomSwitch"
-                android:text="@string/switch_favorite" />
+                android:layout_gravity="center|end"
 
+                android:contentDescription="@string/btn_favorite"
+                android:paddingBottom="@dimen/padding_small"
+                android:paddingEnd="@dimen/padding_medium"
+                android:paddingLeft="@dimen/padding_medium"
+                android:paddingRight="@dimen/padding_medium"
+                android:paddingStart="@dimen/padding_medium"
+                android:paddingTop="@dimen/padding_small"
+
+                android:text="@string/switch_favorite"
+                android:textColor="@color/primary_light"
+                android:theme="@style/AppTheme.CustomSwitch" />
+
+            <TextView
+                android:id="@+id/sheet_station_usage_text"
+                style="@style/AppTheme.Caption.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="MEMBERSHIP - ACCESS KEY - PAY ON SITE" />
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/sheet_station_detail_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_dark"
-        android:orientation="horizontal"
-        android:padding="@dimen/padding_medium">
-
         <TextView
-            android:id="@+id/sheet_station_membership"
-            style="@style/AppTheme.Caption.Small"
-            android:layout_width="match_parent"
+            android:id="@+id/sheet_station_operator_web"
+            style="@style/AppTheme.Body"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            tools:text="MEMBERSHIP" />
+            android:layout_columnSpan="10"
+            android:autoLink="web"
+            tools:text="http://www.fortum.no/hurtigladere" />
 
-        <TextView
-            android:id="@+id/sheet_station_key"
-            style="@style/AppTheme.Caption.Small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            tools:text="ACCESS KEY" />
+    </GridLayout>
 
-        <TextView
-            android:id="@+id/sheet_pay_on_site"
-            style="@style/AppTheme.Caption.Small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            tools:text="PAY ON SITE" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/sheet_station_operator_web"
-        style="@style/AppTheme.Body.Small"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autoLink="web"
-        android:background="@color/primary_dark"
-        android:paddingBottom="@dimen/padding_small"
-        android:paddingEnd="@dimen/padding_small"
-        android:paddingLeft="@dimen/padding_small"
-        android:paddingRight="@dimen/padding_medium"
-        android:paddingStart="@dimen/padding_medium"
-        android:paddingTop="@dimen/padding_small"
-        tools:text="http://www.fortum.no/hurtigladere" />
 
     <!-- no support for ListView in CoordinatorLayout!!-->
     <android.support.v7.widget.RecyclerView

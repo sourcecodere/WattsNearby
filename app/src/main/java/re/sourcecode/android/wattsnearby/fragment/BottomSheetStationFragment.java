@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import re.sourcecode.android.wattsnearby.MainMapActivity;
@@ -36,9 +38,8 @@ import re.sourcecode.android.wattsnearby.utilities.WattsWidgetUtils;
 
 /**
  * Created by olem on 4/23/17.
- *
+ * <p>
  * Bottom sheet for station details
- *
  */
 public class BottomSheetStationFragment extends BottomSheetDialogFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -48,10 +49,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     TextView viewTitle;
     TextView viewOpWebSite;
     TextView viewUtTitle;
-    LinearLayout viewDetailBar;
-    TextView viewAccessKey;
-    TextView viewMembership;
-    TextView viewPayOnSite;
+    TextView viewUsageText;
     TextView viewAddr;
     TextView viewPostCode;
     TextView viewState;
@@ -175,10 +173,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             viewTitle = (TextView) rootView.findViewById(R.id.sheet_station_title);
             viewOpWebSite = (TextView) rootView.findViewById(R.id.sheet_station_operator_web);
             viewUtTitle = (TextView) rootView.findViewById(R.id.sheet_station_usage_type_title);
-            viewDetailBar = (LinearLayout) rootView.findViewById(R.id.sheet_station_detail_bar);
-            viewAccessKey = (TextView) rootView.findViewById(R.id.sheet_station_key);
-            viewMembership = (TextView) rootView.findViewById(R.id.sheet_station_membership);
-            viewPayOnSite = (TextView) rootView.findViewById(R.id.sheet_pay_on_site);
+            viewUsageText = (TextView) rootView.findViewById(R.id.sheet_station_usage_text);
             viewAddr = (TextView) rootView.findViewById(R.id.sheet_station_addr);
             viewPostCode = (TextView) rootView.findViewById(R.id.sheet_station_addr_post_code);
             viewState = (TextView) rootView.findViewById(R.id.sheet_station_addr_state);
@@ -211,8 +206,6 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             */
             LinearLayoutManager layoutManager =
                     new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-
-
 
             /* setLayoutManager associates the LayoutManager we created above with our RecyclerView */
             mRecyclerView.setLayoutManager(layoutManager);
@@ -248,7 +241,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 
-        if ((mStationUri != null) && (mConnectionUri != null)){
+        if ((mStationUri != null) && (mConnectionUri != null)) {
             switch (loaderId) {
 
                 case ID_STATION_LOADER:
@@ -296,39 +289,10 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
 
             if (data.getString(INDEX_STATION_UT_TITLE) != null) {
                 viewUtTitle.setText(data.getString(INDEX_STATION_UT_TITLE));
-            } else {
-                viewUtTitle.setVisibility(View.GONE);
-            }
-
-            boolean keepDetailBar = false;
-
-            if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
-                viewAccessKey.setText(getText(R.string.ut_accesskey));
-                keepDetailBar = true;
-            } else {
-                viewAccessKey.setVisibility(View.INVISIBLE);
-            }
-            if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
-                viewMembership.setText(getText(R.string.ut_membership));
-                keepDetailBar = true;
-            } else {
-                viewMembership.setVisibility(View.INVISIBLE);
-            }
-            if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
-                viewPayOnSite.setText(getText(R.string.ut_pay_on_site));
-                keepDetailBar = true;
-            } else {
-                viewPayOnSite.setVisibility(View.INVISIBLE);
-            }
-
-            if (!keepDetailBar) {
-                viewDetailBar.setVisibility(View.GONE);
             }
 
             if (data.getString(INDEX_STATION_OPERATOR_WEBSITE) != null) {
                 viewOpWebSite.setText(data.getString(INDEX_STATION_OPERATOR_WEBSITE));
-            } else {
-                viewOpWebSite.setVisibility(View.GONE);
             }
 
             // Maybe we need addr2 also? Skipped to save space.
@@ -337,6 +301,33 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             viewState.setText(data.getString(INDEX_STATION_ADDR_STATE));
             viewTown.setText(data.getString(INDEX_STATION_ADDR_TOWN));
             viewCountry.setText(data.getString(INDEX_STATION_ADDR_COUNTRY_CODE));
+
+
+            ArrayList<String> usageClauses = new ArrayList<>();
+
+            if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
+                usageClauses.add((String) getText(R.string.ut_accesskey));
+            }
+
+            if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
+                usageClauses.add((String) getText(R.string.ut_membership));
+            }
+
+            if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
+                usageClauses.add((String) getText(R.string.ut_pay_on_site));
+
+            }
+
+            for (int i = 0; i < usageClauses.size(); i++) {
+                if (!viewUsageText.getText().equals("")) {
+                    viewUsageText.setText(
+                            viewUsageText.getText() + "-" + usageClauses.get(i)
+                    );
+                } else {
+                    viewUsageText.setText(usageClauses.get(i));
+                }
+            }
+
             if (data.getInt(INDEX_STATION_FAVORITE) == 1) {
                 viewFavorite.setChecked(true);
             } else {

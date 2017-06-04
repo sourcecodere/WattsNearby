@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Bottom details sheet fragment -->
-    <dimen name="bottom_sheet_peek_height">160dp</dimen>
+    <dimen name="bottom_sheet_peek_height">180dp</dimen>
 
     <!-- Define standard dimensions -->
     <dimen name="margin_tiny">4dp</dimen>
@@ -39,7 +39,7 @@
     <dimen name="text_size_title">20sp</dimen>
     <dimen name="text_size_sub_title">15sp</dimen>
     <dimen name="text_size_caption">14sp</dimen>
-    <dimen name="text_size_caption_small">9sp</dimen>
+    <dimen name="text_size_caption_small">10sp</dimen>
     <dimen name="text_size_body">13sp</dimen>
-    <dimen name="text_size_body_small">9sp</dimen>
+    <dimen name="text_size_body_small">10sp</dimen>
 </resources>
