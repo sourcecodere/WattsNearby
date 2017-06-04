@@ -7,15 +7,14 @@
 
     <ImageView
         android:id="@+id/connection_icon"
-        android:layout_width="@dimen/icon_size_large"
+        android:layout_width="@dimen/icon_size_extra_large"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
         android:layout_marginRight="@dimen/margin_medium"
         android:layout_marginEnd="@dimen/margin_medium"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginLeft="@dimen/margin_small"
-
-        android:src="@drawable/ic_chademo" />
+        tools:src="@drawable/ic_chademo" />
 
     <LinearLayout
         android:layout_width="match_parent"

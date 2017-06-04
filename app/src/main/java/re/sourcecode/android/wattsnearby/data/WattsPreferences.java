@@ -41,6 +41,30 @@ public class WattsPreferences {
         return sp.getBoolean(displayOnlyFastChargersKey, shouldDisplayOnlyFastChargersByDefault);
     }
 
+
+    /**
+     * Returns true if the user prefers to see CEE 7/4 - Schuko - Type F chargers, false otherwise.
+     * This preference can be changed by the user within the SettingsFragment.
+     *
+     * @param context Used to access SharedPreferences
+     * @return true if the user prefers to only see CEE 7/4 - Schuko - Type F chargers, false otherwise
+     */
+    public static boolean areSchukoEnabled(Context context) {
+        /* Key for accessing the preference for showing notifications */
+        String displaySchukoKey = context.getString(R.string.pref_enable_schuko_key);
+
+        boolean shouldDisplaySchukoByDefault = context
+                .getResources()
+                .getBoolean(R.bool.enable_schuko);
+
+        /* As usual, we use the default SharedPreferences to access the user's preferences */
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        /* If a value is stored with the key, we extract it here. If not, use a default. */
+
+        return sp.getBoolean(displaySchukoKey, shouldDisplaySchukoByDefault);
+    }
+
     /**
      * Returns true if the user prefers to see type 2 menneske chargers, false otherwise. This
      * preference can be changed by the user within the SettingsFragment.

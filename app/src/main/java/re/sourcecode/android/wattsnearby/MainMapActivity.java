@@ -69,6 +69,7 @@ import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
+import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
 
 
 public class MainMapActivity extends AppCompatActivity implements
@@ -195,7 +196,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
 
         // Create the car location marker, set position later
-        mMarkerOptionsCar = WattsImageUtils.getCarMarkerOptions(
+        mMarkerOptionsCar = WattsMapUtils.getCarMarkerOptions(
                 getString(R.string.marker_current),
                 WattsImageUtils.vectorToBitmap(
                         this,
@@ -553,7 +554,7 @@ public class MainMapActivity extends AppCompatActivity implements
         Log.d(TAG, "onMarkerClick");
         Long stationId = (Long) marker.getTag();
 
-        if (stationId != null) { //every station marker should have data (stationId), only the car does not
+        if (stationId != null) { //every station marker should have data (stationId), the car doesn't.
             BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetStationFragment();
 
             Bundle args = new Bundle();

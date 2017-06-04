@@ -11,6 +11,14 @@
 
     <PreferenceCategory android:title="@string/charger_types">
         <CheckBoxPreference
+            android:defaultValue="@bool/enable_schuko"
+            android:icon="@drawable/ic_schuko"
+            android:key="@string/pref_enable_schuko_key"
+            android:summaryOff="@string/pref_enable_schuko_false"
+            android:summaryOn="@string/pref_enable_schuko_true"
+            android:title="@string/pref_enable_schuko_label" />
+
+        <CheckBoxPreference
             android:defaultValue="@bool/enable_type2_mennekes"
             android:icon="@drawable/ic_type2_mennekes"
             android:key="@string/pref_enable_type2_mennekes_key"

@@ -9,8 +9,7 @@ import android.support.v4.content.res.ResourcesCompat;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
 
 import re.sourcecode.android.wattsnearby.R;
 
@@ -36,29 +35,6 @@ public class WattsImageUtils {
         //DrawableCompat.setTint(vectorDrawable, color);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    /**
-     * @return MarkerOptions for the car
-     */
-    public static MarkerOptions getCarMarkerOptions(String title, BitmapDescriptor markerIcon) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(title);
-        markerOptions.icon(markerIcon);
-        markerOptions.anchor(0.38f, 0.6f);
-        return markerOptions;
-    }
-
-    /**
-     * @return MarkerOptions for the car
-     */
-    public static MarkerOptions getStationMarkerOptions(LatLng position, String title, BitmapDescriptor markerIcon) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(title);
-        markerOptions.icon(markerIcon);
-        markerOptions.anchor(1.0f, 0.5f);
-        markerOptions.position(position);
-        return markerOptions;
     }
 
     public static Drawable getConnectionIcon(Context context, int connectionId) {

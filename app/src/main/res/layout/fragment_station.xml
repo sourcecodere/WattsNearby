@@ -26,8 +26,8 @@
                 style="@style/AppTheme.SubTitle.Dark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="Kiwi Fjellbo"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="Kiwi Fjellbo" />
 
             <TextView
                 android:id="@+id/sheet_station_addr"
@@ -142,6 +142,7 @@
                     android:src="@drawable/ic_directions_white" />
             </LinearLayout>
 
+
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/favorite_switch"
                 android:layout_width="wrap_content"
@@ -149,9 +150,10 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/btn_favorite"
                 android:padding="@dimen/padding_medium"
-                tools:text="@string/switch_favorite"
                 android:textColor="@color/primary_light"
-                android:theme="@style/AppTheme.CustomSwitch" />
+                android:theme="@style/AppTheme.CustomSwitch"
+                android:text="@string/switch_favorite" />
+
         </LinearLayout>
 
     </LinearLayout>
@@ -197,12 +199,12 @@
         android:layout_height="wrap_content"
         android:autoLink="web"
         android:background="@color/primary_dark"
-        android:paddingTop="@dimen/padding_small"
         android:paddingBottom="@dimen/padding_small"
         android:paddingEnd="@dimen/padding_small"
         android:paddingLeft="@dimen/padding_small"
         android:paddingRight="@dimen/padding_medium"
         android:paddingStart="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_small"
         tools:text="http://www.fortum.no/hurtigladere" />
 
     <!-- no support for ListView in CoordinatorLayout!!-->

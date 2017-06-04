@@ -247,4 +247,30 @@
             android:text="@string/credit_ic_tesla_hpwc" />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_marginRight="@dimen/margin_medium"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginLeft="@dimen/margin_medium"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/pref_enable_schuko_label"
+            android:src="@drawable/ic_schuko" />
+
+        <TextView
+            style="@style/AppTheme.Body.Dark.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:text="@string/credit_ic_schuko" />
+    </LinearLayout>
+
 </LinearLayout>
