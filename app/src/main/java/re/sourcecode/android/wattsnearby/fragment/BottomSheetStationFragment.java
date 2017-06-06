@@ -1,6 +1,5 @@
 package re.sourcecode.android.wattsnearby.fragment;
 
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -21,12 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import re.sourcecode.android.wattsnearby.MainMapActivity;
@@ -37,7 +33,7 @@ import re.sourcecode.android.wattsnearby.utilities.WattsWidgetUtils;
 
 
 /**
- * Created by olem on 4/23/17.
+ * Created by SourcecodeRe on 4/23/17.
  * <p>
  * Bottom sheet for station details
  */
@@ -50,7 +46,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     TextView viewOpWebSite;
     TextView viewUtTitle;
     TextView viewUsageText;
-    TextView viewAddr;
+    TextView viewAddress;
     TextView viewPostCode;
     TextView viewState;
     TextView viewTown;
@@ -75,7 +71,6 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             ChargingStationContract.StationEntry.COLUMN_LON,
             ChargingStationContract.StationEntry.COLUMN_ADDR_TITLE,
             ChargingStationContract.StationEntry.COLUMN_ADDR_LINE1,
-            ChargingStationContract.StationEntry.COLUMN_ADDR_LINE2,
             ChargingStationContract.StationEntry.COLUMN_ADDR_POSTCODE,
             ChargingStationContract.StationEntry.COLUMN_ADDR_STATE,
             ChargingStationContract.StationEntry.COLUMN_ADDR_TOWN,
@@ -98,12 +93,11 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     public static final int INDEX_STATION_LON = 7;
     public static final int INDEX_STATION_ADDR_TITLE = 8;
     public static final int INDEX_STATION_ADDR_LINE1 = 9;
-    public static final int INDEX_STATION_ADDR_LINE2 = 10;
-    public static final int INDEX_STATION_ADDR_POSTCODE = 11;
-    public static final int INDEX_STATION_ADDR_STATE = 12;
-    public static final int INDEX_STATION_ADDR_TOWN = 13;
-    public static final int INDEX_STATION_ADDR_COUNTRY_CODE = 14;
-    public static final int INDEX_STATION_FAVORITE = 15;
+    public static final int INDEX_STATION_ADDR_POSTCODE = 10;
+    public static final int INDEX_STATION_ADDR_STATE = 11;
+    public static final int INDEX_STATION_ADDR_TOWN = 12;
+    public static final int INDEX_STATION_ADDR_COUNTRY_CODE = 13;
+    public static final int INDEX_STATION_FAVORITE = 14;
 
     /* The columns of data that we are interested in displaying within our BottomSheetDialogFragment's
      * connections display. */
@@ -142,9 +136,6 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     private static final int ID_STATION_LOADER = 122;
     private static final int ID_CONNECTION_LOADER = 142;
 
-    /* the station id*/
-    private Long mStationId;
-
     /* The URI that is used to access the chosen station's details */
     private Uri mStationUri;
     private Uri mConnectionUri;
@@ -166,15 +157,17 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
 
             View rootView = inflater.inflate(R.layout.fragment_station, container, false);
 
-            mStationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
-            mStationUri = ChargingStationContract.StationEntry.buildStationUri(mStationId);
-            mConnectionUri = ChargingStationContract.ConnectionEntry.buildStationUri(mStationId);
+            /* the station id*/
+            Long stationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
+
+            mStationUri = ChargingStationContract.StationEntry.buildStationUri(stationId);
+            mConnectionUri = ChargingStationContract.ConnectionEntry.buildStationUri(stationId);
 
             viewTitle = (TextView) rootView.findViewById(R.id.sheet_station_title);
             viewOpWebSite = (TextView) rootView.findViewById(R.id.sheet_station_operator_web);
             viewUtTitle = (TextView) rootView.findViewById(R.id.sheet_station_usage_type_title);
             viewUsageText = (TextView) rootView.findViewById(R.id.sheet_station_usage_text);
-            viewAddr = (TextView) rootView.findViewById(R.id.sheet_station_addr);
+            viewAddress = (TextView) rootView.findViewById(R.id.sheet_station_addr);
             viewPostCode = (TextView) rootView.findViewById(R.id.sheet_station_addr_post_code);
             viewState = (TextView) rootView.findViewById(R.id.sheet_station_addr_state);
             viewTown = (TextView) rootView.findViewById(R.id.sheet_station_addr_town);
@@ -296,7 +289,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             }
 
             // Maybe we need addr2 also? Skipped to save space.
-            viewAddr.setText(data.getString(INDEX_STATION_ADDR_LINE1));
+            viewAddress.setText(data.getString(INDEX_STATION_ADDR_LINE1));
             viewPostCode.setText(data.getString(INDEX_STATION_ADDR_POSTCODE));
             viewState.setText(data.getString(INDEX_STATION_ADDR_STATE));
             viewTown.setText(data.getString(INDEX_STATION_ADDR_TOWN));

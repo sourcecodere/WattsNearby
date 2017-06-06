@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import re.sourcecode.android.wattsnearby.R;
 /**
- * Created by olem on 5/1/17.
+ * Created by SourcecodeRe on 5/1/17.
  *
  * Inspired and code copied from https://github.com/udacity/ud851-Sunshine developed by udacity.com
  *

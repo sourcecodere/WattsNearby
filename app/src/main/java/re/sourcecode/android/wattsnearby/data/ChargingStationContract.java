@@ -5,13 +5,13 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * Created by olem on 3/16/17.
+ * Created by SourcecodeRe on 3/16/17.
  *
  * Data contract for charging station with several connections
  */
 public class ChargingStationContract {
 
-    private static final String TAG = ChargingStationContract.class.getSimpleName();
+    //private static final String TAG = ChargingStationContract.class.getSimpleName();
     /*
     * The "Content authority" is a name for the entire content provider, similar to the
     * relationship between a domain name and its website. A convenient string to use for the

@@ -5,14 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by olem on 3/16/17.
+ * Created by SourcecodeRe on 3/16/17.
  *
  * Db helper for the two tables in WattsMearby. Handles db creation and update.
  */
 public class ChargingStationDbHelper extends SQLiteOpenHelper {
 
 
-    private static final String TAG = ChargingStationDbHelper.class.getSimpleName();
+    //private static final String TAG = ChargingStationDbHelper.class.getSimpleName();
 
     public static final String DB_NAME = "ocm.db";
 

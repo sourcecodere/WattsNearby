@@ -1,5 +1,6 @@
 package re.sourcecode.android.wattsnearby.widget;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -16,6 +17,8 @@ import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 
 /**
+ * Created by SourcecodeRe on 5/14/17.
+ *
  * Implementation of App Widget functionality.
  */
 public class CollectionWidget extends AppWidgetProvider {
@@ -84,6 +87,7 @@ public class CollectionWidget extends AppWidgetProvider {
                 new Intent(context, WidgetService.class));
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);

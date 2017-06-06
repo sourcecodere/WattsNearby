@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
 
 /**
- * Created by olem on 4/29/17.
+ * Created by SourceCodeRe on 4/29/17.
  *
  * Inspired and code copied from https://github.com/udacity/ud851-Sunshine developed by udacity.com
  *
@@ -24,7 +24,7 @@ import re.sourcecode.android.wattsnearby.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private static final String TAG = SettingsActivity.class.getSimpleName();
+    //private static final String TAG = SettingsActivity.class.getSimpleName();
 
 
     @Override

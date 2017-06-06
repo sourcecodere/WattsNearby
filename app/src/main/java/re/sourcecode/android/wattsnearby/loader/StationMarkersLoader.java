@@ -1,12 +1,12 @@
 package re.sourcecode.android.wattsnearby.loader;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -14,7 +14,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,13 +23,12 @@ import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 import re.sourcecode.android.wattsnearby.data.WattsPreferences;
 import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsMapUtils;
+import re.sourcecode.android.wattsnearby.utilities.WattsMarkerUtils;
 
 /**
- * Created by olem on 5/29/17.
- *
+ * Created by SourcecodeRe on 5/29/17.
+ * <p>
  * Loader to offload database queries from main UI of station markers in map.
- *
  */
 public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOptions>> {
 
@@ -68,7 +66,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
     public StationMarkersLoader(Context context, Bundle args) {
         super(context);
         mContext = context;
-        if ((args != null ) && (args.containsKey(MainMapActivity.ARG_MAP_VISIBLE_BOUNDS))) {
+        if ((args != null) && (args.containsKey(MainMapActivity.ARG_MAP_VISIBLE_BOUNDS))) {
             this.mLatLngBounds = args.getParcelable(MainMapActivity.ARG_MAP_VISIBLE_BOUNDS);
         }
 
@@ -96,7 +94,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
 
     private HashMap<Long, MarkerOptions> getVisibleMarkerOptions() {
         Log.d(TAG, "getVisibleMarkerOptions");
-        HashMap<Long, MarkerOptions> stationMarkers = new HashMap<>();
+        @SuppressLint("UseSparseArrays") HashMap<Long, MarkerOptions> stationMarkers = new HashMap<>();
         ContentResolver wattsContentResolver = mContext.getContentResolver();
         Uri getStationsUri = ChargingStationContract.StationEntry.CONTENT_URI;
 
@@ -107,48 +105,54 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
                 null,
                 null);
         try {
-            while (getStationsCursor.moveToNext()) {
+            if (getStationsCursor != null && getStationsCursor.getCount() > 0) {
+                while (getStationsCursor.moveToNext()) {
 
-                long stationId = getStationsCursor.getLong(INDEX_ID);
-                LatLng stationPosition = new LatLng(
-                        getStationsCursor.getDouble(INDEX_LAT),
-                        getStationsCursor.getDouble(INDEX_LON));
-                String stationTitle = getStationsCursor.getString(INDEX_ADDRESS_TITLE);
-                if (mLatLngBounds.contains(stationPosition)) {
+                    long stationId = getStationsCursor.getLong(INDEX_ID);
+                    LatLng stationPosition = new LatLng(
+                            getStationsCursor.getDouble(INDEX_LAT),
+                            getStationsCursor.getDouble(INDEX_LON));
+                    String stationTitle = getStationsCursor.getString(INDEX_ADDRESS_TITLE);
+                    if (mLatLngBounds.contains(stationPosition)) {
 
 
-                    Cursor connectionCursor = getConnectionsFilteredByPrefs(
-                            mContext,
-                            wattsContentResolver,
-                            stationId,
-                            CONNECTION_ID_PROJECTION);
-                    try {
-                        if (connectionCursor.getCount() > 0) {
-                            //Log.d(TAG, "station" + stationId + " has " + connectionCursor.getCount() + " matching connections");
-                            // we have matching connections, add it to the map
-                            MarkerOptions markerOptions;
-                            if (checkFastChargingAtStation(wattsContentResolver, stationId)) {
-                                markerOptions = WattsMapUtils.getStationMarkerOptions(
-                                        stationPosition,
-                                        stationTitle,
-                                        mMarkerIconStationFast);
-                                stationMarkers.put(stationId, markerOptions);
-                            } else {
-                                markerOptions = WattsMapUtils.getStationMarkerOptions(
-                                        stationPosition,
-                                        stationTitle,
-                                        mMarkerIconStation);
-                                stationMarkers.put(stationId, markerOptions);
+                        Cursor connectionCursor = getConnectionsFilteredByPrefs(
+                                mContext,
+                                wattsContentResolver,
+                                stationId,
+                                CONNECTION_ID_PROJECTION);
+                        try {
+                            if (connectionCursor.getCount() > 0) {
+                                //Log.d(TAG, "station" + stationId + " has " + connectionCursor.getCount() + " matching connections");
+                                // we have matching connections, add it to the map
+                                MarkerOptions markerOptions;
+                                if (checkFastChargingAtStation(wattsContentResolver, stationId)) {
+                                    markerOptions = WattsMarkerUtils.getStationMarkerOptions(
+                                            stationPosition,
+                                            stationTitle,
+                                            mMarkerIconStationFast);
+                                    stationMarkers.put(stationId, markerOptions);
+                                } else {
+                                    markerOptions = WattsMarkerUtils.getStationMarkerOptions(
+                                            stationPosition,
+                                            stationTitle,
+                                            mMarkerIconStation);
+                                    stationMarkers.put(stationId, markerOptions);
+                                }
+                            }
+                        } finally {
+                            if (connectionCursor != null) {
+                                connectionCursor.close();
                             }
                         }
-                    } finally {
-                        connectionCursor.close();
                     }
+
                 }
             }
-
         } finally {
-            getStationsCursor.close();
+            if (getStationsCursor != null) {
+                getStationsCursor.close();
+            }
         }
 
         return stationMarkers;
@@ -181,28 +185,29 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         );
 
         try {
-            while (getConnectionsCursor.moveToNext()) {
-                if (getConnectionsCursor.getInt(INDEX_STATION_FAST) > 0) {
-                    return true;
+            if (getConnectionsCursor != null && getConnectionsCursor.getCount() > 0) {
+                while (getConnectionsCursor.moveToNext()) {
+                    if (getConnectionsCursor.getInt(INDEX_STATION_FAST) > 0) {
+                        return true;
+                    }
                 }
             }
         } finally {
-            getConnectionsCursor.close();
+            if (getConnectionsCursor != null) {
+                getConnectionsCursor.close();
+            }
         }
         return false;
     }
 
     /**
-     *
      * Helper method to filter out connections not matching user preferences.
      *
-     *
-     * @param context application contex
+     * @param context              application contex
      * @param wattsContentResolver content resolver
-     * @param stationId the station id
-     * @param projection for columns in table
+     * @param stationId            the station id
+     * @param projection           for columns in table
      * @return a filtered cursor of connections at a station
-     *
      */
     private static Cursor getConnectionsFilteredByPrefs(Context context, ContentResolver wattsContentResolver, long stationId, String[] projection) {
 
@@ -217,7 +222,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         selectionArgsArray.add(String.valueOf(stationId));
 
         //filter out if only fast chargers are enabled
-        if(WattsPreferences.areOnlyFastChargersEnabled(context)) {
+        if (WattsPreferences.areOnlyFastChargersEnabled(context)) {
             selection += " AND " + ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST + "=?";
             selectionArgsArray.add("1"); // 1 is true
         }

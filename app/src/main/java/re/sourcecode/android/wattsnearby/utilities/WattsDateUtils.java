@@ -1,11 +1,13 @@
 package re.sourcecode.android.wattsnearby.utilities;
 
+import android.annotation.SuppressLint;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by olem on 4/5/17.
+ * Created by SourcecodeRe on 4/5/17.
  *
  * Util to handle date formats
  */
@@ -22,7 +24,7 @@ public class WattsDateUtils {
     public static Long dateStringToEpoc(String dateString)
             throws ParseException{
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date date = format.parse(dateString);
         return date.getTime();
     }

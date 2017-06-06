@@ -12,7 +12,7 @@ import java.text.ParseException;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 
 /**
- * Created by olem on 3/6/17.
+ * Created by SourcecodeRe on 3/6/17.
  *
  * Util to handle json format from OCM
  */

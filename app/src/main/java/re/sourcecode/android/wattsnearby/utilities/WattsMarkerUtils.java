@@ -5,10 +5,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
- * Created by olem on 6/4/17.
+ * Created by SourcecodeRe on 6/4/17.
+ *
+ * Utils for map markers
  */
 
-public class WattsMapUtils {
+public class WattsMarkerUtils {
 
     /**
      * @return MarkerOptions for the car

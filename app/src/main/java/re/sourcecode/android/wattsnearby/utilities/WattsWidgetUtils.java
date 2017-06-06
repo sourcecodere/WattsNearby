@@ -8,7 +8,7 @@ import android.content.Intent;
 import re.sourcecode.android.wattsnearby.widget.CollectionWidget;
 
 /**
- * Created by olem on 5/14/17.
+ * Created by SourcecodeRe on 5/14/17.
  *
  * Util for WattsNearby widget
  */

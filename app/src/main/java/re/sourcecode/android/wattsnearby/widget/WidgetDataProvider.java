@@ -15,12 +15,14 @@ import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
 
 /**
+ * Created by SourcecodeRe on 5/14/17.
+ *
  * WidgetDataProvider acts as the adapter for the collection view widget,
  * providing RemoteViews to the widget in the getViewAt method.
  */
 public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory {
 
-    private static final String TAG = "WidgetDataProvider";
+    //private static final String TAG = "WidgetDataProvider";
 
     private List<String> mCollection = new ArrayList<>();
     private Context mContext = null;

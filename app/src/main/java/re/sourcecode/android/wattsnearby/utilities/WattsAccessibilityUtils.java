@@ -6,7 +6,7 @@ import android.content.Context;
 import re.sourcecode.android.wattsnearby.R;
 
 /**
- * Created by olem on 5/11/17.
+ * Created by SourcecodeRe on 5/11/17.
  *
  * Util to get strings for accessibility
  */

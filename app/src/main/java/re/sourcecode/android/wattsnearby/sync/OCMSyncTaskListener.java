@@ -1,7 +1,7 @@
 package re.sourcecode.android.wattsnearby.sync;
 
 /**
- * Created by olem on 4/19/17.
+ * Created by SourcecodeRe on 4/19/17.
  *
  * Listener for the async task
  */

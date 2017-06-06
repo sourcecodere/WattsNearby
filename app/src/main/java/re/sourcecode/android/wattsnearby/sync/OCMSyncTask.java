@@ -6,7 +6,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -20,8 +22,8 @@ import re.sourcecode.android.wattsnearby.utilities.WattsOCMNetworkUtils;
 import re.sourcecode.android.wattsnearby.utilities.WattsOCMJsonUtils;
 
 /**
- * Created by olem on 3/31/17.
- *
+ * Created by SourcecodeRe on 3/31/17.
+ * <p>
  * Async task to sync data from OCM
  */
 public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
@@ -49,8 +51,6 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
     private OCMSyncTaskListener mCallback;
     private Exception mException;
-
-
 
 
     public OCMSyncTask(Context context, LatLng latLng, Double distance, int max_results, OCMSyncTaskListener callback) {
@@ -109,9 +109,9 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      * Performs the network request for updated charging stations, parses the JSON from that request, and
      * inserts the new station information into our ContentProvider.
      *
-     * @param distance  The current map zoom level
-     * @param latLng    The current LatLng position
-     * @param context   Used to access utility methods and the ContentResolver
+     * @param distance The current map zoom level
+     * @param latLng   The current LatLng position
+     * @param context  Used to access utility methods and the ContentResolver
      */
     private static void syncStations(Context context, LatLng latLng, double distance, int max_results) {
         try {
@@ -143,6 +143,8 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
     private static void cacheStation(JSONObject jsonStation) {
         try {
+            //Log.d(TAG, "caching station");
+
             /* get the OCM id */
             long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
 
@@ -157,9 +159,13 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                     null,
                     null);
 
-            boolean stationInDB = currentStationCursor.moveToFirst();
+            boolean stationInDB = false;
 
-            //Log.d(TAG, stationByIdUri.toString() + " " + stationInDB.toString());
+            if (currentStationCursor != null && currentStationCursor.getCount() > 0) {
+                stationInDB = currentStationCursor.moveToFirst();
+            }
+
+            //Log.d(TAG, stationByIdUri.toString() + " " + stationInDB);
             /*
             * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
             */
@@ -185,7 +191,6 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                     );
                 }
 
-
             } else {
             /* update only if timestamp is newer */
 
@@ -198,12 +203,12 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                     mWattsContentResolver.delete(
                             ChargingStationContract.ConnectionEntry.CONTENT_URI,
                             ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "=?",
-                            new String[] {Long.toString(station_id)}
+                            new String[]{Long.toString(station_id)}
                     );
                     mWattsContentResolver.delete(
                             ChargingStationContract.StationEntry.CONTENT_URI,
                             ChargingStationContract.StationEntry.COLUMN_ID + "=?",
-                            new String[]{ Long.toString(station_id) }
+                            new String[]{Long.toString(station_id)}
                     );
                     ContentValues stationValues = WattsOCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
                     ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
@@ -225,6 +230,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                 //close db cursor
                 currentStationCursor.close();
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -14,7 +14,7 @@ import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 
 /**
- * Created by olem on 4/29/17.
+ * Created by SourcecodeRe on 4/29/17.
  * <p>
  * Inspired and code copied from https://github.com/udacity/ud851-Sunshine developed by udacity.com
  * <p>
@@ -91,10 +91,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             boolean isOn = sharedPreferences.getBoolean(key, false);
             if (isOn) {
                 Log.d(TAG, "Filter ( preferences ) changed to on: " + key);
-                mSharedPreferences.edit().putBoolean(MainMapActivity.FILTER_CHANGED_KEY, true).commit();
+                mSharedPreferences.edit().putBoolean(MainMapActivity.FILTER_CHANGED_KEY, true).apply();
             } else {
                 Log.d(TAG, "Filter ( preferences ) changed to off: " + key);
-                mSharedPreferences.edit().putBoolean(MainMapActivity.FILTER_CHANGED_KEY, true).commit();
+                mSharedPreferences.edit().putBoolean(MainMapActivity.FILTER_CHANGED_KEY, true).apply();
 
             }
         }

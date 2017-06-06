@@ -14,8 +14,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import re.sourcecode.android.wattsnearby.R;
 
 /**
- * Created by olem on 4/9/17.
- *
+ * Created by SourcecodeRe on 4/9/17.
+ * <p>
  * Util to handle vector graphics in WattsNearby
  */
 public class WattsImageUtils {
@@ -26,19 +26,27 @@ public class WattsImageUtils {
      */
     public static BitmapDescriptor vectorToBitmap(Context context, int id, Integer addToScale) {
         Drawable vectorDrawable = ResourcesCompat.getDrawable(context.getResources(), id, null);
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth() + addToScale,
-                vectorDrawable.getIntrinsicHeight() + addToScale, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap;
+        if (vectorDrawable != null) {
+            bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth() + addToScale,
+                    vectorDrawable.getIntrinsicHeight() + addToScale, Bitmap.Config.ARGB_8888);
 
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        //DrawableCompat.setTint(vectorDrawable, color);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
+            Canvas canvas = new Canvas(bitmap);
+            vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+
+            //DrawableCompat.setTint(vectorDrawable, color);
+            vectorDrawable.draw(canvas);
+
+            return BitmapDescriptorFactory.fromBitmap(bitmap);
+        }
+        return null;
     }
 
     public static Drawable getConnectionIcon(Context context, int connectionId) {
         switch (connectionId) {
+            case 28:
+                return ContextCompat.getDrawable(context, R.drawable.ic_schuko);
             case 2: //
                 return ContextCompat.getDrawable(context, R.drawable.ic_chademo);
             case 33:

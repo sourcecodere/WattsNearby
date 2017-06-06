@@ -16,7 +16,7 @@ import re.sourcecode.android.wattsnearby.SettingsActivity;
 
 
 /**
- * Created by olem on 4/23/17.
+ * Created by SourcecodeRe on 4/23/17.
  *
  * Generic bottom sheet fragment used for car details and about data
  *

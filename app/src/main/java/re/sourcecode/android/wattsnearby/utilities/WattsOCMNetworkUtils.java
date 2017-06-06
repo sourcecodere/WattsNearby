@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 /**
- * Created by olem on 3/31/17.
+ * Created by SourcecodeRe on 3/31/17.
  *
  * Util to handle network requests and response to/from OCM.
  */

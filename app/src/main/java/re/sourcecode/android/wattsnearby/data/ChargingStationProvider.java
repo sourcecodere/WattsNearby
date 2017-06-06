@@ -4,18 +4,21 @@ import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
+import re.sourcecode.android.wattsnearby.BuildConfig;
 
 /**
- * Created by olem on 3/24/17.
- *
+ * Created by SourcecodeRe on 3/24/17.
+ * <p>
  * This class serves as the ContentProvider for WattsNearby's data. This class allows us to
  * bulkInsert data, query data, and delete data.
- *
  */
 public class ChargingStationProvider extends ContentProvider {
 
@@ -218,7 +221,14 @@ public class ChargingStationProvider extends ContentProvider {
         // causes the cursor to register a content observer to watch for changes that happen to
         // this URI and any of it's descendants. By descendants, we mean any URI that begins
         // with this path.
-        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        Context context = getContext();
+        if (context.getContentResolver() != null) {
+            retCursor.setNotificationUri(context.getContentResolver(), uri);
+        } else {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "No rows returned from query");
+            }
+        }
         return retCursor;
     }
 
@@ -266,7 +276,12 @@ public class ChargingStationProvider extends ContentProvider {
         db.endTransaction();
         // Use this on the URI passed into the function to notify any observers that the uri has
         // changed.
-        getContext().getContentResolver().notifyChange(uri, null);
+        Context context = getContext();
+        if (context.getContentResolver() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        } else {
+            Log.e(TAG, "No rows inserted");
+        }
         return returnUri;
     }
 
@@ -317,8 +332,11 @@ public class ChargingStationProvider extends ContentProvider {
         }
 
         /* If we actually deleted any rows, notify that a change has occurred to this URI */
-        if (numRowsDeleted != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+        Context context = getContext();
+        if ((numRowsDeleted != 0) && (context.getContentResolver() != null)) {
+            context.getContentResolver().notifyChange(uri, null);
+        } else {
+            Log.e(TAG, "No rows deleted." );
         }
 
         return numRowsDeleted;
@@ -329,7 +347,7 @@ public class ChargingStationProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int rows;
 
-        switch(sUriMatcher.match(uri)){
+        switch (sUriMatcher.match(uri)) {
             case CODE_STATION:
                 rows = db.update(
                         ChargingStationContract.StationEntry.TABLE_NAME,
@@ -352,9 +370,11 @@ public class ChargingStationProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-
-        if(rows != 0){
-            getContext().getContentResolver().notifyChange(uri, null);
+        Context context = getContext();
+        if ((rows != 0) && (context.getContentResolver() != null)) {
+            context.getContentResolver().notifyChange(uri, null);
+        } else {
+            Log.e(TAG, "No rows updated");
         }
 
         return rows;

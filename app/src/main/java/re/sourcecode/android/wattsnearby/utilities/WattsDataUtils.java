@@ -1,22 +1,18 @@
 package re.sourcecode.android.wattsnearby.utilities;
 
-import android.content.ContentResolver;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
-import re.sourcecode.android.wattsnearby.data.WattsPreferences;
+
 
 /**
- * Created by olem on 5/5/17.
- *
+ * Created by SourcecodeRe on 5/5/17.
+ * <p>
  * Util for simple DB queries
  */
 public class WattsDataUtils {
@@ -25,9 +21,9 @@ public class WattsDataUtils {
     /**
      * Checks database for charging station and return LatLng for certain station
      *
-     * @param context
-     * @param stationId
-     * @return LatLng of statioin
+     * @param context   application context
+     * @param stationId id of station
+     * @return LatLng of stationId
      */
     public static LatLng getStationLatLng(Context context, long stationId) {
 
@@ -38,7 +34,7 @@ public class WattsDataUtils {
         };
 
         final int INDEX_STATION_LAT = 0;
-        final int INDEX_STATIO_LON = 1;
+        final int INDEX_STATION_LON = 1;
 
         final Uri getStationUri = ChargingStationContract.StationEntry.buildStationUri(stationId);
 
@@ -48,12 +44,18 @@ public class WattsDataUtils {
                 null,
                 null,
                 null
-                );
+        );
         try {
-            getLatLngCursor.moveToFirst();
-            return new LatLng( getLatLngCursor.getDouble(INDEX_STATION_LAT), getLatLngCursor.getDouble(INDEX_STATIO_LON));
+            if (getLatLngCursor != null && getLatLngCursor.getCount() > 0) {
+                getLatLngCursor.moveToFirst();
+                return new LatLng(getLatLngCursor.getDouble(INDEX_STATION_LAT), getLatLngCursor.getDouble(INDEX_STATION_LON));
+            }
+
         } finally {
-            getLatLngCursor.close();
+            if (getLatLngCursor != null) {
+                getLatLngCursor.close();
+            }
         }
+        return null;
     }
 }
