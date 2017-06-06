@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WattsNearby</string>
+    <string name="action_about">Om</string>
+    <string name="action_search">Søk</string>
+    <string name="action_settings">Innstillinger</string>
+    <string name="btn_favorite">Legg til som favoritt</string>
+    <string name="btn_google_maps">Åpne lokasjon i google maps</string>
+    <string name="btn_my_location">Flytt kartet til min lokasjon</string>
+    <string name="btn_navigation">Åpne navigering til lokasjon i google maps</string>
+    <string name="btn_settings">Åpne innstillnger</string>
+    <string name="charger_types">Skru på eller av tilkoblingstyper</string>
+    <string name="credit_ic">Heder for ikoner brukt i WattsNearby:</string>
+    <string name="credit_ic_chademo">Av GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432298</string>
+    <string name="credit_ic_combo_css">Av GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432298</string>
+    <string name="credit_ic_launcher">Av www.freepik.com - CC BY-SA 3.0, www.flaticon.com</string>
+    <string name="credit_ic_schuko">Av Tucvbif - CC BY-SA 3.0, commons.wikimedia.org/wiki/File:Schuko_plug.svg</string>
+    <string name="credit_ic_tesla_hpwc">Av GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432293</string>
+    <string name="credit_ic_type1_css">Av GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432296</string>
+    <string name="credit_ic_type1_j1772">Av GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432296</string>
+    <string name="credit_ic_type2_mennekes">Av GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432292</string>
+    <string name="credit_ocm">Benytter open charge map:</string>
+    <string name="error_OCM_sync_failure">"Feil ved synkronisering av data fra openchargemap.org. Prøv igjen senere. Feil:  "</string>
+    <string name="error_not_online">Telefonen har ikke internett. WattsNearby trenger en fungerende internett tilkobling.</string>
+    <string name="fast_charger">Hurtiglader</string>
+    <string name="img_electric_car">Elbil</string>
+    <string name="img_fast">Hurtiglader</string>
+    <string name="marker_current">Dette er deg!</string>
+    <string name="snackbar_no_last_location">Ingen lokasjon! Vær sikker på at lokasjon er påskrudd i telefonens instillinger. Skal WattsNearby prøve igjen?</string>
+    <string name="snackbar_permission_explanation">Lokasjonstilgang er påkrevd. Spør på ny.</string>
+    <string name="snackbar_service_not_connected">Kan ikke koble til nødvendig tjeneste. Prøv på ny?</string>
+    <string name="switch_favorite">Favoritt:&#160;</string>
+    <string name="toast_old_last_location">Den siste kjente lokasjonen er gammel! Påse at lokasjon er påskrudd. Det kan også være nødvendig å flytte deg for å få bedre GPSsignal.</string>
+    <string name="toast_permission_denied">Beklager denne applikasjonen virker ikke uten tilgang til lokasjon. Vær vennlig å tillat lokasjon.</string>
+    <string name="toast_place_selection_failed">"Lokasjonsvalg feilet: "</string>
+    <string name="ut_accesskey">NØKKEL</string>
+    <string name="ut_membership">MEDLEMSSKAP</string>
+    <string name="ut_pay_on_site">BETALING</string>
+    <string name="widget_top_text">WattsNearby favoritter</string>
+</resources>

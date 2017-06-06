@@ -6,9 +6,9 @@
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
     <!-- Banner ad unit id -->
-    <string name="banner_ad_unit_id_test">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_ad_unit_id">ca-app-pub-5213087131455295/7575504566</string>
-    <string name="banner_app_id">ca-app-pub-5213087131455295~5217467366</string>
+    <string name="banner_ad_unit_id_test" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-5213087131455295/7575504566</string>
+    <string name="banner_app_id" translatable="false">ca-app-pub-5213087131455295~5217467366</string>
 
     <!-- Button descriptions -->
     <string name="btn_my_location">Move map to my location</string>
@@ -28,7 +28,7 @@
     <string name="snackbar_permission_explanation">Location permission is required. Ask for permission?</string>
     <string name="snackbar_no_last_location">No location! Make sure you have enable Location in phone settings. Try again?</string>
     <string name="snackbar_service_not_connected">Can\'t connect location service. Retry?</string>
-    <string name="snackbar_ok_btn">OK</string>
+    <string name="snackbar_ok_btn" translatable="false">OK</string>
 
     <!-- Toast strings -->
     <string name="toast_permission_denied">Sorry this app does not work without location permissions, please allow location permissions</string>
@@ -37,7 +37,7 @@
 
     <!-- Error strings -->
     <string name="error_OCM_sync_failure">Error in syncing data from openchargmap.org, please try again later. Error: </string>
-    <string name="error_not_online">The phone is not online. WattsApp need a working internet connection.</string>
+    <string name="error_not_online">The phone is not online. WattsNearby need a working internet connection.</string>
     <!-- String transitions -->
     <string name="transition_name_my_location" translatable="false">MYLOCATION</string>
 
@@ -50,51 +50,51 @@
 
     <!-- Strings related to enable only fast chargers preference -->
     <string name="pref_enable_only_fast_chargers_key" translatable="false">enable_only_fast</string>
-    <string name="pref_enable_only_fast_chargers_label">Only display fast chargers</string>
-    <string name="pref_enable_only_fast_chargers_true">Enabled</string>
-    <string name="pref_enable_only_fast_chargers_false">Not Enabled</string>
+    <string name="pref_enable_only_fast_chargers_label" translatable="false">Only display fast chargers</string>
+    <string name="pref_enable_only_fast_chargers_true" translatable="false">Enabled</string>
+    <string name="pref_enable_only_fast_chargers_false" translatable="false">Not Enabled</string>
     <!-- Strings related to charger types preferences -->
     <string name="charger_types">Enable/disable connection types</string>
     <!-- type2_mennekes -->
     <string name="pref_enable_type2_mennekes_key" translatable="false">enable_type2_mennekes</string>
-    <string name="pref_enable_type2_mennekes_label">Type 2 Mennekes</string>
-    <string name="pref_enable_type2_mennekes_true">Enabled</string>
-    <string name="pref_enable_type2_mennekes_false">Not Enabled</string>
+    <string name="pref_enable_type2_mennekes_label" translatable="false">Type 2 Mennekes</string>
+    <string name="pref_enable_type2_mennekes_true" translatable="false">Enabled</string>
+    <string name="pref_enable_type2_mennekes_false" translatable="false">Not Enabled</string>
     <!-- combo_css_eu -->
     <string name="pref_enable_combo_ccs_eu_key" translatable="false">enable_combo_css_eu</string>
-    <string name="pref_enable_combo_ccs_eu_label">Combo CCS EU</string>
-    <string name="pref_enable_combo_ccs_eu_true">Enabled</string>
-    <string name="pref_enable_combo_ccs_eu_false">Not Enabled</string>
+    <string name="pref_enable_combo_ccs_eu_label" translatable="false">Combo CCS EU</string>
+    <string name="pref_enable_combo_ccs_eu_true" translatable="false">Enabled</string>
+    <string name="pref_enable_combo_ccs_eu_false" translatable="false">Not Enabled</string>
     <!-- type1_j1772 -->
     <string name="pref_enable_type1_j1772_key" translatable="false">enable_type1_j1772</string>
-    <string name="pref_enable_type1_j1772_label">Type 1 J1772</string>
-    <string name="pref_enable_type1_j1772_true">Enabled</string>
-    <string name="pref_enable_type1_j1772_false">Not Enabled</string>
+    <string name="pref_enable_type1_j1772_label" translatable="false">Type 1 J1772</string>
+    <string name="pref_enable_type1_j1772_true" translatable="false">Enabled</string>
+    <string name="pref_enable_type1_j1772_false" translatable="false">Not Enabled</string>
     <!-- type1_css -->
     <string name="pref_enable_type1_ccs_key" translatable="false">enable_type1_css</string>
-    <string name="pref_enable_type1_ccs_label">Type 1 CCS</string>
-    <string name="pref_enable_type1_ccs_true">Enabled</string>
-    <string name="pref_enable_type1_ccs_false">Not Enabled</string>
+    <string name="pref_enable_type1_ccs_label" translatable="false">Type 1 CCS</string>
+    <string name="pref_enable_type1_ccs_true" translatable="false">Enabled</string>
+    <string name="pref_enable_type1_ccs_false" translatable="false">Not Enabled</string>
     <!-- chademo -->
     <string name="pref_enable_chademo_key" translatable="false">enable_chademo</string>
-    <string name="pref_enable_chademo_label">Chademo</string>
-    <string name="pref_enable_chademo_true">Enabled</string>
-    <string name="pref_enable_chademo_false">Not Enabled</string>
+    <string name="pref_enable_chademo_label" translatable="false">Chademo</string>
+    <string name="pref_enable_chademo_true" translatable="false">Enabled</string>
+    <string name="pref_enable_chademo_false" translatable="false">Not Enabled</string>
     <!-- tesla_hpwc -->
     <string name="pref_enable_tesla_hpwc_key" translatable="false">enable_tesla_hpwc</string>
-    <string name="pref_enable_tesla_hpwc_label">Tesla HPWC</string>
-    <string name="pref_enable_tesla_hpwc_true">Enabled</string>
-    <string name="pref_enable_tesla_hpwc_false">Not Enabled</string>
+    <string name="pref_enable_tesla_hpwc_label" translatable="false">Tesla HPWC</string>
+    <string name="pref_enable_tesla_hpwc_true" translatable="false">Enabled</string>
+    <string name="pref_enable_tesla_hpwc_false" translatable="false">Not Enabled</string>
     <!-- schuko -->
     <string name="pref_enable_schuko_key" translatable="false">enable_tesla_schuko</string>
-    <string name="pref_enable_schuko_label">Schuko</string>
-    <string name="pref_enable_schuko_true">Enabled</string>
-    <string name="pref_enable_schuko_false">Not Enabled</string>
+    <string name="pref_enable_schuko_label" translatable="false">Schuko</string>
+    <string name="pref_enable_schuko_true" translatable="false">Enabled</string>
+    <string name="pref_enable_schuko_false" translatable="false">Not Enabled</string>
     <!-- other_input -->
     <string name="pref_enable_other_input_key" translatable="false">enable_other_input</string>
-    <string name="pref_enable_other_input_label">Other connections</string>
-    <string name="pref_enable_other_input_true">Enabled</string>
-    <string name="pref_enable_other_input_false">Not Enabled</string>
+    <string name="pref_enable_other_input_label" translatable="false">Other connections</string>
+    <string name="pref_enable_other_input_true" translatable="false">Enabled</string>
+    <string name="pref_enable_other_input_false" translatable="false">Not Enabled</string>
 
     <!-- About -->
     <string name="about_title" translatable="false">WattsNearby</string>
@@ -108,11 +108,11 @@
     <string name="credit_ic">Credits for icons used in WattsNearby:</string>
     <string name="credit_ic_launcher">By www.freepik.com - CC BY-SA 3.0, www.flaticon.com</string>
     <string name="credit_ic_tesla_hpwc">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432293</string>
+    <string name="credit_ic_combo_css">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432298</string>
     <string name="credit_ic_chademo">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432298</string>
-    <string name="credit_ic_combo_css">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432297</string>
     <string name="credit_ic_type2_mennekes">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432292</string>
-    <string name="credit_ic_type1_css">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432291</string>
     <string name="credit_ic_type1_j1772">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432296</string>
+    <string name="credit_ic_type1_css">By GreatDrok - CC BY-SA 4.0, commons.wikimedia.org/w/index.php?curid=48432296</string>
     <string name="credit_ic_schuko">By Tucvbif - CC BY-SA 3.0, commons.wikimedia.org/wiki/File:Schuko_plug.svg</string>
 
     <!-- Bottom sheet -->
@@ -124,13 +124,13 @@
     <string name="ut_accesskey">ACCESS_KEY</string>
 
     <!-- Analytics -->
-    <string name="analytics_id_fab">fab</string>
-    <string name="analytics_name_fab_my_location">my_location_fab</string>
-    <string name="analytics_content_type_fab">clicked</string>
-    <string name="analytics_id_snack_bar">snack_bar</string>
-    <string name="analytics_name_snack_bar_no_location_service">no_location_service</string>
-    <string name="analytics_name_snack_bar_not_online">not_online</string>
-    <string name="analytics_content_type_snack_bar">clicked</string>
+    <string name="analytics_id_fab" translatable="false">fab</string>
+    <string name="analytics_name_fab_my_location" translatable="false">my_location_fab</string>
+    <string name="analytics_content_type_fab" translatable="false">clicked</string>
+    <string name="analytics_id_snack_bar" translatable="false">snack_bar</string>
+    <string name="analytics_name_snack_bar_no_location_service" translatable="false">no_location_service</string>
+    <string name="analytics_name_snack_bar_not_online" translatable="false">not_online</string>
+    <string name="analytics_content_type_snack_bar" translatable="false">clicked</string>
 
     <!-- Widget top text -->
     <string name="widget_title" translatable="false">WattsNearby</string>
