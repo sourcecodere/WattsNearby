@@ -16,9 +16,9 @@ import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
  *
  * Util to handle json format from OCM
  */
-public class WattsOCMJsonUtils {
+public class OCMJsonUtils {
 
-    private static final String TAG = WattsOCMJsonUtils.class.getSimpleName();
+    private static final String TAG = OCMJsonUtils.class.getSimpleName();
     // https://api.openchargemap.io/v2/poi/?output=json&countrycode=NO&maxresults=10&latitude=60.029265&longitude=11.0952163&distanceunit=km&distance=2
 
     /* ID */
@@ -239,7 +239,7 @@ public class WattsOCMJsonUtils {
         // TODO: change to time object
         if (!jsonStation.isNull(OCM_TIME_UPDATED)) {
             try {
-                last_updated = WattsDateUtils.dateStringToEpoc(jsonStation.getString(OCM_TIME_UPDATED));
+                last_updated = DateUtils.dateStringToEpoc(jsonStation.getString(OCM_TIME_UPDATED));
             } catch (ParseException e) {
                 Log.e(TAG, e.getMessage());
                 last_updated = 0L;

@@ -10,7 +10,7 @@ import re.sourcecode.android.wattsnearby.R;
  *
  * Util to get strings for accessibility
  */
-public class WattsAccessibilityUtils {
+public class AccessibilityUtils {
     public static String getConnectionDescription(Context context, int connectionId) {
         switch (connectionId) {
             case 2: //

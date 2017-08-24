@@ -11,7 +11,7 @@ import re.sourcecode.android.wattsnearby.R;
  *
  */
 
-public class WattsPreferences {
+public class Preferences {
 
     /**
      * Returns true if the user prefers to see only fast chargers, false otherwise. This

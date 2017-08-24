@@ -67,9 +67,9 @@ import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
 import re.sourcecode.android.wattsnearby.loader.StationMarkersLoader;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
-import re.sourcecode.android.wattsnearby.utilities.WattsDataUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsMarkerUtils;
+import re.sourcecode.android.wattsnearby.utilities.DataUtils;
+import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
+import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
 
 /**
  * Created by SourceCodeRe
@@ -208,9 +208,9 @@ public class MainMapActivity extends AppCompatActivity implements
 
 
         // Create the car location marker, set position later
-        mMarkerOptionsCar = WattsMarkerUtils.getCarMarkerOptions(
+        mMarkerOptionsCar = MarkerUtils.getCarMarkerOptions(
                 getString(R.string.marker_current),
-                WattsImageUtils.vectorToBitmap(
+                ImageUtils.vectorToBitmap(
                         this,
                         R.drawable.ic_car_color_sharp,
                         getResources().getInteger(R.integer.car_icon_add_to_size)
@@ -500,7 +500,7 @@ public class MainMapActivity extends AppCompatActivity implements
             // TODO: move center a bit when bottom sheet opens.
 
             // Move the camera to station position
-            LatLng stationLatLng = WattsDataUtils.getStationLatLng(getApplicationContext(), mStationIdFromIntent);
+            LatLng stationLatLng = DataUtils.getStationLatLng(getApplicationContext(), mStationIdFromIntent);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
                     stationLatLng,
                     getResources().getInteger(R.integer.zoom_station_widget)

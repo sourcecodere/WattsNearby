@@ -21,9 +21,9 @@ import java.util.List;
 import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
-import re.sourcecode.android.wattsnearby.data.WattsPreferences;
-import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsMarkerUtils;
+import re.sourcecode.android.wattsnearby.data.Preferences;
+import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
+import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
 
 /**
  * Created by SourcecodeRe on 5/29/17.
@@ -70,13 +70,13 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             this.mLatLngBounds = args.getParcelable(MainMapActivity.ARG_MAP_VISIBLE_BOUNDS);
         }
 
-        mMarkerIconStation = WattsImageUtils.vectorToBitmap(
+        mMarkerIconStation = ImageUtils.vectorToBitmap(
                 context,
                 R.drawable.ic_station,
                 context.getResources().getInteger(R.integer.station_icon_add_to_size)
         );
         // Create the charging station marker bitmap
-        mMarkerIconStationFast = WattsImageUtils.vectorToBitmap(
+        mMarkerIconStationFast = ImageUtils.vectorToBitmap(
                 context,
                 R.drawable.ic_station_fast,
                 context.getResources().getInteger(R.integer.station_icon_add_to_size)
@@ -127,13 +127,13 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
                                 // we have matching connections, add it to the map
                                 MarkerOptions markerOptions;
                                 if (checkFastChargingAtStation(wattsContentResolver, stationId)) {
-                                    markerOptions = WattsMarkerUtils.getStationMarkerOptions(
+                                    markerOptions = MarkerUtils.getStationMarkerOptions(
                                             stationPosition,
                                             stationTitle,
                                             mMarkerIconStationFast);
                                     stationMarkers.put(stationId, markerOptions);
                                 } else {
-                                    markerOptions = WattsMarkerUtils.getStationMarkerOptions(
+                                    markerOptions = MarkerUtils.getStationMarkerOptions(
                                             stationPosition,
                                             stationTitle,
                                             mMarkerIconStation);
@@ -222,14 +222,14 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         selectionArgsArray.add(String.valueOf(stationId));
 
         //filter out if only fast chargers are enabled
-        if (WattsPreferences.areOnlyFastChargersEnabled(context)) {
+        if (Preferences.areOnlyFastChargersEnabled(context)) {
             selection += " AND " + ChargingStationContract.ConnectionEntry.COLUMN_CONN_LEVEL_FAST + "=?";
             selectionArgsArray.add("1"); // 1 is true
         }
 
         String subSelection = null;
         // filter out if other connections is enabled
-        if (WattsPreferences.areOtherInputsEnabled(context)) {
+        if (Preferences.areOtherInputsEnabled(context)) {
             // first
             subSelection = " AND  (" + ChargingStationContract.ConnectionEntry.COLUMN_CONN_TYPE_ID + " NOT IN (?, ?, ?, ?, ?, ?, ?)";
             selectionArgsArray.add("28");
@@ -242,7 +242,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
         }
 
         // filter out the explicit connections from preferences
-        if (WattsPreferences.areSchukoEnabled(context)) {
+        if (Preferences.areSchukoEnabled(context)) {
             // ID 28
             if (subSelection == null) {
                 subSelection = " AND (";
@@ -253,7 +253,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             selectionArgsArray.add("28");
         }
 
-        if (WattsPreferences.areChademoEnabled(context)) {
+        if (Preferences.areChademoEnabled(context)) {
             // ID 2
             if (subSelection == null) {
                 subSelection = " AND (";
@@ -264,7 +264,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             selectionArgsArray.add("2");
         }
 
-        if (WattsPreferences.areComboCcsEuEnabled(context)) {
+        if (Preferences.areComboCcsEuEnabled(context)) {
             // ID 33
             if (subSelection == null) {
                 subSelection = " AND (";
@@ -275,7 +275,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             selectionArgsArray.add("33");
         }
 
-        if (WattsPreferences.areTeslaHpwcEnabled(context)) {
+        if (Preferences.areTeslaHpwcEnabled(context)) {
             // ID 30
             if (subSelection == null) {
                 subSelection = " AND (";
@@ -286,7 +286,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             selectionArgsArray.add("30");
         }
 
-        if (WattsPreferences.areType2MenneskeEnabled(context)) {
+        if (Preferences.areType2MenneskeEnabled(context)) {
             // ID 25
             if (subSelection == null) {
                 subSelection = " AND (";
@@ -297,7 +297,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             selectionArgsArray.add("25");
         }
 
-        if (WattsPreferences.areType1CcsEnabled(context)) {
+        if (Preferences.areType1CcsEnabled(context)) {
             // ID 32
             if (subSelection == null) {
                 subSelection = " AND (";
@@ -308,7 +308,7 @@ public class StationMarkersLoader extends AsyncTaskLoader<HashMap<Long, MarkerOp
             selectionArgsArray.add("32");
         }
 
-        if (WattsPreferences.areType1j1772Enabled(context)) {
+        if (Preferences.areType1j1772Enabled(context)) {
             // ID 1
             if (subSelection == null) {
                 subSelection = " AND (";

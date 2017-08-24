@@ -12,7 +12,7 @@ import re.sourcecode.android.wattsnearby.widget.CollectionWidget;
  *
  * Util for WattsNearby widget
  */
-public class WattsWidgetUtils {
+public class WidgetUtils {
 
     /*
     * To refresh the list of favorites in the collection widget

@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * Util to handle date formats
  */
-public class WattsDateUtils {
+public class DateUtils {
 
     /**
      * This method returns the number of days since the epoch (January 01, 1970, 12:00 Midnight UTC)

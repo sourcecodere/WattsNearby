@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Utils for map markers
  */
 
-public class WattsMarkerUtils {
+public class MarkerUtils {
 
     /**
      * @return MarkerOptions for the car

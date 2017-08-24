@@ -6,9 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -17,9 +15,9 @@ import org.json.JSONObject;
 import java.net.URL;
 
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
-import re.sourcecode.android.wattsnearby.utilities.WattsDateUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsOCMNetworkUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsOCMJsonUtils;
+import re.sourcecode.android.wattsnearby.utilities.DateUtils;
+import re.sourcecode.android.wattsnearby.utilities.OCMNetworkUtils;
+import re.sourcecode.android.wattsnearby.utilities.OCMJsonUtils;
 
 /**
  * Created by SourcecodeRe on 3/31/17.
@@ -123,13 +121,13 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
             * nearby charging stations. It will create a URL based off of the latitude,
             * longitude and distance (the current map zoom level)
             */
-            URL ocmRequestUrl = WattsOCMNetworkUtils.getUrl(latLng, distance, max_results);
+            URL ocmRequestUrl = OCMNetworkUtils.getUrl(latLng, distance, max_results);
 
             /* Use the URL to retrieve the JSON */
-            String jsonOcmResponse = WattsOCMNetworkUtils.getResponseFromHttpUrl(ocmRequestUrl);
+            String jsonOcmResponse = OCMNetworkUtils.getResponseFromHttpUrl(ocmRequestUrl);
 
             /* Parse as JSONArray */
-            JSONArray ocmJsonArray = WattsOCMJsonUtils.getOCMJsonArray(jsonOcmResponse);
+            JSONArray ocmJsonArray = OCMJsonUtils.getOCMJsonArray(jsonOcmResponse);
 
             /* iterate through each station and update the local cache database*/
             for (int i = 0; i < ocmJsonArray.length(); i++) {
@@ -146,7 +144,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
             //Log.d(TAG, "caching station");
 
             /* get the OCM id */
-            long id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
+            long id = OCMJsonUtils.getOCMStationIdFromJson(jsonStation);
 
             /* query the cache for the current id */
             Uri stationByIdUri = ChargingStationContract.StationEntry.buildStationUri(id);
@@ -173,8 +171,8 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
                 currentStationCursor.close();
 
-                ContentValues stationValues = WattsOCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
-                ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
+                ContentValues stationValues = OCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
+                ContentValues[] connectionsValues = OCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
 
                 /* new station data, insert it */
 
@@ -194,9 +192,9 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
             } else {
             /* update only if timestamp is newer */
 
-                long station_id = WattsOCMJsonUtils.getOCMStationIdFromJson(jsonStation);
+                long station_id = OCMJsonUtils.getOCMStationIdFromJson(jsonStation);
                 long db_entry_changed = currentStationCursor.getLong(INDEX_TIME_UPDATED);
-                long json_entry_changed = WattsDateUtils.dateStringToEpoc(WattsOCMJsonUtils.getOCMLastChangedFromJson(jsonStation));
+                long json_entry_changed = DateUtils.dateStringToEpoc(OCMJsonUtils.getOCMLastChangedFromJson(jsonStation));
 
                 if (db_entry_changed < json_entry_changed) {
                     /* delete the old data */
@@ -210,8 +208,8 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
                             ChargingStationContract.StationEntry.COLUMN_ID + "=?",
                             new String[]{Long.toString(station_id)}
                     );
-                    ContentValues stationValues = WattsOCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
-                    ContentValues[] connectionsValues = WattsOCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
+                    ContentValues stationValues = OCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
+                    ContentValues[] connectionsValues = OCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);
 
                     /* new station data, insert it */
                     mWattsContentResolver.insert(

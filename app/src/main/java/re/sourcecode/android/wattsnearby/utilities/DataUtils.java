@@ -15,7 +15,7 @@ import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
  * <p>
  * Util for simple DB queries
  */
-public class WattsDataUtils {
+public class DataUtils {
 
 
     /**

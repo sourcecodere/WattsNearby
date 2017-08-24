@@ -29,7 +29,7 @@ import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.adapter.ConnectionAdapter;
 import re.sourcecode.android.wattsnearby.data.ChargingStationContract;
-import re.sourcecode.android.wattsnearby.utilities.WattsWidgetUtils;
+import re.sourcecode.android.wattsnearby.utilities.WidgetUtils;
 
 
 /**
@@ -338,13 +338,13 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
                         // Update the database
                         wattsContentResolver.update(mStationUri, values, null, null);
                         // Refresh any widgets
-                        WattsWidgetUtils.sendRefreshBroadcast(getContext());
+                        WidgetUtils.sendRefreshBroadcast(getContext());
                     } else {
                         values.put(ChargingStationContract.StationEntry.COLUMN_FAVORITE, 0);
                         // Update the database
                         wattsContentResolver.update(mStationUri, values, null, null);
                         // Refresh any widgets
-                        WattsWidgetUtils.sendRefreshBroadcast(getContext());
+                        WidgetUtils.sendRefreshBroadcast(getContext());
                     }
                 }
             });

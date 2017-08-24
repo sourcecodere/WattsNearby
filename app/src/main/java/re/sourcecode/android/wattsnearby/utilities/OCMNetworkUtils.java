@@ -17,9 +17,9 @@ import java.util.Scanner;
  *
  * Util to handle network requests and response to/from OCM.
  */
-public final class WattsOCMNetworkUtils {
+public final class OCMNetworkUtils {
 
-    private static final String TAG = WattsOCMNetworkUtils.class.getSimpleName();
+    private static final String TAG = OCMNetworkUtils.class.getSimpleName();
 
     // API URI sample:  https://api.openchargemap.io/v2/poi/?output=json&maxresults=10&latitude=60.029265&longitude=11.0952163&distanceunit=km&distance=2
     /* The base OCM API url */

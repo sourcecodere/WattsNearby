@@ -18,7 +18,7 @@ import re.sourcecode.android.wattsnearby.R;
  * <p>
  * Util to handle vector graphics in WattsNearby
  */
-public class WattsImageUtils {
+public class ImageUtils {
 
     /**
      * Converting a {@link Drawable} to a {@link BitmapDescriptor},

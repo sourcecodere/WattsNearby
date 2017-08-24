@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
 import re.sourcecode.android.wattsnearby.R;
-import re.sourcecode.android.wattsnearby.utilities.WattsAccessibilityUtils;
-import re.sourcecode.android.wattsnearby.utilities.WattsImageUtils;
+import re.sourcecode.android.wattsnearby.utilities.AccessibilityUtils;
+import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
 
 /**
  * Created by SourcecodeRe on 5/8/17.
@@ -71,10 +71,10 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
 
         int conType = mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_TYPE_ID);
         holder.connIconView.setImageDrawable(
-                WattsImageUtils.getConnectionIcon(mContext, conType)
+                ImageUtils.getConnectionIcon(mContext, conType)
         );
         holder.connIconView.setContentDescription(
-                WattsAccessibilityUtils.getConnectionDescription(mContext, conType)
+                AccessibilityUtils.getConnectionDescription(mContext, conType)
         );
 
         holder.connTitleView.setText(
