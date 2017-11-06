@@ -83,6 +83,7 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnInfoWindowClickListener,
         PlaceSelectionListener,
         LoaderManager.LoaderCallbacks<HashMap<Long, MarkerOptions>> {
 
@@ -494,6 +495,8 @@ public class MainMapActivity extends AppCompatActivity implements
         mMap.setOnCameraIdleListener(this);
         // Setup callback for when user clicks on marker
         mMap.setOnMarkerClickListener(this);
+        // Setup callback for when user clicks on the marker title
+        mMap.setOnInfoWindowClickListener(this);
 
         // Intent handling.
         if (mStationIdFromIntent != 0L) {
@@ -611,6 +614,12 @@ public class MainMapActivity extends AppCompatActivity implements
         }
 
         return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        // Just do the same as when a marker icon is clicked
+        onMarkerClick(marker);
     }
 
     /**
