@@ -52,6 +52,7 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -139,21 +140,21 @@ public class MainMapActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_map);
 
+        MapsInitializer.initialize(this);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-        //Check if Google Play Services Available or not
-        if (!checkGooglePlayServices()) {
-            if (BuildConfig.DEBUG) {
-                Log.d("onCreate", "Google Play Services are not available");
-            }
-            finish();
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.d("onCreate", "Google Play Services available.");
-            }
-        }
+
+
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map_fragment);
+        mapFragment.getMapAsync(this);
+
+
+
         if (!isOnline()) {
             Snackbar.make(
                     MainMapActivity.this.findViewById(R.id.main_layout),
@@ -182,11 +183,6 @@ public class MainMapActivity extends AppCompatActivity implements
         }
 
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map_fragment);
-        mapFragment.getMapAsync(this);
-
         // Fab for the my location. With onClickListener
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_my_location);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -207,20 +203,6 @@ public class MainMapActivity extends AppCompatActivity implements
             }
         });
 
-
-        // Create the car location marker, set position later
-        mMarkerOptionsCar = MarkerUtils.getCarMarkerOptions(
-                getString(R.string.marker_current),
-                ImageUtils.vectorToBitmap(
-                        this,
-                        R.drawable.ic_car_color_sharp,
-                        getResources().getInteger(R.integer.car_icon_add_to_size)
-                )
-        );
-
-        // Init loader for markers. No args, means it returns null in onLoadFinished
-        // use restartLoader for updating map markers.
-        getSupportLoaderManager().initLoader(MARKER_LOADER, null, this);
 
         // Intent with stationId (e.g. from widget list item click)
         if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
@@ -467,6 +449,34 @@ public class MainMapActivity extends AppCompatActivity implements
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
+
+
+        //Check if Google Play Services Available or not
+        if (!checkGooglePlayServices()) {
+            if (BuildConfig.DEBUG) {
+                Log.d("onCreate", "Google Play Services are not available");
+            }
+            finish();
+        } else {
+            if (BuildConfig.DEBUG) {
+                Log.d("onCreate", "Google Play Services available.");
+            }
+        }
+
+        // Create the car location marker, set position later
+        mMarkerOptionsCar = MarkerUtils.getCarMarkerOptions(
+                getString(R.string.marker_current),
+                ImageUtils.vectorToBitmap(
+                        this,
+                        R.drawable.ic_car_color_sharp,
+                        getResources().getInteger(R.integer.car_icon_add_to_size)
+                )
+        );
+
+        // Init loader for markers. No args, means it returns null in onLoadFinished
+        // use restartLoader for updating map markers.
+        getSupportLoaderManager().initLoader(MARKER_LOADER, null, this);
+
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1020,16 +1030,17 @@ public class MainMapActivity extends AppCompatActivity implements
 
                 // Set the last location from the LocationServices
                 Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                long locationAge = System.currentTimeMillis() - location.getTime();
-                if (locationAge >= getResources().getInteger(R.integer.max_last_location_age) * 1000) {
-                    // Try again to force a location update
-                    setupLocationServices();
-                    Toast.makeText(this, getText(R.string.toast_old_last_location),
-                            Toast.LENGTH_SHORT).show();
-                }
+
+
 
                 if (location != null) {
-
+                    long locationAge = System.currentTimeMillis() - location.getTime();
+                    if (locationAge >= getResources().getInteger(R.integer.max_last_location_age) * 1000) {
+                        // Try again to force a location update
+                        setupLocationServices();
+                        Toast.makeText(this, getText(R.string.toast_old_last_location),
+                                Toast.LENGTH_SHORT).show();
+                    }
                     mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
                     // Move the car markers current position
