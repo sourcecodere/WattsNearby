@@ -1,17 +1,52 @@
 package re.sourcecode.android.wattsnearby.loader;
 
-import android.content.AsyncTaskLoader;
+import android.content.ContentValues;
+import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.OperationCanceledException;
+import android.support.v4.content.Loader;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.URL;
+
+import re.sourcecode.android.wattsnearby.MainMapActivity;
+import re.sourcecode.android.wattsnearby.R;
+import re.sourcecode.android.wattsnearby.utilities.DirectionsJsonUtils;
+import re.sourcecode.android.wattsnearby.utilities.DirectionsNetworkUtils;
 
 /**
  * Created by olem on 11/18/17.
  */
 
-public class DirectionsLoader extends AsyncTaskLoader<String> {
+public class DirectionsLoader extends AsyncTaskLoader<ContentValues> {
+
+    private Context mContext;
+    private LatLng mOrigin;
+    private LatLng mDestination;
+
+    // Args for returned bundle with directions data
+    public static final String ARG_DISTANCE = "distance";
+    public static final String ARG_OVERVIEW_POLYLINE = "overview_polyline";
 
 
-    public DirectionsLoader(Context context) {
+    public DirectionsLoader(Context context, Bundle args) {
         super(context);
+        this.mContext = context;
+        if ((args != null)
+                && (args.containsKey(MainMapActivity.ARG_DIRECTIONS_ORIGIN))
+                && (args.containsKey(MainMapActivity.ARG_DIRECTIONS_DEST))) {
+
+            this.mOrigin = args.getParcelable(MainMapActivity.ARG_DIRECTIONS_ORIGIN);
+            this.mDestination = args.getParcelable(MainMapActivity.ARG_DIRECTIONS_DEST);
+        }
     }
 
     /**
@@ -40,7 +75,37 @@ public class DirectionsLoader extends AsyncTaskLoader<String> {
      * @see #onCanceled
      */
     @Override
-    public String loadInBackground() {
-        return null;
+    public ContentValues loadInBackground() {
+        if ((mDestination != null) && (mOrigin != null)) {
+            try {
+                String key = mContext.getString(R.string.google_api_key);
+
+                URL directionsRequestURL = DirectionsNetworkUtils.getUrl(key, mOrigin, mDestination);
+
+                String stringDirectionsResponse = DirectionsNetworkUtils.getResponseFromHttpUrl(directionsRequestURL);
+
+                JSONObject jsonDirectionsResponse = DirectionsJsonUtils.getDirectionsJsonObject(stringDirectionsResponse);
+
+                String distance = DirectionsJsonUtils.getDirectionsDistanceFromJson(jsonDirectionsResponse);
+
+                String overviewPolylineEncoded = DirectionsJsonUtils.getDirectionsOverviewPolylineFromJson(jsonDirectionsResponse);
+                if ((distance != null) && (overviewPolylineEncoded != null)) {
+
+                    ContentValues directionsContentValues = new ContentValues();
+
+                    directionsContentValues.put(ARG_DISTANCE, distance);
+                    directionsContentValues.put(ARG_OVERVIEW_POLYLINE, overviewPolylineEncoded);
+
+                    return directionsContentValues;
+                }
+                return null;
+
+            } catch (OperationCanceledException | JSONException | IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }

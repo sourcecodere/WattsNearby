@@ -2,10 +2,12 @@ package re.sourcecode.android.wattsnearby;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -59,16 +61,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.maps.android.PolyUtil;
 
 import java.util.HashMap;
+import java.util.List;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetStationFragment;
+import re.sourcecode.android.wattsnearby.loader.DirectionsLoader;
 import re.sourcecode.android.wattsnearby.loader.StationMarkersLoader;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.DataUtils;
+import re.sourcecode.android.wattsnearby.utilities.DirectionsJsonUtils;
 import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
 
@@ -77,15 +85,16 @@ import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
  **/
 
 public class MainMapActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        OnMapReadyCallback,
+        PlaceSelectionListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnInfoWindowClickListener,
-        PlaceSelectionListener,
+        BottomSheetStationFragment.OnDirectionsReceivedListener,  // to send distance data from map to bottom sheet
+        GoogleApiClient.ConnectionCallbacks,
+        OnMapReadyCallback,
         LoaderManager.LoaderCallbacks {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
@@ -110,10 +119,14 @@ public class MainMapActivity extends AppCompatActivity implements
     private MarkerOptions mMarkerOptionsCar; // Icon for the car.
     private Marker mCurrentLocationMarker; // Car marker with position
 
+    private Polyline mDirectionsPolyLine; // Directions poly line from car to selected marker
+
     @SuppressLint("UseSparseArrays")
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
 
     private long mStationIdFromIntent; // For intent
+
+    private int mBottomSheetStationFragmentId; // To communicate with fragment interface
 
     private ProgressBar mProgressBar;
 
@@ -125,7 +138,8 @@ public class MainMapActivity extends AppCompatActivity implements
     public static final String ARG_WIDGET_INTENT_KEY = "station_id";
     public static final String ARG_MAP_VISIBLE_BOUNDS = "visible_bounds";
     public static final String FILTER_CHANGED_KEY = "changed"; // used in main to check for changes and in settings fragment to set changes
-
+    public static final String ARG_DIRECTIONS_DEST = "destination"; // used in directions loader
+    public static final String ARG_DIRECTIONS_ORIGIN = "origin"; // used in directions loader
     /**
      * AppCompatActivity override
      * <p/>
@@ -261,6 +275,9 @@ public class MainMapActivity extends AppCompatActivity implements
             }
             mVisibleStationMarkers = new HashMap<Long, Marker>();
             refreshMapStationMarkers();
+        }
+        if (mDirectionsPolyLine != null) {
+            mDirectionsPolyLine.remove();
         }
 
     }
@@ -477,7 +494,9 @@ public class MainMapActivity extends AppCompatActivity implements
         // Init loader for markers. No args, means it returns null in onLoadFinished
         // use restartLoader for updating map markers.
         getSupportLoaderManager().initLoader(LOADER_MARKERS, null, this);
-
+        // Init loader for directions. No args, means it returns null in onLoadFinished
+        // use restartLoader for updating directions.
+        getSupportLoaderManager().initLoader(LOADER_DIRECTIONS, null, this);
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -611,11 +630,19 @@ public class MainMapActivity extends AppCompatActivity implements
         Long stationId = (Long) marker.getTag();
 
         if (stationId != null) { //every station marker should have data (stationId), the car doesn't.
+
+            // restart the loader for directions
+            Bundle args = new Bundle();
+            args.putParcelable(ARG_DIRECTIONS_ORIGIN, mLastLocation);
+            args.putParcelable(ARG_DIRECTIONS_DEST, marker.getPosition());
+            getSupportLoaderManager().restartLoader(LOADER_DIRECTIONS, args, this).forceLoad();
+
             BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetStationFragment();
 
-            Bundle args = new Bundle();
+            args = new Bundle();
             args.putLong(ARG_DETAIL_SHEET_STATION_ID, stationId);
             bottomSheetDialogFragment.setArguments(args);
+            mBottomSheetStationFragmentId = bottomSheetDialogFragment.getId();
 
             bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
         } else {
@@ -808,8 +835,8 @@ public class MainMapActivity extends AppCompatActivity implements
         if (id == LOADER_MARKERS) {
             return new StationMarkersLoader(getApplicationContext(), args);
         } else if (id == LOADER_DIRECTIONS) {
-            Log.i(TAG, "TODO");
-            return null;
+
+            return new DirectionsLoader(getApplicationContext(), args);
         } else {
             return null;
         }
@@ -861,7 +888,23 @@ public class MainMapActivity extends AppCompatActivity implements
             }
 
         } else if (id == LOADER_DIRECTIONS) {
-            Log.i(TAG, "TODO");
+            if (data instanceof ContentValues) {
+                ContentValues contentValuesData = (ContentValues) data;
+
+                String distance = contentValuesData.getAsString(DirectionsLoader.ARG_DISTANCE);
+                onDistanceReceived(distance);
+
+                String overview_polyline = contentValuesData.getAsString(DirectionsLoader.ARG_OVERVIEW_POLYLINE);
+
+                List<LatLng> points = PolyUtil.decode(overview_polyline);
+                if (mDirectionsPolyLine != null) {
+                    mDirectionsPolyLine.remove();
+                }
+                mDirectionsPolyLine = mMap.addPolyline(new PolylineOptions()
+                .addAll(points)
+                .color(Color.DKGRAY));
+
+            }
         }
     }
 
@@ -876,6 +919,21 @@ public class MainMapActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader loader) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onLoadReset");
+        }
+    }
+
+    /**
+     * Own interface method from BottomSheetStationFragment.
+     * Used the update distance when loader has finished
+     *
+     * @param distance
+     */
+    @Override
+    public void onDistanceReceived(String distance) {
+        BottomSheetStationFragment stationFrag = (BottomSheetStationFragment) getSupportFragmentManager()
+                .findFragmentById(mBottomSheetStationFragmentId);
+        if (stationFrag != null) {
+            stationFrag.updateDistance(distance);
         }
     }
 

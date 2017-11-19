@@ -23,13 +23,27 @@
         android:paddingTop="@dimen/padding_small">
 
         <TextView
+            android:id="@+id/sheet_station_distance"
+            style="@style/AppTheme.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="10"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            tools:text="42.24 km"
+            />
+
+        <TextView
             android:id="@+id/sheet_station_title"
             style="@style/AppTheme.SubTitle.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_columnSpan="10"
             android:textStyle="bold"
-            tools:text="Kiwi Fjellbo" />
+            tools:text="Kiwi Fjellbo"
+            android:paddingBottom="@dimen/padding_medium"/>
+
+
 
         <LinearLayout
             android:layout_width="wrap_content"

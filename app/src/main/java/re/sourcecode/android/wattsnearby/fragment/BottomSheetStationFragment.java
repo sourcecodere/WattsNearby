@@ -2,6 +2,7 @@ package re.sourcecode.android.wattsnearby.fragment;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -37,12 +38,17 @@ import re.sourcecode.android.wattsnearby.utilities.WidgetUtils;
  * <p>
  * Bottom sheet for station details
  */
-public class BottomSheetStationFragment extends BottomSheetDialogFragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BottomSheetStationFragment extends BottomSheetDialogFragment implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = BottomSheetStationFragment.class.getSimpleName();
 
+    OnDirectionsReceivedListener mCallback; // To make sure the container activity implements
+                                            // the callback interface use this to check it in
+                                            // onAttach()
+
     TextView viewTitle;
+    TextView viewDistance;
     TextView viewOpWebSite;
     TextView viewUtTitle;
     TextView viewUsageText;
@@ -149,6 +155,29 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
 
+    // Container activity must implement this interface to send data from loader to the
+    // bottom sheet fragment.
+    public interface OnDirectionsReceivedListener {
+        void onDistanceReceived(String distance);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (OnDirectionsReceivedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+    }
+
+    public void updateDistance(String distance) {
+        viewDistance.setText(distance);
+    }
 
     @Nullable
     @Override
@@ -164,6 +193,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment
             mConnectionUri = ChargingStationContract.ConnectionEntry.buildStationUri(stationId);
 
             viewTitle = (TextView) rootView.findViewById(R.id.sheet_station_title);
+            viewDistance = (TextView) rootView.findViewById(R.id.sheet_station_distance);
             viewOpWebSite = (TextView) rootView.findViewById(R.id.sheet_station_operator_web);
             viewUtTitle = (TextView) rootView.findViewById(R.id.sheet_station_usage_type_title);
             viewUsageText = (TextView) rootView.findViewById(R.id.sheet_station_usage_text);
