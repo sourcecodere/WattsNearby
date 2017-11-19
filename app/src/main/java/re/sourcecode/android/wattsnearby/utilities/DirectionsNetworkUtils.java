@@ -12,8 +12,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import re.sourcecode.android.wattsnearby.BuildConfig;
+
 /**
  * Created by olem on 11/6/17.
+ *
+ * Handles network requests to google direction api.
  */
 
 public class DirectionsNetworkUtils {
@@ -39,8 +43,6 @@ public class DirectionsNetworkUtils {
     private static final String KEY_PARAM = "key"; //
 
 
-
-
     public static URL getUrl(String key, LatLng origin, LatLng destination) {
         Uri directionsQueryUri = Uri.parse(DIRECTIONS_BASE_URL).buildUpon()
                 .appendPath(output)
@@ -60,10 +62,14 @@ public class DirectionsNetworkUtils {
                 .build();
         try {
             URL directionsQueryUrl = new URL(directionsQueryUri.toString());
-            Log.v(TAG, "URL: " + directionsQueryUrl);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "URL: " + directionsQueryUrl);
+            }
             return directionsQueryUrl;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace();
+            }
             return  null;
         }
     }

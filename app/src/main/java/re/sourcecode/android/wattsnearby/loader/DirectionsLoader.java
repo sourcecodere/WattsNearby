@@ -8,8 +8,6 @@ import android.os.OperationCanceledException;
 import android.support.v4.content.Loader;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,11 +22,15 @@ import re.sourcecode.android.wattsnearby.utilities.DirectionsNetworkUtils;
 
 /**
  * Created by olem on 11/18/17.
+ *
+ * Loader for directions from google maps v2 api
  */
 
 public class DirectionsLoader extends AsyncTaskLoader<ContentValues> {
 
-    private Context mContext;
+    private static final String TAG = AsyncTaskLoader.class.getSimpleName();
+
+    private String mApiKey;
     private LatLng mOrigin;
     private LatLng mDestination;
 
@@ -39,7 +41,7 @@ public class DirectionsLoader extends AsyncTaskLoader<ContentValues> {
 
     public DirectionsLoader(Context context, Bundle args) {
         super(context);
-        this.mContext = context;
+        this.mApiKey = context.getString(R.string.google_api_key);
         if ((args != null)
                 && (args.containsKey(MainMapActivity.ARG_DIRECTIONS_ORIGIN))
                 && (args.containsKey(MainMapActivity.ARG_DIRECTIONS_DEST))) {
@@ -78,9 +80,8 @@ public class DirectionsLoader extends AsyncTaskLoader<ContentValues> {
     public ContentValues loadInBackground() {
         if ((mDestination != null) && (mOrigin != null)) {
             try {
-                String key = mContext.getString(R.string.google_api_key);
 
-                URL directionsRequestURL = DirectionsNetworkUtils.getUrl(key, mOrigin, mDestination);
+                URL directionsRequestURL = DirectionsNetworkUtils.getUrl(mApiKey, mOrigin, mDestination);
 
                 String stringDirectionsResponse = DirectionsNetworkUtils.getResponseFromHttpUrl(directionsRequestURL);
 

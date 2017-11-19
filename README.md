@@ -1,7 +1,7 @@
 # Watts Nearby: Electric Car Charge Map
 
 ## Version
-__0.1 Beta__
+__0.92 Beta__
 
 ## Description
 Need electrons to run you car? This Android app will locate which charging station you should use when and where you need one.

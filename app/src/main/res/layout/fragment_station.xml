@@ -28,7 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_columnSpan="10"
-            android:textStyle="bold"
             android:textAlignment="center"
             tools:text="42.24 km"
             />

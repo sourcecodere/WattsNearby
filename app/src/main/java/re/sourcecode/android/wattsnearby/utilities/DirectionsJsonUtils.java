@@ -1,24 +1,17 @@
 package re.sourcecode.android.wattsnearby.utilities;
 
-import android.graphics.Color;
-
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by olem on 11/18/17.
+ *
+ * Parses the json received from google directions api.
  */
 
 public class DirectionsJsonUtils {
+
     private static final String TAG = DirectionsJsonUtils.class.getSimpleName();
 
     private static final String DIRECTIONS_ROUTES = "routes";

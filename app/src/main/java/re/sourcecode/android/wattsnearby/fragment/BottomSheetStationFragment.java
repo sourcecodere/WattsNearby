@@ -26,6 +26,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import re.sourcecode.android.wattsnearby.BuildConfig;
 import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.adapter.ConnectionAdapter;
@@ -360,7 +361,9 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
             viewFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.d(TAG, "onCheckedChanged");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "onCheckedChanged");
+                    }
                     ContentResolver wattsContentResolver = getActivity().getContentResolver();
                     ContentValues values = new ContentValues();
                     if (isChecked) {

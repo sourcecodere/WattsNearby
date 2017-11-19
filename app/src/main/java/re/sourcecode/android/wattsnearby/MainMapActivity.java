@@ -452,7 +452,9 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "onMapReady");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onMapReady");
+        }
         mMap = googleMap;
         try {
             // Customise the styling of the base map using a JSON object defined
