@@ -45,7 +45,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     private static final int INDEX_OPERTOR_TITLE = 1;
     private static final int INDEX_ADDR_TITLE = 2;
     private static final int INDEX_ADDR_TOWN = 3;
-    private static final int INDEX_FAVORITE = 4;
+    //private static final int INDEX_FAVORITE = 4;
 
 
     public WidgetDataProvider(Context context, Intent intent) {

@@ -76,7 +76,6 @@ import re.sourcecode.android.wattsnearby.loader.StationMarkersLoader;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTask;
 import re.sourcecode.android.wattsnearby.sync.OCMSyncTaskListener;
 import re.sourcecode.android.wattsnearby.utilities.DataUtils;
-import re.sourcecode.android.wattsnearby.utilities.DirectionsJsonUtils;
 import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
 
@@ -273,7 +272,7 @@ public class MainMapActivity extends AppCompatActivity implements
             for (Marker value : mVisibleStationMarkers.values()) {
                 value.remove();
             }
-            mVisibleStationMarkers = new HashMap<Long, Marker>();
+            mVisibleStationMarkers = new HashMap<>();
             refreshMapStationMarkers();
         }
         if (mDirectionsPolyLine != null) {
@@ -500,27 +499,19 @@ public class MainMapActivity extends AppCompatActivity implements
         // use restartLoader for updating directions.
         getSupportLoaderManager().initLoader(LOADER_DIRECTIONS, null, this);
 
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                // Disable my location button, using own fab for this
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                // Disable Map Toolbar
-                mMap.getUiSettings().setMapToolbarEnabled(false);
-                // Enable zoom control
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-            }
-        } else {
-            // Disable my location button, using own fab for this
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Disables the my location button, since we are using own fab for this..
             mMap.setMyLocationEnabled(false);
-            // Disable Map Toolbar
-            mMap.getUiSettings().setMapToolbarEnabled(false);
-            // Enable zoom control
-            mMap.getUiSettings().setZoomControlsEnabled(true);
         }
+
+        // Disables the my location button, since we are using own fab for this..
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        // Disable Map Toolbar
+        mMap.getUiSettings().setMapToolbarEnabled(false);
+        // Enable zoom control
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+
         // Setup callback for camera movement (onCameraMove).
         mMap.setOnCameraMoveListener(this);
         // Setup callback for when camera has stopped moving (onCameraIdle).
@@ -928,7 +919,7 @@ public class MainMapActivity extends AppCompatActivity implements
      * Own interface method from BottomSheetStationFragment.
      * Used the update distance when loader has finished
      *
-     * @param distance
+     * @param distance is a string with the distance from google directions api
      */
     @Override
     public void onDistanceReceived(String distance) {
@@ -1273,8 +1264,11 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
+        if (cm != null) {
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            return netInfo != null && netInfo.isConnectedOrConnecting();
+        }
+        return false;
     }
 
 

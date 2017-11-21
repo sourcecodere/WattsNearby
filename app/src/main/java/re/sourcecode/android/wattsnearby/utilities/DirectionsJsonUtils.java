@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 public class DirectionsJsonUtils {
 
-    private static final String TAG = DirectionsJsonUtils.class.getSimpleName();
+    //private static final String TAG = DirectionsJsonUtils.class.getSimpleName();
 
     private static final String DIRECTIONS_ROUTES = "routes";
     private static final String DIRECTIONS_ROUTES_LEGS = "legs";

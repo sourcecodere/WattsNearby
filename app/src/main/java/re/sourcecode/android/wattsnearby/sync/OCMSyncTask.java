@@ -1,5 +1,6 @@
 package re.sourcecode.android.wattsnearby.sync;
 
+import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,9 +27,7 @@ import re.sourcecode.android.wattsnearby.utilities.OCMJsonUtils;
  */
 public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = OCMSyncTask.class.getSimpleName();
-
-    private Context mContext;
+    //private static final String TAG = OCMSyncTask.class.getSimpleName();
     private LatLng mLatLng;
     private Double mDistance;
     private int mMaxResults;
@@ -52,7 +51,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
 
 
     public OCMSyncTask(Context context, LatLng latLng, Double distance, int max_results, OCMSyncTaskListener callback) {
-        this.mContext = context;
+        this.mWattsContentResolver = context.getContentResolver();
         this.mLatLng = latLng;
         this.mDistance = distance;
         this.mMaxResults = max_results;
@@ -78,7 +77,7 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
         try {
             if (android.os.Debug.isDebuggerConnected())
                 android.os.Debug.waitForDebugger();
-            syncStations(this.mContext, this.mLatLng, this.mDistance, this.mMaxResults);
+            syncStations(this.mLatLng, this.mDistance, this.mMaxResults);
         } catch (Exception e) {
             mException = e;
         }
@@ -109,12 +108,10 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
      *
      * @param distance The current map zoom level
      * @param latLng   The current LatLng position
-     * @param context  Used to access utility methods and the ContentResolver
      */
-    private static void syncStations(Context context, LatLng latLng, double distance, int max_results) {
+    private static void syncStations(LatLng latLng, double distance, int max_results) {
         try {
-            /* Get a handle on the ContentResolver to update and insert data */
-            mWattsContentResolver = context.getContentResolver();
+
 
             /*
             * The getUrl method will return the URL that we need to get the ocm JSON for the
@@ -168,8 +165,9 @@ public class OCMSyncTask extends AsyncTask<Void, Void, Void> {
             * If currentStationCursor is empty, moveToFirst will return false, then we insert, else we update.
             */
             if (!stationInDB) {
-
-                currentStationCursor.close();
+                if (currentStationCursor != null) {
+                    currentStationCursor.close();
+                }
 
                 ContentValues stationValues = OCMJsonUtils.getOCMStationContentValuesFromJson(jsonStation);
                 ContentValues[] connectionsValues = OCMJsonUtils.getOCMConnectionsContentValuesFromJson(jsonStation);

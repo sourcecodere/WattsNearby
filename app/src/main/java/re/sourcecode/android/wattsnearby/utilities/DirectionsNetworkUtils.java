@@ -34,7 +34,7 @@ public class DirectionsNetworkUtils {
 
     /* The position parameters query */
     private static final String ORIGIN_PARAM = "origin"; // e.g. origin=41.43206,-81.38992
-    private static final String DESTINATIO_PARAM = "destination";
+    private static final String DESTINATION_PARAM = "destination";
 
     /* The units parameter */
     private static final String UNITS_PARAM = "units";
@@ -51,7 +51,7 @@ public class DirectionsNetworkUtils {
                         String.format("%f,%f",origin.latitude, origin.longitude)
                 )
                 .appendQueryParameter(
-                        DESTINATIO_PARAM,
+                        DESTINATION_PARAM,
                         String.format("%f,%f", destination.latitude, destination.longitude)
                 )
                 .appendQueryParameter(
