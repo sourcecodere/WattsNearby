@@ -90,6 +90,7 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMapClickListener, // To clean up polyline from directions
         GoogleMap.OnInfoWindowClickListener,
         BottomSheetStationFragment.OnDirectionsReceivedListener,  // to send distance data from map to bottom sheet
         GoogleApiClient.ConnectionCallbacks,
@@ -520,6 +521,8 @@ public class MainMapActivity extends AppCompatActivity implements
         mMap.setOnMarkerClickListener(this);
         // Setup callback for when user clicks on the marker title
         mMap.setOnInfoWindowClickListener(this);
+        // Setup callback for when user clicks on other parts of the map
+        mMap.setOnMapClickListener(this);
 
         // Intent handling.
         if (mStationIdFromIntent != 0L) {
@@ -651,6 +654,13 @@ public class MainMapActivity extends AppCompatActivity implements
     public void onInfoWindowClick(Marker marker) {
         // Just do the same as when a marker icon is clicked
         onMarkerClick(marker);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if (mDirectionsPolyLine != null) {
+            mDirectionsPolyLine.remove();
+        }
     }
 
     /**
@@ -894,8 +904,10 @@ public class MainMapActivity extends AppCompatActivity implements
                     mDirectionsPolyLine.remove();
                 }
                 mDirectionsPolyLine = mMap.addPolyline(new PolylineOptions()
-                .addAll(points)
-                .color(Color.DKGRAY));
+                        .addAll(points)
+                        .width(getResources().getDimension(R.dimen.directions_poly_line_width))
+                        .color(getResources().getColor(R.color.accent))
+                );
 
             }
         }

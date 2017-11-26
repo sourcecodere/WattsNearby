@@ -19,7 +19,7 @@ public class MarkerUtils {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(title);
         markerOptions.icon(markerIcon);
-        markerOptions.anchor(0.38f, 0.6f);
+        markerOptions.anchor(0.50f, 1.0f);
         return markerOptions;
     }
 
