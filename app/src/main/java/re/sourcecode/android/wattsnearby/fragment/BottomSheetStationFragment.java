@@ -329,18 +329,18 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
 
             ArrayList<String> usageClauses = new ArrayList<>();
 
-            if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
-                usageClauses.add((String) getText(R.string.ut_accesskey));
-            }
-
-            if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
-                usageClauses.add((String) getText(R.string.ut_membership));
-            }
-
-            if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
-                usageClauses.add((String) getText(R.string.ut_pay_on_site));
-
-            }
+//            if (data.getInt(INDEX_STATION_UT_ACCESSKEY) == 1) {
+//                usageClauses.add((String) getText(R.string.ut_accesskey));
+//            }
+//
+//            if (data.getInt(INDEX_STATION_UT_MEMBERSHIP) == 1) {
+//                usageClauses.add((String) getText(R.string.ut_membership));
+//            }
+//
+//            if (data.getInt(INDEX_STATION_UT_PAY_ON_SITE) == 1) {
+//                usageClauses.add((String) getText(R.string.ut_pay_on_site));
+//
+//            }
 
             for (int i = 0; i < usageClauses.size(); i++) {
                 if (!viewUsageText.getText().equals("")) {
