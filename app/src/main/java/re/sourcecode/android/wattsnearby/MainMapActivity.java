@@ -7,13 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -42,13 +41,16 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
@@ -63,6 +65,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.PolyUtil;
 
@@ -79,12 +83,13 @@ import re.sourcecode.android.wattsnearby.utilities.DataUtils;
 import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
 
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
 /**
  * Created by SourceCodeRe
  **/
 
 public class MainMapActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         PlaceSelectionListener,
         GoogleMap.OnCameraMoveListener,
@@ -93,7 +98,6 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnMapClickListener, // To clean up polyline from directions
         GoogleMap.OnInfoWindowClickListener,
         BottomSheetStationFragment.OnDirectionsReceivedListener,  // to send distance data from map to bottom sheet
-        GoogleApiClient.ConnectionCallbacks,
         OnMapReadyCallback,
         LoaderManager.LoaderCallbacks {
 
@@ -106,9 +110,6 @@ public class MainMapActivity extends AppCompatActivity implements
     private static final int LOADER_MARKERS = 3; // ID for loading markers on async loader thread
 
     private static final int LOADER_DIRECTIONS = 4; // ID for loading directions on async loader thread
-
-    private GoogleApiClient mGoogleApiClient; // The google services connection.
-    private LocationRequest mLocationRequest; // Periodic location request object.
 
     private GoogleMap mMap; // The map object.
 
@@ -126,12 +127,12 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private long mStationIdFromIntent; // For intent
 
-    private int mBottomSheetStationFragmentId; // To communicate with fragment interface
-
     private ProgressBar mProgressBar;
 
     // Setup analytics
     private FirebaseAnalytics mFirebaseAnalytics;
+
+    private static final String mBottomSheetStationFragmentTag = "BottomSheetStation"; // To communicate with fragment interface
 
     public static final String ARG_DETAIL_SHEET_STATION_ID = "station_id"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
@@ -140,6 +141,7 @@ public class MainMapActivity extends AppCompatActivity implements
     public static final String FILTER_CHANGED_KEY = "changed"; // used in main to check for changes and in settings fragment to set changes
     public static final String ARG_DIRECTIONS_DEST = "destination"; // used in directions loader
     public static final String ARG_DIRECTIONS_ORIGIN = "origin"; // used in directions loader
+
     /**
      * AppCompatActivity override
      * <p/>
@@ -159,15 +161,14 @@ public class MainMapActivity extends AppCompatActivity implements
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
+            getLastLocation();
         }
-
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
-
 
 
         if (!isOnline()) {
@@ -199,7 +200,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
 
         // Fab for the my location. With onClickListener
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_my_location);
+        FloatingActionButton fab = findViewById(R.id.fab_my_location);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,7 +232,7 @@ public class MainMapActivity extends AppCompatActivity implements
         // Setup the banner ad
         MobileAds.initialize(getApplicationContext(),
                 getString(R.string.banner_app_id));
-        AdView adView = (AdView) findViewById(R.id.adView);
+        AdView adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("2B3C903E8A681D2047F678BBCD58B109")
                 .build();
@@ -241,7 +242,7 @@ public class MainMapActivity extends AppCompatActivity implements
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(FILTER_CHANGED_KEY, false).apply();
 
         // for progressbar when loading markers to map
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mProgressBar = findViewById(R.id.progress_bar);
 
     }
 
@@ -263,7 +264,6 @@ public class MainMapActivity extends AppCompatActivity implements
             Log.d(TAG, "onResume");
         }
         super.onResume();
-        mGoogleApiClient.connect();
         boolean changedPrefs = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(FILTER_CHANGED_KEY, false);
         if (changedPrefs) {
             if (BuildConfig.DEBUG) {
@@ -293,10 +293,6 @@ public class MainMapActivity extends AppCompatActivity implements
             Log.d(TAG, "onPause");
             //Log.d(TAG, "onPause mVisibleStationMarkers: " + mVisibleStationMarkers.size());
         }
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
-        }
         super.onPause();
     }
 
@@ -311,7 +307,6 @@ public class MainMapActivity extends AppCompatActivity implements
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onStart");
         }
-        buildGoogleApiClient(); // Get connection to google services.
         super.onStart();
     }
 
@@ -325,11 +320,6 @@ public class MainMapActivity extends AppCompatActivity implements
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onStop");
         }
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
-        }
-        // super
         super.onStop();
     }
 
@@ -544,50 +534,11 @@ public class MainMapActivity extends AppCompatActivity implements
             args.putLong(ARG_DETAIL_SHEET_STATION_ID, mStationIdFromIntent);
             bottomSheetDialogFragment.setArguments(args);
 
-            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), mBottomSheetStationFragmentTag);
         }
 
         // Moves the bottom map elements up a bit to fit the adView.
         mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
-    }
-
-    /**
-     * GoogleApiClient.ConnectionCallbacks
-     * </p>
-     */
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onConnected");
-        }
-
-        // Create location requests and setup location services.
-        setupLocationServices();
-
-        // Try to set last location, update car marker, and do not zoom to location
-        updateCurrentLocation(false);
-    }
-
-    /**
-     * GoogleApiClient.ConnectionCallbacks
-     * </p>
-     */
-    @Override
-    public void onConnectionSuspended(int i) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onConnectionSuspended");
-        }
-    }
-
-    /**
-     * GoogleApiClient.OnConnectionFailedListener
-     * </p>
-     */
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onConnectionFailed");
-        }
     }
 
     /**
@@ -638,9 +589,8 @@ public class MainMapActivity extends AppCompatActivity implements
             args = new Bundle();
             args.putLong(ARG_DETAIL_SHEET_STATION_ID, stationId);
             bottomSheetDialogFragment.setArguments(args);
-            mBottomSheetStationFragmentId = bottomSheetDialogFragment.getId();
 
-            bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+            bottomSheetDialogFragment.show(getSupportFragmentManager(), mBottomSheetStationFragmentTag);
         } else {
             BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetGenericFragment();
 
@@ -935,8 +885,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onDistanceReceived(String distance) {
-        BottomSheetStationFragment stationFrag = (BottomSheetStationFragment) getSupportFragmentManager()
-                .findFragmentById(mBottomSheetStationFragmentId);
+        BottomSheetStationFragment stationFrag = (BottomSheetStationFragment) getSupportFragmentManager().findFragmentByTag(mBottomSheetStationFragmentTag);
         if (stationFrag != null) {
             stationFrag.updateDistance(distance);
         }
@@ -967,9 +916,6 @@ public class MainMapActivity extends AppCompatActivity implements
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
                         mMap.setMyLocationEnabled(true);
                     }
 
@@ -1033,147 +979,121 @@ public class MainMapActivity extends AppCompatActivity implements
 
     }
 
+    protected void startLocationUpdates() {
 
-    protected void setupLocationServices() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "setupLocationServices");
-        }
-        // Handle locations of handset
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                && (checkLocationPermission())) {
+        // Create the location request to start receiving updates
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(getResources().getInteger(R.integer.preferred_location_interval));
+        locationRequest.setFastestInterval(getResources().getInteger(R.integer.fastest_location_interval));
 
-            //setup periodic location requests
-            if (mLocationRequest == null) {
-                createLocationRequest();
-            }
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        // Create LocationSettingsRequest object using location request
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(locationRequest);
+        LocationSettingsRequest locationSettingsRequest = builder.build();
 
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Could not setup location services");
-            }
-            Snackbar.make(
-                    MainMapActivity.this.findViewById(R.id.main_layout),
-                    getString(R.string.snackbar_service_not_connected),
-                    Snackbar.LENGTH_INDEFINITE)
-                    .setAction(
-                            getString(R.string.snackbar_ok_btn),
-                            new View.OnClickListener() {
-                                /**
-                                 * Called when a view has been clicked.
-                                 *
-                                 * @param v The view that was clicked.
-                                 */
-                                @Override
-                                public void onClick(View v) {
-                                    //exit
-                                    analyticsLogSelectContent(
-                                            getString(R.string.analytics_id_snack_bar),
-                                            getString(R.string.analytics_name_snack_bar_no_location_service),
-                                            getString(R.string.analytics_content_type_snack_bar)
-                                    );
-                                    recreate();
-                                }
-                            })
-                    .show();
-        }
+        // Check whether location settings are satisfied
+        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest);
 
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        checkLocationPermission();
+        getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        // do work here
+                        onLocationChanged(locationResult.getLastLocation());
+                    }
+                },
+                Looper.myLooper());
     }
 
-    /**
-     * Set up the location requests
-     * <p/>
-     */
-    protected void createLocationRequest() {
-        //if (BuildConfig.DEBUG) {
-        //Log.d(TAG, "createLocationRequest");
-        //}
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(getResources().getInteger(R.integer.preferred_location_interval)); // ideal interval
-        mLocationRequest.setFastestInterval(getResources().getInteger(R.integer.fastest_location_interval)); // the fastest interval my app can handle
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // highest accuracy
+
+    public void getLastLocation() {
+        // Get last known recent location using new Google Play Services SDK (v11+)
+        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
+
+        checkLocationPermission();
+
+        locationClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // GPS location can be null if GPS is switched off
+                        if (location != null) {
+                            onLocationChanged(location);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("MapDemoActivity", "Error trying to get last GPS location");
+                        e.printStackTrace();
+                    }
+                });
     }
+
 
     protected void updateCurrentLocation(boolean moveCamera) {
         // Handle locations of handset
         if (BuildConfig.DEBUG) {
-            //Log.d(TAG, "updateCurrentLocation moveCamera: " + moveCamera);
-            //Log.d(TAG, "updateCurrentLocation Location permissions: " + checkLocationPermission());
-            //Log.d(TAG, "updateCurrentLocation Access fine location: " + (ContextCompat.checkSelfPermission(MainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED));
 
             Log.d(TAG, "updateCurrentLocation");
 
         }
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 && (checkLocationPermission())) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "updateCurrentLocation mGoogleApiClient: " + mGoogleApiClient);
-            }
-            if (mGoogleApiClient != null) {
+            getLastLocation();
+            if (mLastLocation != null) {
 
-                // Set the last location from the LocationServices
-                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-
-
-                if (location != null) {
-                    long locationAge = System.currentTimeMillis() - location.getTime();
-                    if (locationAge >= getResources().getInteger(R.integer.max_last_location_age) * 1000) {
-                        // Try again to force a location update
-                        setupLocationServices();
-                        Toast.makeText(this, getText(R.string.toast_old_last_location),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
-                    // Move the car markers current position
-                    if (mCurrentLocationMarker != null) {
-                        mCurrentLocationMarker.setPosition(mLastLocation);
-                    } else {
-                        mMarkerOptionsCar.position(mLastLocation);
-                        mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
-                    }
-
-                    if (moveCamera) {
-                        // move the camera
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                                mLastLocation,
-                                getResources().getInteger(R.integer.zoom_default)
-                        );
-                        mMap.animateCamera(cameraUpdate);
-                    }
-                    // save camera center
-                    mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
-
-                    // OCM camera center to something at this point
-                    // to trigger a sync
-                    mLastOCMCameraCenter = new LatLng(0d, 0d);
+                // Move the car markers current position
+                if (mCurrentLocationMarker != null) {
+                    mCurrentLocationMarker.setPosition(mLastLocation);
                 } else {
-                    Log.e(TAG, "updateCurrentLocation no getLastLocation from LocationServices");
-                    Snackbar.make(
-                            MainMapActivity.this.findViewById(R.id.main_layout),
-                            getString(R.string.snackbar_no_last_location),
-                            Snackbar.LENGTH_INDEFINITE)
-                            .setAction(
-                                    getString(R.string.snackbar_ok_btn),
-                                    new View.OnClickListener() {
-                                        /**
-                                         * Called when a view has been clicked.
-                                         *
-                                         * @param v The view that was clicked.
-                                         */
-                                        @Override
-                                        public void onClick(View v) {
-                                            setupLocationServices();
-
-
-                                        }
-                                    }).show();
-
+                    mMarkerOptionsCar.position(mLastLocation);
+                    mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
                 }
+
+                if (moveCamera) {
+                    // move the camera
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                            mLastLocation,
+                            getResources().getInteger(R.integer.zoom_default)
+                    );
+                    mMap.animateCamera(cameraUpdate);
+                }
+                // save camera center
+                mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+
+                // OCM camera center to something at this point
+                // to trigger a sync
+                mLastOCMCameraCenter = new LatLng(0d, 0d);
             } else {
-                Log.e(TAG, "GoogleApiClient not connected");
+                Log.e(TAG, "updateCurrentLocation no getLastLocation from LocationServices");
+                Snackbar.make(
+                        MainMapActivity.this.findViewById(R.id.main_layout),
+                        getString(R.string.snackbar_no_last_location),
+                        Snackbar.LENGTH_INDEFINITE)
+                        .setAction(
+                                getString(R.string.snackbar_ok_btn),
+                                new View.OnClickListener() {
+                                    /**
+                                     * Called when a view has been clicked.
+                                     *
+                                     * @param v The view that was clicked.
+                                     */
+                                    @Override
+                                    public void onClick(View v) {
+                                        startLocationUpdates();
+
+
+                                    }
+                                }).show();
+
             }
+
 
         } else {
             if (BuildConfig.DEBUG) {
@@ -1182,17 +1102,6 @@ public class MainMapActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Log analytics SELECT_CONTENT event
-     * <p/>
-     */
-    private void analyticsLogSelectContent(String id, String name, String type) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-    }
 
     /**
      * Check if the user allows location (fine)
@@ -1307,22 +1216,14 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
-     * Setup the GoogleApiClient for play services (maps)
+     * Log analytics SELECT_CONTENT event
      * <p/>
      */
-    protected synchronized void buildGoogleApiClient() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "buildGoogleApiClient");
-        }
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .addApi(Places.GEO_DATA_API)
-                    .addApi(Places.PLACE_DETECTION_API)
-                    .build();
-            mGoogleApiClient.connect();
-        }
+    private void analyticsLogSelectContent(String id, String name, String type) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

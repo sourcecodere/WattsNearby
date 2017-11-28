@@ -1,5 +1,6 @@
 package re.sourcecode.android.wattsnearby.utilities;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.util.Log;
 
@@ -44,7 +45,7 @@ public class DirectionsNetworkUtils {
 
 
     public static URL getUrl(String key, LatLng origin, LatLng destination) {
-        Uri directionsQueryUri = Uri.parse(DIRECTIONS_BASE_URL).buildUpon()
+        @SuppressLint("DefaultLocale") Uri directionsQueryUri = Uri.parse(DIRECTIONS_BASE_URL).buildUpon()
                 .appendPath(output)
                 .appendQueryParameter(
                         ORIGIN_PARAM,

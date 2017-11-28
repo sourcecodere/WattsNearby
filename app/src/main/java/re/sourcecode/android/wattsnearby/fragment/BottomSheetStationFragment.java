@@ -177,6 +177,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
     }
 
     public void updateDistance(String distance) {
+        Log.i(TAG, "updateDistance");
         viewDistance.setText(distance);
     }
 
