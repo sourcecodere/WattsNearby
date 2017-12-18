@@ -103,34 +103,38 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 0;  // For controlling necessary Permissions.
+    private static final int PERMISSIONS_REQUEST_LOCATION = 0;      // For controlling necessary 
+                                                                    // Permissions.
+    private static final int INTENT_PLACE = 1;          // Intent id for places search
 
-    private static final int INTENT_PLACE = 1; // For places search
+    private static final int LOADER_MARKERS = 3;        // ID for loading markers in async loader 
+                                                        // thread
+    private static final int LOADER_DIRECTIONS = 4;     // ID for loading directions in async 
+                                                        // loader thread
 
-    private static final int LOADER_MARKERS = 3; // ID for loading markers on async loader thread
+    private GoogleMap mMap;                 // The map object.
 
-    private static final int LOADER_DIRECTIONS = 4; // ID for loading directions on async loader thread
+    private LatLng mLastLocation;           // Last known position on the phone/car.
+    private LatLng mLastCameraCenter;       // Latitude and longitude of last camera center.
+    private LatLng mLastOCMCameraCenter;    // Latitude and longitude of last camera center where 
+                                            // the OCM api was synced against the content provider.
 
-    private GoogleMap mMap; // The map object.
+    private MarkerOptions mMarkerOptionsCar;    // Icon for the car.
+    private Marker mCurrentLocationMarker;      // Car marker with position
 
-    private LatLng mLastLocation; // Last known position on the phone/car.
-    private LatLng mLastCameraCenter; // Latitude and longitude of last camera center.
-    private LatLng mLastOCMCameraCenter; // Latitude and longitude of last camera center where the OCM api was synced against the content provider.
-
-    private MarkerOptions mMarkerOptionsCar; // Icon for the car.
-    private Marker mCurrentLocationMarker; // Car marker with position
-
-    private Polyline mDirectionsPolyLine; // Directions poly line from car to selected marker
+    private Polyline mDirectionsPolyLine;       // Directions poly line from car to selected marker
 
     @SuppressLint("UseSparseArrays")
-    private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap <stationId, Marker> of station markers in the current map
+    private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap 
+                                                                            // <stationId, Marker> 
+                                                                            // of station markers 
+                                                                            // in the current map
 
-    private long mStationIdFromIntent; // For intent
+    private long mStationIdFromIntent;         // For intent
 
     private ProgressBar mProgressBar;
-
-    // Setup analytics
-    private FirebaseAnalytics mFirebaseAnalytics;
+    
+    private FirebaseAnalytics mFirebaseAnalytics; // Setup analytics
 
     private static final String mBottomSheetStationFragmentTag = "BottomSheetStation"; // To communicate with fragment interface
 
@@ -161,9 +165,9 @@ public class MainMapActivity extends AppCompatActivity implements
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
-            getLastLocation();
         }
 
+        setupLocationUpdates();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -227,8 +231,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-
+        
         // Setup the banner ad
         MobileAds.initialize(getApplicationContext(),
                 getString(R.string.banner_app_id));
@@ -239,9 +242,13 @@ public class MainMapActivity extends AppCompatActivity implements
         adView.loadAd(adRequest);
 
         // set the default value of filter changed flag to false
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(FILTER_CHANGED_KEY, false).apply();
+        PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .edit()
+                .putBoolean(FILTER_CHANGED_KEY, false)
+                .apply();
 
-        // for progressbar when loading markers to map
+        // Progressbar when loading markers to map
         mProgressBar = findViewById(R.id.progress_bar);
 
     }
@@ -449,9 +456,11 @@ public class MainMapActivity extends AppCompatActivity implements
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
-            boolean success = googleMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.style_json));
+            boolean success = googleMap
+                    .setMapStyle(
+                            MapStyleOptions
+                                    .loadRawResourceStyle(this, R.raw.style_json)
+                    );
 
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
@@ -537,6 +546,10 @@ public class MainMapActivity extends AppCompatActivity implements
             bottomSheetDialogFragment.show(getSupportFragmentManager(), mBottomSheetStationFragmentTag);
         }
 
+
+        // Init the current location and move the camera
+        updateCurrentLocation(true);
+        
         // Moves the bottom map elements up a bit to fit the adView.
         mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
     }
@@ -891,46 +904,7 @@ public class MainMapActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Callback for result of permission request.
-     * <p/>
-     *
-     * @param requestCode  the permission request code
-     * @param permissions  list of permissions
-     * @param grantResults the result of the grant
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onRequestPermissionsResult");
-        }
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-                    // Permission denied, exit the app and show explanation toast.
-                    Toast toast = Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                }
-            }
-
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
-        }
-    }
+    
 
     /**
      * Restart the loader for station markers with current LatLngBounds of camera.
@@ -979,7 +953,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     }
 
-    protected void startLocationUpdates() {
+    protected void setupLocationUpdates() {
 
         // Create the location request to start receiving updates
         LocationRequest locationRequest = new LocationRequest();
@@ -1011,10 +985,16 @@ public class MainMapActivity extends AppCompatActivity implements
 
 
     public void getLastLocation() {
+
+        checkLocationPermission();
+
         // Get last known recent location using new Google Play Services SDK (v11+)
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
 
-        checkLocationPermission();
+        if (locationClient == null) {
+            setupLocationUpdates();
+            locationClient = getFusedLocationProviderClient(this);
+        }
 
         locationClient.getLastLocation()
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -1086,7 +1066,7 @@ public class MainMapActivity extends AppCompatActivity implements
                                      */
                                     @Override
                                     public void onClick(View v) {
-                                        startLocationUpdates();
+                                        getLastLocation();
 
 
                                     }
@@ -1102,7 +1082,47 @@ public class MainMapActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Callback for result of permission request.
+     * <p/>
+     *
+     * @param requestCode  the permission request code
+     * @param permissions  list of permissions
+     * @param grantResults the result of the grant
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onRequestPermissionsResult");
+        }
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+                    // Permission denied, exit the app and show explanation toast.
+                    Toast toast = Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+            }
+
+            // other 'case' lines to check for other permissions this app might request.
+            // You can add here other case statements according to your requirement.
+        }
+    }
+    
     /**
      * Check if the user allows location (fine)
      * <p/>
