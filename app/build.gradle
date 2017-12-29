@@ -46,12 +46,12 @@ dependencies {
     compile 'com.android.support:preference-v7:27.0.2'
     compile 'com.android.support:design:27.0.2'
     compile 'com.google.maps.android:android-maps-utils:0.5'
-    compile 'com.google.android.gms:play-services-location:11.6.2'
-    compile 'com.google.android.gms:play-services-maps:11.6.2'
-    compile 'com.google.android.gms:play-services-places:11.6.2'
-    compile 'com.google.android.gms:play-services-analytics:11.6.2'
-    compile 'com.google.firebase:firebase-ads:11.6.2'
-    compile 'com.google.firebase:firebase-core:11.6.2'
+    compile 'com.google.android.gms:play-services-location:11.8.0'
+    compile 'com.google.android.gms:play-services-maps:11.8.0'
+    compile 'com.google.android.gms:play-services-places:11.8.0'
+    compile 'com.google.android.gms:play-services-analytics:11.8.0'
+    compile 'com.google.firebase:firebase-ads:11.8.0'
+    compile 'com.google.firebase:firebase-core:11.8.0'
     testCompile 'junit:junit:4.12'
 }
 
