@@ -44,7 +44,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
@@ -65,8 +64,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.PolyUtil;
 
@@ -83,14 +82,12 @@ import re.sourcecode.android.wattsnearby.utilities.DataUtils;
 import re.sourcecode.android.wattsnearby.utilities.ImageUtils;
 import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
 
-import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 /**
  * Created by SourceCodeRe
  **/
 
 public class MainMapActivity extends AppCompatActivity implements
-        LocationListener,
         PlaceSelectionListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
@@ -103,7 +100,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 0;      // For controlling necessary 
+    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 0;      // For controlling necessary
                                                                     // Permissions.
     private static final int INTENT_PLACE = 1;          // Intent id for places search
 
@@ -114,10 +111,24 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private GoogleMap mMap;                 // The map object.
 
+    // The entry point to the Fused Location Provider.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+
     private LatLng mLastLocation;           // Last known position on the phone/car.
     private LatLng mLastCameraCenter;       // Latitude and longitude of last camera center.
     private LatLng mLastOCMCameraCenter;    // Latitude and longitude of last camera center where 
                                             // the OCM api was synced against the content provider.
+
+    private boolean mCamFollowsCar = false; // Enable automatic camera movement as the car moves.
+                                            // Enabled when mylocation is clicked.
+                                            // Disabled when other parts of the map is clicked.
+
+    // Keys for storing the positions above
+    private static final String KEY_LOCATION = "location";
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_OCM_CAMERA_POSITION = "ocm_sync_camera_position";
+
+    private boolean mLocationPermissionGranted; // For checking runtime permission for fine location
 
     private MarkerOptions mMarkerOptionsCar;    // Icon for the car.
     private Marker mCurrentLocationMarker;      // Car marker with position
@@ -159,15 +170,21 @@ public class MainMapActivity extends AppCompatActivity implements
             Log.d(TAG, "onCreate");
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_map);
 
-        MapsInitializer.initialize(this);
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
+        // Retrieve location and camera position from saved instance state.
+        if (savedInstanceState != null) {
+            mLastLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            mLastCameraCenter = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+            mLastOCMCameraCenter = savedInstanceState.getParcelable(KEY_OCM_CAMERA_POSITION);
         }
 
-        setupLocationUpdates();
+        // Retrieve the content view that renders the map.
+        setContentView(R.layout.activity_main_map);
+
+        // Construct a FusedLocationProviderClient.
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        MapsInitializer.initialize(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -201,28 +218,6 @@ public class MainMapActivity extends AppCompatActivity implements
                             })
                     .show();
         }
-
-
-        // Fab for the my location. With onClickListener
-        FloatingActionButton fab = findViewById(R.id.fab_my_location);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "My location fab clicked!");
-                }
-                analyticsLogSelectContent(
-                        getString(R.string.analytics_id_fab),
-                        getString(R.string.analytics_content_type_fab),
-                        getString(R.string.analytics_name_fab_my_location));
-
-                // Try to set last location, update car marker, and zoom to location
-                updateCurrentLocation(true);
-
-
-            }
-        });
-
 
         // Intent with stationId (e.g. from widget list item click)
         if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
@@ -289,46 +284,6 @@ public class MainMapActivity extends AppCompatActivity implements
 
     }
 
-    /**
-     * AppCompatActivity override
-     * <p/>
-     * Dispatch onPause() to fragments.
-     */
-    @Override
-    protected void onPause() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onPause");
-            //Log.d(TAG, "onPause mVisibleStationMarkers: " + mVisibleStationMarkers.size());
-        }
-        super.onPause();
-    }
-
-    /**
-     * AppCompatActivity override
-     * <p/>
-     * Dispatch onStart() to all fragments.  Ensure any created loaders are
-     * now started.
-     */
-    @Override
-    protected void onStart() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onStart");
-        }
-        super.onStart();
-    }
-
-    /**
-     * AppCompatActivity override
-     * <p/>
-     * Dispatch onStop() to all fragments.  Ensure all loaders are stopped.
-     */
-    @Override
-    protected void onStop() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onStop");
-        }
-        super.onStop();
-    }
 
     /**
      * AppCompatActivity override
@@ -344,8 +299,13 @@ public class MainMapActivity extends AppCompatActivity implements
             //Log.d(TAG, "onSaveInstanceState mVisibleStationMarkers: " + mVisibleStationMarkers.size());
         }
 //        savedInstanceState.putSerializable("markers", (Serializable) mVisibleStationMarkers);
+        if (mMap != null) {
+            savedInstanceState.putParcelable(KEY_CAMERA_POSITION, mLastCameraCenter);
+            savedInstanceState.putParcelable(KEY_LOCATION, mLastLocation);
+            savedInstanceState.putParcelable(KEY_OCM_CAMERA_POSITION, mLastOCMCameraCenter);
+            super.onSaveInstanceState(savedInstanceState);
+        }
 
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     /**
@@ -499,6 +459,14 @@ public class MainMapActivity extends AppCompatActivity implements
         // use restartLoader for updating directions.
         getSupportLoaderManager().initLoader(LOADER_DIRECTIONS, null, this);
 
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getLocationPermission();
+        }
+
+        // Start the periodic updates for locations
+        startPeriodicLocationUpdates();
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Disables the my location button, since we are using own fab for this..
             mMap.setMyLocationEnabled(false);
@@ -523,6 +491,33 @@ public class MainMapActivity extends AppCompatActivity implements
         // Setup callback for when user clicks on other parts of the map
         mMap.setOnMapClickListener(this);
 
+
+        // Fab for the my location. With onClickListener
+        FloatingActionButton fab = findViewById(R.id.fab_my_location);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "My location fab clicked!");
+                }
+                analyticsLogSelectContent(
+                        getString(R.string.analytics_id_fab),
+                        getString(R.string.analytics_content_type_fab),
+                        getString(R.string.analytics_name_fab_my_location));
+
+                mCamFollowsCar = true;
+                if (mLocationPermissionGranted) {
+                    // Try to get the last location
+                    getLastLocation();
+                }
+                updateCurrentLocation(mCamFollowsCar);
+
+                // TODO enable tracking (disable if the user pushes any other part of the map)
+
+            }
+        });
+
+
         // Intent handling.
         if (mStationIdFromIntent != 0L) {
             // TODO: move center a bit when bottom sheet opens.
@@ -546,35 +541,11 @@ public class MainMapActivity extends AppCompatActivity implements
             bottomSheetDialogFragment.show(getSupportFragmentManager(), mBottomSheetStationFragmentTag);
         }
 
-
-        // Init the current location and move the camera
-        updateCurrentLocation(true);
-        
         // Moves the bottom map elements up a bit to fit the adView.
         mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
+
     }
 
-    /**
-     * LocationListener
-     * </p>
-     */
-    @Override
-    public void onLocationChanged(Location location) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onLocationChanged");
-        }
-        // Update last location the the new location
-        mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
-        // Move the car markers current position if we already have it in the map
-        if (mCurrentLocationMarker != null) {
-            mCurrentLocationMarker.setPosition(mLastLocation);
-
-        } else { //else add it to the map
-            mMarkerOptionsCar.position(mLastLocation);
-            mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
-        }
-    }
 
     /**
      * GoogleMap.onMarkerClick called when marker is clicked
@@ -587,6 +558,8 @@ public class MainMapActivity extends AppCompatActivity implements
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onMarkerClick");
         }
+        mCamFollowsCar = false;
+
         Long stationId = (Long) marker.getTag();
 
         if (stationId != null) { //every station marker should have data (stationId), the car doesn't.
@@ -621,6 +594,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     @Override
     public void onMapClick(LatLng latLng) {
+        mCamFollowsCar = false;
         if (mDirectionsPolyLine != null) {
             mDirectionsPolyLine.remove();
         }
@@ -637,6 +611,7 @@ public class MainMapActivity extends AppCompatActivity implements
         //}
         // Get the current visible region of the map, and save the center LatLng
         mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+        mCamFollowsCar = false;
     }
 
     /**
@@ -646,9 +621,9 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraIdle() {
-        //if (BuildConfig.DEBUG) {
-        //Log.d(TAG, "onCameraIdle");
-        //}
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCameraIdle");
+        }
 
         Resources resources = getResources();
 
@@ -953,7 +928,37 @@ public class MainMapActivity extends AppCompatActivity implements
 
     }
 
-    protected void setupLocationUpdates() {
+
+    /**
+     * Gets the current location of the device, and positions the map's camera.
+     */
+    private void getLastLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            if (mLocationPermissionGranted) {
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            Location location = task.getResult();
+                            if (location != null) {
+                                mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    protected void startPeriodicLocationUpdates() {
 
         // Create the location request to start receiving updates
         LocationRequest locationRequest = new LocationRequest();
@@ -972,68 +977,45 @@ public class MainMapActivity extends AppCompatActivity implements
         settingsClient.checkLocationSettings(locationSettingsRequest);
 
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        checkLocationPermission();
-        getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        // do work here
-                        onLocationChanged(locationResult.getLastLocation());
-                    }
-                },
-                Looper.myLooper());
-    }
-
-
-    public void getLastLocation() {
-
-        checkLocationPermission();
-
-        // Get last known recent location using new Google Play Services SDK (v11+)
-        FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
-
-        if (locationClient == null) {
-            setupLocationUpdates();
-            locationClient = getFusedLocationProviderClient(this);
+        getLocationPermission();
+        try {
+            if (mLocationPermissionGranted) {
+                mFusedLocationProviderClient.requestLocationUpdates(locationRequest,
+                        new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                // do work here
+                                Location location = locationResult.getLastLocation();
+                                mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                                // Try to update the current location and move the camera. If location is available.
+                                updateCurrentLocation(mCamFollowsCar);
+                            }
+                        },
+                        Looper.myLooper());
+            }
+        } catch (SecurityException e) {
+            Log.e("Exception: %s", e.getMessage());
         }
-
-        locationClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // GPS location can be null if GPS is switched off
-                        if (location != null) {
-                            onLocationChanged(location);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("MapDemoActivity", "Error trying to get last GPS location");
-                        e.printStackTrace();
-                    }
-                });
     }
 
 
     protected void updateCurrentLocation(boolean moveCamera) {
         // Handle locations of handset
         if (BuildConfig.DEBUG) {
-
             Log.d(TAG, "updateCurrentLocation");
-
         }
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                && (checkLocationPermission())) {
-            getLastLocation();
-            if (mLastLocation != null) {
+        if (mLocationPermissionGranted) {
+            if (mLastLocation != null)  {
 
-                // Move the car markers current position
-                if (mCurrentLocationMarker != null) {
-                    mCurrentLocationMarker.setPosition(mLastLocation);
-                } else {
+                if (mCurrentLocationMarker == null) {
                     mMarkerOptionsCar.position(mLastLocation);
                     mCurrentLocationMarker = mMap.addMarker(mMarkerOptionsCar);
+                }
+
+                // Move the car markers current position if it has changed
+                if (mCurrentLocationMarker.getPosition() != mLastLocation) {
+                    // New position!
+                    mCurrentLocationMarker.setPosition(mLastLocation);
                 }
 
                 if (moveCamera) {
@@ -1044,12 +1026,17 @@ public class MainMapActivity extends AppCompatActivity implements
                     );
                     mMap.animateCamera(cameraUpdate);
                 }
-                // save camera center
-                mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
 
-                // OCM camera center to something at this point
-                // to trigger a sync
-                mLastOCMCameraCenter = new LatLng(0d, 0d);
+                LatLng newMapCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+
+                if ((mLastCameraCenter != null) && (mLastCameraCenter != newMapCenter)){
+                    // save camera center
+                    mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+
+                    // OCM camera center to something at this point
+                    // to trigger a sync
+                    mLastOCMCameraCenter = new LatLng(0d, 0d);
+                }
             } else {
                 Log.e(TAG, "updateCurrentLocation no getLastLocation from LocationServices");
                 Snackbar.make(
@@ -1074,7 +1061,6 @@ public class MainMapActivity extends AppCompatActivity implements
 
             }
 
-
         } else {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "No permissions");
@@ -1083,60 +1069,20 @@ public class MainMapActivity extends AppCompatActivity implements
     }
 
     /**
-     * Callback for result of permission request.
-     * <p/>
-     *
-     * @param requestCode  the permission request code
-     * @param permissions  list of permissions
-     * @param grantResults the result of the grant
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onRequestPermissionsResult");
-        }
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-                    // Permission denied, exit the app and show explanation toast.
-                    Toast toast = Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                }
-            }
-
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
-        }
-    }
-    
-    /**
      * Check if the user allows location (fine)
      * <p/>
      *
      * @return True or False
      */
-    private boolean checkLocationPermission() {
+    private void getLocationPermission() {
         //if (BuildConfig.DEBUG) {
-        //Log.d(TAG, "checkLocationPermission");
+        //Log.d(TAG, "getLocationPermission");
         //}
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -1159,37 +1105,55 @@ public class MainMapActivity extends AppCompatActivity implements
                                     @Override
                                     public void onClick(View v) {
                                         //Prompt the user once explanation has been shown
-                                        askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, PERMISSIONS_REQUEST_LOCATION);
+                                        ActivityCompat.requestPermissions(
+                                                MainMapActivity.this,
+                                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                                PERMISSIONS_REQUEST_FINE_LOCATION);
                                     }
                                 }).show();
 
 
             } else {
                 // No explanation needed, we can request the permission.
-                askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, PERMISSIONS_REQUEST_LOCATION);
+                ActivityCompat.requestPermissions(
+                        MainMapActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSIONS_REQUEST_FINE_LOCATION);
             }
-            return false;
-        } else {
-            return true;
         }
+
     }
 
+    /**
+     * Callback for result of permission request.
+     * <p/>
+     *
+     * @param requestCode  the permission request code
+     * @param permissions  list of permissions
+     * @param grantResults the result of the grant
+     */
 
-    private void askForPermission(String permission, Integer requestCode) {
-        if (ContextCompat.checkSelfPermission(MainMapActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainMapActivity.this, permission)) {
-
-                //This is called if user has denied the permission before
-                //In this case I am just asking the permission again
-                ActivityCompat.requestPermissions(MainMapActivity.this, new String[]{permission}, requestCode);
-
-            } else {
-
-                ActivityCompat.requestPermissions(MainMapActivity.this, new String[]{permission}, requestCode);
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                } else {
+                    // Permission denied, exit the app and show explanation toast.
+                    Toast toast = Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                    getLocationPermission();
+                }
             }
         }
+
     }
 
     /**
