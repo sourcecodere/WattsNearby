@@ -799,6 +799,7 @@ public class MainMapActivity extends AppCompatActivity implements
                 Log.d(TAG, "onLoadFinished mVisibleStationMarkers before clean up:" + mVisibleStationMarkers.size());
             }
             if (data instanceof HashMap) {
+                @SuppressWarnings("unchecked")
                 HashMap<Long, MarkerOptions> hashMapData = (HashMap<Long, MarkerOptions>) data;
                 // clean up map
                 for (HashMap.Entry<Long, Marker> entry : mVisibleStationMarkers.entrySet()) {
@@ -1071,8 +1072,6 @@ public class MainMapActivity extends AppCompatActivity implements
     /**
      * Check if the user allows location (fine)
      * <p/>
-     *
-     * @return True or False
      */
     private void getLocationPermission() {
         //if (BuildConfig.DEBUG) {

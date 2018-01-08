@@ -137,12 +137,12 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
         ConnectionAdapterViewHolder(View view) {
             super(view);
 
-            connIconView = (ImageView) view.findViewById(R.id.connection_icon);
-            connFastView = (ImageView) view.findViewById(R.id.connection_fast);
-            connTitleView = (TextView) view.findViewById(R.id.connection_title);
-            connLevelTitleView = (TextView) view.findViewById(R.id.connection_level_title);
-            connCurrentView = (TextView) view.findViewById(R.id.connection_current);
-            connPowerView = (TextView) view.findViewById(R.id.connection_power);
+            connIconView = view.findViewById(R.id.connection_icon);
+            connFastView = view.findViewById(R.id.connection_fast);
+            connTitleView = view.findViewById(R.id.connection_title);
+            connLevelTitleView = view.findViewById(R.id.connection_level_title);
+            connCurrentView = view.findViewById(R.id.connection_current);
+            connPowerView = view.findViewById(R.id.connection_power);
         }
     }
 

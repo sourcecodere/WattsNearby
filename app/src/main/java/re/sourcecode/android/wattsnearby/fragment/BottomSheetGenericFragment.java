@@ -50,9 +50,9 @@ public class BottomSheetGenericFragment extends BottomSheetDialogFragment {
 
         } else { // user pushed the car marker
             contentView = View.inflate(getContext(), R.layout.fragment_car, null);
-            TextView title = (TextView) contentView.findViewById(R.id.car_sheet_title);
+            TextView title = contentView.findViewById(R.id.car_sheet_title);
             title.setText(getResources().getString(R.string.marker_current));
-            ImageButton settingsBtn = (ImageButton) contentView.findViewById(R.id.btn_settings);
+            ImageButton settingsBtn = contentView.findViewById(R.id.btn_settings);
             settingsBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
