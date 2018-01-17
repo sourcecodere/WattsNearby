@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Default zoom level when centering on current position. -->
-    <integer name="zoom_default">10</integer>
+    <integer name="zoom_default">12</integer>
     <integer name="zoom_places_search">12</integer>
-    <integer name="zoom_station_select">10</integer>
+    <integer name="zoom_station_select">12</integer>
     <integer name="zoom_station_widget">18</integer>
 
     <!-- Preferred is the ideal interval for position updates. -->

@@ -1066,6 +1066,7 @@ public class MainMapActivity extends AppCompatActivity implements
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "No permissions");
             }
+            getLocationPermission();
         }
     }
 
