@@ -132,6 +132,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
     public static final int INDEX_CONN_AMP = 5;
     public static final int INDEX_CONN_VOLT = 6;
     public static final int INDEX_CONN_KW = 7;
+    public static final int INDEX_CONN_COUNT = 8;
 
     /*
     * This ID will be used to identify the Loader responsible for loading the station details
@@ -192,7 +193,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
             Long stationId = getArguments().getLong(MainMapActivity.ARG_DETAIL_SHEET_STATION_ID);
 
             mStationUri = ChargingStationContract.StationEntry.buildStationUri(stationId);
-            mConnectionUri = ChargingStationContract.ConnectionEntry.buildStationUri(stationId);
+            mConnectionUri = ChargingStationContract.ConnectionEntry.buildConnectionGroupedUri(stationId);
 
             viewTitle = (TextView) rootView.findViewById(R.id.sheet_station_title);
             viewDistance = (TextView) rootView.findViewById(R.id.sheet_station_distance);
@@ -214,7 +215,7 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
             * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
             * do things like set the adapter of the RecyclerView and toggle the visibility.
             */
-            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view_list);
+            mRecyclerView = rootView.findViewById(R.id.recycler_view_list);
             /*
             * A LinearLayoutManager is responsible for measuring and positioning item views within a
             * RecyclerView into a linear list. This means that it can produce either a horizontal or

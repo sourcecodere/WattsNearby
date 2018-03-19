@@ -101,13 +101,13 @@ public class MainMapActivity extends AppCompatActivity implements
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
     private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 0;      // For controlling necessary
-                                                                    // Permissions.
+    // Permissions.
     private static final int INTENT_PLACE = 1;          // Intent id for places search
 
     private static final int LOADER_MARKERS = 3;        // ID for loading markers in async loader 
-                                                        // thread
+    // thread
     private static final int LOADER_DIRECTIONS = 4;     // ID for loading directions in async 
-                                                        // loader thread
+    // loader thread
 
     private GoogleMap mMap;                 // The map object.
 
@@ -117,11 +117,11 @@ public class MainMapActivity extends AppCompatActivity implements
     private LatLng mLastLocation;           // Last known position on the phone/car.
     private LatLng mLastCameraCenter;       // Latitude and longitude of last camera center.
     private LatLng mLastOCMCameraCenter;    // Latitude and longitude of last camera center where 
-                                            // the OCM api was synced against the content provider.
+    // the OCM api was synced against the content provider.
 
     private boolean mCamFollowsCar = false; // Enable automatic camera movement as the car moves.
-                                            // Enabled when mylocation is clicked.
-                                            // Disabled when other parts of the map is clicked.
+    // Enabled when mylocation is clicked.
+    // Disabled when other parts of the map is clicked.
 
     // Keys for storing the positions above
     private static final String KEY_LOCATION = "location";
@@ -137,14 +137,14 @@ public class MainMapActivity extends AppCompatActivity implements
 
     @SuppressLint("UseSparseArrays")
     private HashMap<Long, Marker> mVisibleStationMarkers = new HashMap<>(); // hashMap 
-                                                                            // <stationId, Marker> 
-                                                                            // of station markers 
-                                                                            // in the current map
+    // <stationId, Marker>
+    // of station markers
+    // in the current map
 
     private long mStationIdFromIntent;         // For intent
 
     private ProgressBar mProgressBar;
-    
+
     private FirebaseAnalytics mFirebaseAnalytics; // Setup analytics
 
     private static final String mBottomSheetStationFragmentTag = "BottomSheetStation"; // To communicate with fragment interface
@@ -171,18 +171,21 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         super.onCreate(savedInstanceState);
 
-        // Retrieve location and camera position from saved instance state.
-        if (savedInstanceState != null) {
-            mLastLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            mLastCameraCenter = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-            mLastOCMCameraCenter = savedInstanceState.getParcelable(KEY_OCM_CAMERA_POSITION);
-        }
-
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_main_map);
 
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+        // Retrieve location and camera position from saved instance state.
+        if (savedInstanceState != null) {
+            mLastLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            mLastCameraCenter = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+            mLastOCMCameraCenter = savedInstanceState.getParcelable(KEY_OCM_CAMERA_POSITION);
+        } else {
+            getLastLocation(); // try to get last location early
+        }
 
         MapsInitializer.initialize(this);
 
@@ -226,7 +229,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        
+
         // Setup the banner ad
         MobileAds.initialize(getApplicationContext(),
                 getString(R.string.banner_app_id));
@@ -464,7 +467,7 @@ public class MainMapActivity extends AppCompatActivity implements
             getLocationPermission();
         }
 
-        // Start the periodic updates for locations
+        // Start the periodic updates for locations TODO: Check if this should be done in onCreate()
         startPeriodicLocationUpdates();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -543,6 +546,9 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Moves the bottom map elements up a bit to fit the adView.
         mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
+
+        // lastly try to move the camera to current position
+        updateCurrentLocation(true);
 
     }
 
@@ -880,8 +886,6 @@ public class MainMapActivity extends AppCompatActivity implements
         }
     }
 
-    
-
     /**
      * Restart the loader for station markers with current LatLngBounds of camera.
      */
@@ -893,6 +897,7 @@ public class MainMapActivity extends AppCompatActivity implements
         args.putParcelable(ARG_MAP_VISIBLE_BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
         getSupportLoaderManager().restartLoader(LOADER_MARKERS, args, this).forceLoad();
     }
+
 
     /**
      * Trigger the async task for OCM updates
@@ -935,7 +940,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     private void getLastLocation() {
         /*
-         * Get the best and most recent location of the device, which may be null in rare
+         * Get the best and most recent location of the device, which may be null in
          * cases when a location is not available.
          */
         try {
@@ -954,7 +959,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     }
                 });
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -1006,7 +1011,7 @@ public class MainMapActivity extends AppCompatActivity implements
             Log.d(TAG, "updateCurrentLocation");
         }
         if (mLocationPermissionGranted) {
-            if (mLastLocation != null)  {
+            if (mLastLocation != null) {
 
                 if (mCurrentLocationMarker == null) {
                     mMarkerOptionsCar.position(mLastLocation);
@@ -1030,7 +1035,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
                 LatLng newMapCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
 
-                if ((mLastCameraCenter != null) && (mLastCameraCenter != newMapCenter)){
+                if ((mLastCameraCenter != null) && (mLastCameraCenter != newMapCenter)) {
                     // save camera center
                     mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
 

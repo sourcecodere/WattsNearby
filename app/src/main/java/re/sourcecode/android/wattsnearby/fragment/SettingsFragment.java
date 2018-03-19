@@ -18,13 +18,10 @@ import re.sourcecode.android.wattsnearby.R;
  * <p>
  * Inspired and code copied from https://github.com/udacity/ud851-Sunshine developed by udacity.com
  * <p>
- * The SettingsFragment serves as the display for all of the user's settings. In Sunshine, the
- * user will be able to change their preference for units of measurement from metric to imperial,
- * set their preferred weather location, and indicate whether or not they'd like to see
- * notifications.
+ * The SettingsFragment serves as the display for all of the user's settings. In WattsNearby, the
+ * user will be able to change their preference for seeing only fast chargers, and the user can
+ * select only their car's connection outlets to filter out charging stations.
  * <p>
- * Please note: If you are using our dummy weather services, the location returned will always be
- * Mountain View, California.
  */
 
 public class SettingsFragment extends PreferenceFragmentCompat implements

@@ -12,6 +12,10 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import re.sourcecode.android.wattsnearby.BuildConfig;
 
 /**
@@ -33,12 +37,11 @@ public class ChargingStationProvider extends ContentProvider {
     public static final int CODE_STATION_ID = 101;
     public static final int CODE_CONNECTION = 200;
     public static final int CODE_CONNECTION_ID = 201;
-
-
+    public static final int CODE_CONNECTION_GROUPED_ID = 202;
     /*
      * The URI Matcher used by this content provider. The leading "s" in this variable name
-     * signifies that this UriMatcher is a static member variable of WeatherProvider and is a
-     * common convention in Android programming.
+     * signifies that this UriMatcher is a static member variable of ChargingStationProvider and
+     * is a common convention in Android programming.
      */
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private ChargingStationDbHelper mOpenHelper;
@@ -87,7 +90,8 @@ public class ChargingStationProvider extends ContentProvider {
         /*
          * For each type of URI you want to add, create a corresponding code. Preferably, these are
          * constant fields in your class so that you can use them throughout the class and you no
-         * they aren't going to change. In Sunshine, we use CODE_WEATHER or CODE_WEATHER_WITH_DATE.
+         * they aren't going to change. In WattsNearby, we use CODE_STATION, CODE_STATION_ID,
+         * CODE_CONNECTION, CODE_CONNECTION_ID and CODE_CONNECTION_GROUPED_ID.
          */
 
         /* This URI is content://re.sourcecode.wattsnearby/station/ */
@@ -98,7 +102,8 @@ public class ChargingStationProvider extends ContentProvider {
         matcher.addURI(authority, ChargingStationContract.PATH_CONNECTION, CODE_CONNECTION);
         /* This URI is content://re.sourcecode.wattsnearby/connection/<id> */
         matcher.addURI(authority, ChargingStationContract.PATH_CONNECTION + "/#", CODE_CONNECTION_ID);
-
+        /* This URI is content://re.sourcecode.wattsnearby/connection_grouped/<id> */
+        matcher.addURI(authority, ChargingStationContract.PATH_CONNECTION_GROUPED + "/#", CODE_CONNECTION_GROUPED_ID);
         /*
          * This URI would look something like
          * content://re.sourcecode.wattsnearby/stations/nearby?lat=40.123213&lon=10.123123&distance=2
@@ -162,10 +167,10 @@ public class ChargingStationProvider extends ContentProvider {
              *      content://re.sourcecode.wattsnearby/station/
              *
              * sUriMatcher's match method will return the code that indicates to us that we need
-             * to return all of the weather in our weather table.
+             * to return all of the station or connections in our tables.
              *
-             * In this case, we want to return a cursor that contains every row of weather data
-             * in our weather table.
+             * In this case, we want to return a cursor that contains every row of data
+             * in our table.
              */
             case CODE_STATION: {
                 retCursor = db.query(
@@ -196,7 +201,8 @@ public class ChargingStationProvider extends ContentProvider {
                         projection,
                         selection,
                         selectionArgs,
-                        null,
+                        //ChargingStationContract.ConnectionEntry.COLUMN_CONN_CURRENT_TYPE_DESC,
+                        null, //groupBy
                         null,
                         sortOrder);
                 break;
@@ -208,9 +214,43 @@ public class ChargingStationProvider extends ContentProvider {
                         projection,
                         ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "= ?",
                         new String[]{String.valueOf(_id)},
-                        null,
+                        null, // groupBy
                         null,
                         sortOrder);
+                break;
+            }
+            case CODE_CONNECTION_GROUPED_ID: {
+                long _id = ContentUris.parseId(uri);
+
+                // Create a comma separated string from the projection array
+                StringBuilder groupByBuilder = new StringBuilder();
+                for (String s : projection) {
+                    groupByBuilder.append(s.replace("'", "\\")).append(", ");
+                }
+                groupByBuilder.deleteCharAt(groupByBuilder.length() - 1);  // delete the last '
+                groupByBuilder.deleteCharAt(groupByBuilder.length() - 1);  // delete the last ,
+                String groupBy = groupByBuilder.toString();
+
+                // Add a count(*) in the select projection array
+                String[] countStatement = {"count(*)"};
+                List<String> projectionWithCountList = new ArrayList<>();
+                // Add first array elements to list
+                Collections.addAll(projectionWithCountList, projection);
+                // Add another array elements to list
+                Collections.addAll(projectionWithCountList, countStatement);
+                // Convert list to array
+                String[] projectionWithCount =
+                        projectionWithCountList.toArray(new String[projectionWithCountList.size()]);
+
+                retCursor = db.query(
+                        ChargingStationContract.ConnectionEntry.TABLE_NAME,
+                        projectionWithCount,
+                        ChargingStationContract.ConnectionEntry.COLUMN_CONN_STATION_ID + "= ?",
+                        new String[]{String.valueOf(_id)},
+                        groupBy,
+                        null,
+                        sortOrder
+                );
                 break;
             }
             default:
@@ -263,7 +303,7 @@ public class ChargingStationProvider extends ContentProvider {
             case CODE_CONNECTION:
                 _id = db.insert(ChargingStationContract.ConnectionEntry.TABLE_NAME, null, values);
                 if (_id > 0) {
-                    returnUri = ChargingStationContract.ConnectionEntry.buildStationUri(_id);
+                    returnUri = ChargingStationContract.ConnectionEntry.buildConnectionUri(_id);
                     db.setTransactionSuccessful();
                 } else {
                     throw new UnsupportedOperationException("Unable to insert row into: " + uri);
@@ -336,7 +376,7 @@ public class ChargingStationProvider extends ContentProvider {
         if ((numRowsDeleted != 0) && (context.getContentResolver() != null)) {
             context.getContentResolver().notifyChange(uri, null);
         } else {
-            Log.e(TAG, "No rows deleted." );
+            Log.e(TAG, "No rows deleted.");
         }
 
         return numRowsDeleted;

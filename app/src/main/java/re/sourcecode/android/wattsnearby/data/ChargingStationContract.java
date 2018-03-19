@@ -45,6 +45,7 @@ public class ChargingStationContract {
      */
     public static final String PATH_STATION = "station";
     public static final String PATH_CONNECTION = "connection";
+    public static final String PATH_CONNECTION_GROUPED = "connection_grouped";
 
     /* Inner class that defines the table contents of the station table */
     public static final class StationEntry implements BaseColumns {
@@ -105,9 +106,13 @@ public class ChargingStationContract {
     public static final class ConnectionEntry implements BaseColumns {
 
 
-        /* The base CONTENT_URI used to query the Station table from the content provider */
+        /* The base CONTENT_URI used to query the Connection table from the content provider */
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_CONNECTION)
+                .build();
+
+        public static final Uri CONTENT_GROUPED_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_CONNECTION_GROUPED)
                 .build();
 
         /* Used internally as the name of table. */
@@ -128,10 +133,22 @@ public class ChargingStationContract {
 
         public static final String COLUMN_CONN_STATION_ID = "con_station_id";
 
-        /* Define a function to build a URI to find a specific station by it's identifier */
-        public static Uri buildStationUri(long id){
+        /*
+        Define a custom function to build URI to find connections at a specific charging
+        station
+        */
+        public static Uri buildConnectionUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
+
+        /*
+        Define a custom function to build URI to find connections at a specific charging
+        station with distinct results solved with sql grouped by.
+         */
+        public static Uri buildConnectionGroupedUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_GROUPED_URI,id);
+        }
+
     }
 
 

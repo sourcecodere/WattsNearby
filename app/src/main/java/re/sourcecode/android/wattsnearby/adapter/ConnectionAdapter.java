@@ -70,9 +70,18 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
         mCursor.moveToPosition(position);
 
         int conType = mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_TYPE_ID);
+
+        holder.connCount.setText(
+                String.format(mContext.getString(R.string.connection_count),
+                    mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_COUNT
+                    )
+                )
+        );
+
         holder.connIconView.setImageDrawable(
                 ImageUtils.getConnectionIcon(mContext, conType)
         );
+
         holder.connIconView.setContentDescription(
                 AccessibilityUtils.getConnectionDescription(mContext, conType)
         );
@@ -89,6 +98,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
         holder.connCurrentView.setText(
                 mCursor.getString(BottomSheetStationFragment.INDEX_CONN_CURRENT_TYPE_TITLE)
         );
+
         holder.connPowerView.setText(
                 String.format(mContext.getString(R.string.connection_power),
                         mCursor.getDouble(BottomSheetStationFragment.INDEX_CONN_VOLT),
@@ -96,14 +106,13 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
                         mCursor.getDouble(BottomSheetStationFragment.INDEX_CONN_KW)
                 )
         );
+
         if (mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_LEVEL_FAST) == 1) {
             holder.connFastView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_fast));
             holder.connFastView.setContentDescription(mContext.getString(R.string.fast_charger));
         } else {
             holder.connFastView.setVisibility(View.INVISIBLE);
         }
-
-
     }
 
     /**
@@ -126,6 +135,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
      */
     class ConnectionAdapterViewHolder extends RecyclerView.ViewHolder {
 
+        final TextView connCount;
         final ImageView connIconView;
         final ImageView connFastView;
         final TextView connTitleView;
@@ -137,6 +147,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
         ConnectionAdapterViewHolder(View view) {
             super(view);
 
+            connCount = view.findViewById(R.id.connection_count);
             connIconView = view.findViewById(R.id.connection_icon);
             connFastView = view.findViewById(R.id.connection_fast);
             connTitleView = view.findViewById(R.id.connection_title);
@@ -147,9 +158,9 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
     }
 
     /**
-     * Swaps the cursor used by the ForecastAdapter for its weather data. This method is called by
+     * Swaps the cursor used by the ForecastAdapter for its conntection data. This method is called by
      * MainActivity after a load has finished, as well as when the Loader responsible for loading
-     * the weather data is reset. When this method is called, we assume we have a completely new
+     * the connection data is reset. When this method is called, we assume we have a completely new
      * set of data, so we call notifyDataSetChanged to tell the RecyclerView to update.
      *
      * @param newCursor the new cursor to use as ForecastAdapter's data source
