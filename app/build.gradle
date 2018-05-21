@@ -20,8 +20,8 @@ android {
         applicationId "re.sourcecode.android.wattsnearby"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 95
-        versionName "0.95"
+        versionCode 96
+        versionName "0.96"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -38,21 +38,23 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:preference-v7:27.0.2'
-    compile 'com.android.support:design:27.0.2'
-    compile 'com.google.maps.android:android-maps-utils:0.5'
-    compile 'com.google.android.gms:play-services-location:11.8.0'
-    compile 'com.google.android.gms:play-services-maps:11.8.0'
-    compile 'com.google.android.gms:play-services-places:11.8.0'
-    compile 'com.google.android.gms:play-services-analytics:11.8.0'
-    compile 'com.google.firebase:firebase-ads:11.8.0'
-    compile 'com.google.firebase:firebase-core:11.8.0'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:customtabs:27.1.1'
+    implementation 'com.android.support:animated-vector-drawable:27.1.1'
+    implementation 'com.android.support:preference-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-places:15.0.1'
+    implementation 'com.google.android.gms:play-services-analytics:15.0.2'
+    implementation 'com.google.firebase:firebase-core:15.0.2'
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
+    testImplementation 'junit:junit:4.12'
 }
 
 apply plugin: 'com.google.gms.google-services'
