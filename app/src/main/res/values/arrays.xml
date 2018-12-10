@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!-- Two dimensional array used for list preference for switching between imperial and metric distance-->
+    <array name="pref_units_labels">
+        <item>@string/pref_metric_label</item>
+        <item>@string/pref_imperial_label</item>
+    </array>
+    <array name="pref_units_values">
+        <item>@string/pref_metric_value</item>
+        <item>@string/pref_imperial_value</item>
+    </array>
+
+</resources>

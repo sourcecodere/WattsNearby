@@ -3,14 +3,17 @@ package re.sourcecode.android.wattsnearby.fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.SwitchPreferenceCompat;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.preference.PreferenceScreen;
+import android.support.v7.preference.TwoStatePreference;
 import android.util.Log;
 
 import re.sourcecode.android.wattsnearby.MainMapActivity;
+import re.sourcecode.android.wattsnearby.data.Preferences;
 import re.sourcecode.android.wattsnearby.R;
 
 /**
@@ -59,7 +62,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         int count = prefScreen.getPreferenceCount();
         for (int i = 0; i < count; i++) {
             Preference p = prefScreen.getPreference(i);
-            if (!(p instanceof CheckBoxPreference)) {
+            if (!(p instanceof TwoStatePreference)) {
+                // for things other than CheckBoxPreference or SwitchPreference, e.g. the PreferenceCategory
                 String value = mSharedPreferences.getString(p.getKey(), "");
                 setPreferenceSummary(p, value);
             }
@@ -94,6 +98,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 mSharedPreferences.edit().putBoolean(MainMapActivity.FILTER_CHANGED_KEY, true).apply();
 
             }
+        } else if (preference != null && preference instanceof ListPreference) {
+            String units = Preferences.getUnitsValue(getContext());
+            mSharedPreferences.edit().putString(key, units);
+            Log.d(TAG, "Units in preferences changed to " + units);
+            setPreferenceSummary(preference, units);
+
+
         }
     }
 

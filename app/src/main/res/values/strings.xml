@@ -34,7 +34,7 @@
     <string name="snackbar_ok_btn" translatable="false">OK</string>
 
     <!-- Toast strings -->
-    <string name="toast_permission_denied">Sorry this application does not work without location permission. Please allow the location permission.</string>
+    <string name="toast_permission_denied">Sorry this application does not work without a location. Please enable location and allow the location permission.</string>
     <string name="toast_place_selection_failed">Place selection failed: </string>
     <string name="toast_old_last_location">The last device location is old!! Make sure you have Location set to on. You may need to move to get a better GPS signal.</string>
 
@@ -50,8 +50,16 @@
     <string name="action_about">About</string>
 
     <!-- Preferences/filters -->
+    <!-- String related to units preference, i.e. imperial vs metric -->
 
+    <string name="pref_units_key" translatable="false">units</string>
+    <string name="pref_units_text_units">Change units</string>
+    <string name="pref_metric_label">Metric distance (km)</string>
+    <string name="pref_imperial_label">Imperial distance (miles)</string>
+    <string name="pref_metric_value" translatable="false">metric</string>
+    <string name="pref_imperial_value" translatable="false">imperial</string>
     <!-- Strings related to enable only fast chargers preference -->
+    <string name="filter_charge_speed">Charging speed filter</string>
     <string name="pref_enable_only_fast_chargers_key" translatable="false">enable_only_fast</string>
     <string name="pref_enable_only_fast_chargers_label" translatable="false">Only display fast chargers</string>
     <string name="pref_enable_only_fast_chargers_true" translatable="false">Enabled</string>

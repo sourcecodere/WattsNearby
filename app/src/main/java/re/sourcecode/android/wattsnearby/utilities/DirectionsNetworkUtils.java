@@ -16,7 +16,7 @@ import java.util.Scanner;
 import re.sourcecode.android.wattsnearby.BuildConfig;
 
 /**
- * Created by olem on 11/6/17.
+ * Created by SourceCodeRe.
  *
  * Handles network requests to google direction api.
  */
@@ -30,8 +30,7 @@ public class DirectionsNetworkUtils {
 
     /* The format/output we want the API to return */
     private static final String output = "json";
-    /* The units we want the  API to return */
-    private static final String distance_unit = "metric"; //TODO add support for imperial
+
 
     /* The position parameters query */
     private static final String ORIGIN_PARAM = "origin"; // e.g. origin=41.43206,-81.38992
@@ -44,7 +43,7 @@ public class DirectionsNetworkUtils {
     private static final String KEY_PARAM = "key"; //
 
 
-    public static URL getUrl(String key, LatLng origin, LatLng destination) {
+    public static URL getUrl(String key, LatLng origin, LatLng destination, String unit) {
         @SuppressLint("DefaultLocale") Uri directionsQueryUri = Uri.parse(DIRECTIONS_BASE_URL).buildUpon()
                 .appendPath(output)
                 .appendQueryParameter(
@@ -57,7 +56,7 @@ public class DirectionsNetworkUtils {
                 )
                 .appendQueryParameter(
                         UNITS_PARAM,
-                        distance_unit
+                        unit
                 )
                 .appendQueryParameter(KEY_PARAM, key)
                 .build();

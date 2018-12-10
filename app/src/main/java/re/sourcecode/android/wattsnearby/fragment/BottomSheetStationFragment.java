@@ -93,9 +93,9 @@ public class BottomSheetStationFragment extends BottomSheetDialogFragment implem
     public static final int INDEX_STATION_OPERATOR_TITLE = 0;
     public static final int INDEX_STATION_OPERATOR_WEBSITE = 1;
     public static final int INDEX_STATION_UT_TITLE = 2;
-    public static final int INDEX_STATION_UT_ACCESSKEY = 3;
-    public static final int INDEX_STATION_UT_MEMBERSHIP = 4;
-    public static final int INDEX_STATION_UT_PAY_ON_SITE = 5;
+    //public static final int INDEX_STATION_UT_ACCESSKEY = 3;
+    //public static final int INDEX_STATION_UT_MEMBERSHIP = 4;
+    //public static final int INDEX_STATION_UT_PAY_ON_SITE = 5;
     public static final int INDEX_STATION_LAT = 6;
     public static final int INDEX_STATION_LON = 7;
     public static final int INDEX_STATION_ADDR_TITLE = 8;

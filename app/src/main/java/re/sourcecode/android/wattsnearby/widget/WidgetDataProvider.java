@@ -25,7 +25,7 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
     //private static final String TAG = "WidgetDataProvider";
 
     private List<String> mCollection = new ArrayList<>();
-    private Context mContext = null;
+    private Context mContext;
     private Cursor mCursor = null;
 
     /* The data we need to get for each list item */

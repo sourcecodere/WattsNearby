@@ -1,6 +1,8 @@
 package re.sourcecode.android.wattsnearby.loader;
 
 import android.content.ContentValues;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
@@ -19,16 +21,17 @@ import re.sourcecode.android.wattsnearby.MainMapActivity;
 import re.sourcecode.android.wattsnearby.R;
 import re.sourcecode.android.wattsnearby.utilities.DirectionsJsonUtils;
 import re.sourcecode.android.wattsnearby.utilities.DirectionsNetworkUtils;
+import re.sourcecode.android.wattsnearby.data.Preferences;
 
 /**
- * Created by olem on 11/18/17.
+ * Created by SourceCodeRe
  *
  * Loader for directions from google maps v2 api
  */
 
 public class DirectionsLoader extends AsyncTaskLoader<ContentValues> {
 
-    private static final String TAG = AsyncTaskLoader.class.getSimpleName();
+    //private static final String TAG = AsyncTaskLoader.class.getSimpleName();
 
     private String mApiKey;
     private LatLng mOrigin;
@@ -81,7 +84,9 @@ public class DirectionsLoader extends AsyncTaskLoader<ContentValues> {
         if ((mDestination != null) && (mOrigin != null)) {
             try {
 
-                URL directionsRequestURL = DirectionsNetworkUtils.getUrl(mApiKey, mOrigin, mDestination);
+                String units = Preferences.getUnitsValue(getContext());
+
+                URL directionsRequestURL = DirectionsNetworkUtils.getUrl(mApiKey, mOrigin, mDestination, units);
 
                 String stringDirectionsResponse = DirectionsNetworkUtils.getResponseFromHttpUrl(directionsRequestURL);
 

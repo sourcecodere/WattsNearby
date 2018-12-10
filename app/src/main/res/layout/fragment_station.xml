@@ -31,7 +31,6 @@
             android:textAlignment="center"
             tools:text="42.24 km"
             android:textStyle="italic"
-
             />
 
         <TextView

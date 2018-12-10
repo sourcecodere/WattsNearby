@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 
 /**
- * Created by olem on 11/18/17.
+ * Created by SourceCodeRe.
  *
  * Parses the json received from google directions api.
  */

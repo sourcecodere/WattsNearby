@@ -303,9 +303,7 @@ public class OCMJsonUtils {
 
         Long foreign_key = getOCMStationIdFromJson(jsonStation); /* Charing station reference for current connections*/
 
-
         JSONArray connectionsJsonArray = jsonStation.getJSONArray(OCM_CONNECTIONS);
-
 
         ContentValues[] connectionsContentValues = new ContentValues[connectionsJsonArray.length()];
 

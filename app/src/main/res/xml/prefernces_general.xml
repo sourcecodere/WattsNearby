@@ -2,13 +2,24 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <CheckBoxPreference
+    <ListPreference
+        android:defaultValue="@string/pref_metric_value"
+        android:entries="@array/pref_units_labels"
+        android:entryValues="@array/pref_units_values"
+        android:key="@string/pref_units_key"
+        android:title="@string/pref_units_text_units"
+        />
+
+    <PreferenceCategory android:title="@string/filter_charge_speed">
+    <SwitchPreference
         android:defaultValue="@bool/enable_only_fast_chargers"
         android:key="@string/pref_enable_only_fast_chargers_key"
         android:summaryOff="@string/pref_enable_only_fast_chargers_false"
         android:summaryOn="@string/pref_enable_only_fast_chargers_true"
         android:title="@string/pref_enable_only_fast_chargers_label" />
+    </PreferenceCategory>
 
+    
     <PreferenceCategory android:title="@string/charger_types">
         <CheckBoxPreference
             android:defaultValue="@bool/enable_schuko"
@@ -73,6 +84,7 @@
             android:summaryOff="@string/pref_enable_other_input_false"
             android:summaryOn="@string/pref_enable_other_input_true"
             android:title="@string/pref_enable_other_input_label" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

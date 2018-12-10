@@ -94,22 +94,19 @@ public class MainMapActivity extends AppCompatActivity implements
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMapClickListener, // To clean up polyline from directions
         GoogleMap.OnInfoWindowClickListener,
-        BottomSheetStationFragment.OnDirectionsReceivedListener,  // to send distance data from map to bottom sheet
+        BottomSheetStationFragment.OnDirectionsReceivedListener,  //to send distance data from map to bottom sheet
         OnMapReadyCallback,
         LoaderManager.LoaderCallbacks {
 
     private static final String TAG = MainMapActivity.class.getSimpleName();
 
-    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 0;      // For controlling necessary
-    // Permissions.
-    private static final int INTENT_PLACE = 1;          // Intent id for places search
+    private static final int PERM_REQUEST_FINE_LOC = 0; // For controlling necessary Permissions.
+    private static final int INTENT_PLACE = 1; // Intent id for places search
 
-    private static final int LOADER_MARKERS = 3;        // ID for loading markers in async loader 
-    // thread
-    private static final int LOADER_DIRECTIONS = 4;     // ID for loading directions in async 
-    // loader thread
+    private static final int LOADER_MARKERS = 3; // ID for loading markers in async thread
+    private static final int LOADER_DIRECTIONS = 4; // ID for loading directions in async thread
 
-    private GoogleMap mMap;                 // The map object.
+    private GoogleMap mMap; // The map object.
 
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -120,7 +117,7 @@ public class MainMapActivity extends AppCompatActivity implements
     // the OCM api was synced against the content provider.
 
     private boolean mCamFollowsCar = false; // Enable automatic camera movement as the car moves.
-    // Enabled when mylocation is clicked.
+    // Enabled when my location is clicked.
     // Disabled when other parts of the map is clicked.
 
     // Keys for storing the positions above
@@ -143,7 +140,8 @@ public class MainMapActivity extends AppCompatActivity implements
 
     private long mStationIdFromIntent;         // For intent
 
-    private ProgressBar mProgressBar;
+    private ProgressBar mProgressBar; // For loading markers
+    private ProgressBar mProgressBarSpinner; // For waiting for location
 
     private FirebaseAnalytics mFirebaseAnalytics; // Setup analytics
 
@@ -153,10 +151,11 @@ public class MainMapActivity extends AppCompatActivity implements
     public static final String ARG_DETAIL_SHEET_ABOUT = "about"; // Key for argument passed to the bottom sheet fragment
     public static final String ARG_WIDGET_INTENT_KEY = "station_id";
     public static final String ARG_MAP_VISIBLE_BOUNDS = "visible_bounds";
-    public static final String FILTER_CHANGED_KEY = "changed"; // used in main to check for changes and in settings fragment to set changes
     public static final String ARG_DIRECTIONS_DEST = "destination"; // used in directions loader
     public static final String ARG_DIRECTIONS_ORIGIN = "origin"; // used in directions loader
 
+    // shared preferences
+    public static final String FILTER_CHANGED_KEY = "filters_changed"; // used in main to check for changes and in settings fragment to set changes
     /**
      * AppCompatActivity override
      * <p/>
@@ -166,6 +165,7 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Log.d(TAG, "Build config " + BuildConfig.DEBUG);
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onCreate");
         }
@@ -177,15 +177,15 @@ public class MainMapActivity extends AppCompatActivity implements
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             mLastLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             mLastCameraCenter = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
             mLastOCMCameraCenter = savedInstanceState.getParcelable(KEY_OCM_CAMERA_POSITION);
-        } else {
-            getLastLocation(); // try to get last location early
         }
+        //else {
+        //    getLastLocation(false); // try to get last location early
+        //}
 
         MapsInitializer.initialize(this);
 
@@ -240,6 +240,8 @@ public class MainMapActivity extends AppCompatActivity implements
         adView.loadAd(adRequest);
 
         // set the default value of filter changed flag to false
+        // and the units changed key to the default
+
         PreferenceManager
                 .getDefaultSharedPreferences(this)
                 .edit()
@@ -248,7 +250,15 @@ public class MainMapActivity extends AppCompatActivity implements
 
         // Progressbar when loading markers to map
         mProgressBar = findViewById(R.id.progress_bar);
+        //mProgressBar.setIndeterminate(true);
+        //mProgressBar.setVisibility(View.VISIBLE);
 
+        // Progressbar spinner waiting for position
+        mProgressBarSpinner = findViewById(R.id.progress_bar_spinner);
+        //mProgressBarSpinner.setIndeterminate(true);
+        if (mLastLocation == null) {
+            mProgressBarSpinner.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -511,12 +521,8 @@ public class MainMapActivity extends AppCompatActivity implements
                 mCamFollowsCar = true;
                 if (mLocationPermissionGranted) {
                     // Try to get the last location
-                    getLastLocation();
+                    getLastLocation(mCamFollowsCar);
                 }
-                updateCurrentLocation(mCamFollowsCar);
-
-                // TODO enable tracking (disable if the user pushes any other part of the map)
-
             }
         });
 
@@ -612,9 +618,9 @@ public class MainMapActivity extends AppCompatActivity implements
      */
     @Override
     public void onCameraMove() {
-        //if (BuildConfig.DEBUG) {
-        //Log.d(TAG, "onCameraMove");
-        //}
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCameraMove");
+        }
         // Get the current visible region of the map, and save the center LatLng
         mLastCameraCenter = mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
         mCamFollowsCar = false;
@@ -634,9 +640,9 @@ public class MainMapActivity extends AppCompatActivity implements
         Resources resources = getResources();
 
         int currentZoom = Math.round(mMap.getCameraPosition().zoom);
-        //if (BuildConfig.DEBUG) {
-        //Log.d(TAG, currentZoom.toString());
-        //}
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "currentZoom " + currentZoom + " triggerlevel "+ getResources().getInteger(R.integer.min_zoom_level));
+        }
 
         // First check that the zoom level is high enough
         // to make it reasonable to trigger a sync at all
@@ -646,7 +652,9 @@ public class MainMapActivity extends AppCompatActivity implements
             // If results has length 2 or greater, the initial bearing is stored in results[1].
             // If results has length 3 or greater, the final bearing is stored in results[2].
             float[] results = new float[3];
-
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "mLastCameraCenter " + mLastCameraCenter + " mLastOCMCameraCenter "+ mLastOCMCameraCenter);
+            }
             if ((mLastCameraCenter != null) && (mLastOCMCameraCenter != null)) {
                 Location.distanceBetween(
                         mLastCameraCenter.latitude,
@@ -696,6 +704,14 @@ public class MainMapActivity extends AppCompatActivity implements
                         Log.d(TAG, "Need to move the camera more to sync..");
                     }
                 }
+            } else if ((mLastOCMCameraCenter == null) && (mLastCameraCenter != null)) {
+                // This happens on the first try, so just initiate the OCM sync
+                mLastOCMCameraCenter = mLastCameraCenter;
+
+                initiateOCMSync(
+                        mLastCameraCenter,
+                        (double) getResources().getInteger(R.integer.ocm_radius_km_far)
+                );
             }
 
             refreshMapStationMarkers();
@@ -826,7 +842,7 @@ public class MainMapActivity extends AppCompatActivity implements
                         mVisibleStationMarkers.put(stationId, tmpMarker);
                     }
                 }
-                // remove the indeterminate progressbar
+                // remove the indeterminate progressbar showing ocm sync in progress
                 mProgressBar.setVisibility(View.INVISIBLE);
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onLoadFinished mVisibleStationMarkers after clean up:" + mVisibleStationMarkers.size());
@@ -890,6 +906,9 @@ public class MainMapActivity extends AppCompatActivity implements
      * Restart the loader for station markers with current LatLngBounds of camera.
      */
     public void refreshMapStationMarkers() {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "refreshMapStationMarkers");
+        }
         // start the indeterminate progressbar
         mProgressBar.setVisibility(View.VISIBLE);
         // restart the loader for markers
@@ -907,6 +926,8 @@ public class MainMapActivity extends AppCompatActivity implements
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "initiateOCMSync");
         }
+        // show that the sync is in progress to the user
+        mProgressBar.setVisibility(View.VISIBLE);
         // TODO: add some more rate limiting?
         OCMSyncTask OCMSyncTask = new OCMSyncTask(this,
                 latLng,
@@ -938,7 +959,7 @@ public class MainMapActivity extends AppCompatActivity implements
     /**
      * Gets the current location of the device, and positions the map's camera.
      */
-    private void getLastLocation() {
+    private void getLastLocation(final boolean moveCamera) {
         /*
          * Get the best and most recent location of the device, which may be null in
          * cases when a location is not available.
@@ -952,9 +973,34 @@ public class MainMapActivity extends AppCompatActivity implements
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             Location location = task.getResult();
+                            // Stop the spinner progress bar
+                            //mProgressBarSpinner.setIndeterminate(false);
+                            mProgressBarSpinner.setVisibility(View.GONE);
                             if (location != null) {
                                 mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                                // move the camera to the new position
+                                updateCurrentLocation(moveCamera);
                             }
+                        } else {
+                            // Start the spinner progress bar waiting for position
+                            mProgressBarSpinner.setVisibility(View.VISIBLE);
+                            Snackbar.make(
+                                    MainMapActivity.this.findViewById(R.id.main_layout),
+                                    getString(R.string.snackbar_no_last_location),
+                                    Snackbar.LENGTH_INDEFINITE)
+                                    .setAction(
+                                            getString(R.string.snackbar_ok_btn),
+                                            new View.OnClickListener() {
+                                                /**
+                                                 * Called when a view has been clicked.
+                                                 *
+                                                 * @param v The view that was clicked.
+                                                 */
+                                                @Override
+                                                public void onClick(View v) {
+                                                    getLastLocation(false);
+                                                }
+                                            }).show();
                         }
                     }
                 });
@@ -983,7 +1029,6 @@ public class MainMapActivity extends AppCompatActivity implements
         settingsClient.checkLocationSettings(locationSettingsRequest);
 
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        getLocationPermission();
         try {
             if (mLocationPermissionGranted) {
                 mFusedLocationProviderClient.requestLocationUpdates(locationRequest,
@@ -1011,7 +1056,11 @@ public class MainMapActivity extends AppCompatActivity implements
             Log.d(TAG, "updateCurrentLocation");
         }
         if (mLocationPermissionGranted) {
-            if (mLastLocation != null) {
+
+            if (mLastLocation == null) {
+                // Try to get the last location
+                getLastLocation(false);
+            } else {
 
                 if (mCurrentLocationMarker == null) {
                     mMarkerOptionsCar.position(mLastLocation);
@@ -1043,35 +1092,7 @@ public class MainMapActivity extends AppCompatActivity implements
                     // to trigger a sync
                     mLastOCMCameraCenter = new LatLng(0d, 0d);
                 }
-            } else {
-                Log.e(TAG, "updateCurrentLocation no getLastLocation from LocationServices");
-                Snackbar.make(
-                        MainMapActivity.this.findViewById(R.id.main_layout),
-                        getString(R.string.snackbar_no_last_location),
-                        Snackbar.LENGTH_INDEFINITE)
-                        .setAction(
-                                getString(R.string.snackbar_ok_btn),
-                                new View.OnClickListener() {
-                                    /**
-                                     * Called when a view has been clicked.
-                                     *
-                                     * @param v The view that was clicked.
-                                     */
-                                    @Override
-                                    public void onClick(View v) {
-                                        getLastLocation();
-
-
-                                    }
-                                }).show();
-
             }
-
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "No permissions");
-            }
-            getLocationPermission();
         }
     }
 
@@ -1080,9 +1101,9 @@ public class MainMapActivity extends AppCompatActivity implements
      * <p/>
      */
     private void getLocationPermission() {
-        //if (BuildConfig.DEBUG) {
-        //Log.d(TAG, "getLocationPermission");
-        //}
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "getLocationPermission");
+        }
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -1113,7 +1134,7 @@ public class MainMapActivity extends AppCompatActivity implements
                                         ActivityCompat.requestPermissions(
                                                 MainMapActivity.this,
                                                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                                PERMISSIONS_REQUEST_FINE_LOCATION);
+                                                PERM_REQUEST_FINE_LOC);
                                     }
                                 }).show();
 
@@ -1123,7 +1144,7 @@ public class MainMapActivity extends AppCompatActivity implements
                 ActivityCompat.requestPermissions(
                         MainMapActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        PERMISSIONS_REQUEST_FINE_LOCATION);
+                        PERM_REQUEST_FINE_LOC);
             }
         }
 
@@ -1144,11 +1165,13 @@ public class MainMapActivity extends AppCompatActivity implements
                                            @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_FINE_LOCATION: {
+            case PERM_REQUEST_FINE_LOC: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
+                    getLastLocation(true);
+                    updateCurrentLocation(true); // TODO fix, this forces OCM for some reason
                 } else {
                     // Permission denied, exit the app and show explanation toast.
                     Toast toast = Toast.makeText(this, getString(R.string.toast_permission_denied), Toast.LENGTH_LONG);

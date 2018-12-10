@@ -13,6 +13,39 @@ import re.sourcecode.android.wattsnearby.R;
 
 public class Preferences {
 
+
+
+    /**
+     * Returns metric or imperial based on user settings and defaults
+     *
+     * @param context Used to access SharedPreferences
+     * @return true if the user prefers to only see fast chargers, false otherwise
+     */
+    public static String getUnitsValue(Context context) {
+        String unitsValue;
+
+        /* Key for accessing the preference for units */
+        String unitsKey = context.getString(R.string.pref_units_key);
+
+
+        boolean metricUnitsOnByDefault = context
+                .getResources()
+                .getBoolean(R.bool.default_metric_units);
+
+        if( metricUnitsOnByDefault) {
+            unitsValue = context.getResources().getString(R.string.pref_metric_value);
+        }
+        else {
+            unitsValue = context.getResources().getString(R.string.pref_imperial_value);
+        }
+
+        /* As usual, we use the default SharedPreferences to access the user's preferences */
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getString(unitsKey, unitsValue);
+    }
+
+
     /**
      * Returns true if the user prefers to see only fast chargers, false otherwise. This
      * preference can be changed by the user within the SettingsFragment.
@@ -21,7 +54,7 @@ public class Preferences {
      * @return true if the user prefers to only see fast chargers, false otherwise
      */
     public static boolean areOnlyFastChargersEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing only fast chargers */
         String displayOnlyFastChargersKey = context.getString(R.string.pref_enable_only_fast_chargers_key);
 
         /*
@@ -50,7 +83,7 @@ public class Preferences {
      * @return true if the user prefers to only see CEE 7/4 - Schuko - Type F chargers, false otherwise
      */
     public static boolean areSchukoEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing tesla schuko */
         String displaySchukoKey = context.getString(R.string.pref_enable_schuko_key);
 
         boolean shouldDisplaySchukoByDefault = context
@@ -73,7 +106,7 @@ public class Preferences {
      * @return true if the user prefers to only see type 2 menneske chargers, false otherwise
      */
     public static boolean areType2MenneskeEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing type 2 menneske chargers */
         String displayType2MenneskeKey = context.getString(R.string.pref_enable_type2_mennekes_key);
 
         boolean shouldDisplayType2MenneskeByDefault = context
@@ -96,7 +129,7 @@ public class Preferences {
      * @return true if the user prefers to only see combo css eu chargers, false otherwise
      */
     public static boolean areComboCcsEuEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing combo css eu chargers */
         String displayComboCcsEuKey = context.getString(R.string.pref_enable_combo_ccs_eu_key);
 
         boolean shouldDisplayComboCcsEuByDefault = context
@@ -119,7 +152,7 @@ public class Preferences {
      * @return true if the user prefers to only see type 1 j1772 chargers, false otherwise
      */
     public static boolean areType1j1772Enabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing type 1 j1772 chargers */
         String displayType1j1772Key = context.getString(R.string.pref_enable_type1_j1772_key);
 
         boolean shouldDisplayType1j1772ByDefault = context
@@ -142,7 +175,7 @@ public class Preferences {
      * @return true if the user prefers to only see type 1 ccs chargers, false otherwise
      */
     public static boolean areType1CcsEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing type 1 ccs chargers */
         String displayType1CcsKey = context.getString(R.string.pref_enable_type1_ccs_key);
 
         boolean shouldDisplayType1CcsByDefault = context
@@ -164,7 +197,7 @@ public class Preferences {
      * @return true if the user prefers to only see chademo chargers, false otherwise
      */
     public static boolean areChademoEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing chademo chargers */
         String displayChademoKey = context.getString(R.string.pref_enable_chademo_key);
 
         boolean shouldDisplayChademoByDefault = context
@@ -187,7 +220,7 @@ public class Preferences {
      * @return true if the user prefers to only see tesla hpwc chargers, false otherwise
      */
     public static boolean areTeslaHpwcEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing tesla hpwc chargers */
         String displayTeslaHpwcKey = context.getString(R.string.pref_enable_tesla_hpwc_key);
 
         boolean shouldDisplayTeslaHpwcByDefault = context
@@ -210,7 +243,7 @@ public class Preferences {
      * @return true if the user prefers to only see other charger inputs, false otherwise
      */
     public static boolean areOtherInputsEnabled(Context context) {
-        /* Key for accessing the preference for showing notifications */
+        /* Key for accessing the preference for showing other charger inputs */
         String displayOtherInputKey = context.getString(R.string.pref_enable_other_input_key);
 
         boolean shouldDisplayOtherInputByDefault = context

@@ -37,4 +37,8 @@
     <string name="ut_membership">MEDLEMSSKAP</string>
     <string name="ut_pay_on_site">BETALING</string>
     <string name="widget_top_text">WattsNearby favoritter</string>
+    <string name="pref_metric_label">Metrisk distanse (km)</string>
+    <string name="pref_imperial_label">Imperisk distanse (miles)</string>
+    <string name="pref_units_text_units">Endre måleenheter</string>
+    <string name="filter_charge_speed">Filtrer på ladehastighet</string>
 </resources>
