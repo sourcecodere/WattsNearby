@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_marginBottom="@dimen/margin_small"
+    android:layout_marginTop="@dimen/margin_small"
+    android:background="@color/primary_light">
 
     <LinearLayout
         android:layout_width="64dp"
@@ -21,7 +24,6 @@
             android:layout_marginLeft="@dimen/margin_small"
             android:layout_marginStart="@dimen/margin_small"
             tools:text="1 x " />
-
     </LinearLayout>
 
     <ImageView
@@ -46,42 +48,41 @@
             style="@style/AppTheme.SubTitle.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_small"
-            android:layout_marginStart="@dimen/margin_small"
             tools:text="CHAdeMO" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/padding_medium">
+            >
 
             <TextView
                 android:id="@+id/connection_level_title"
                 style="@style/AppTheme.Body.Dark"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_small"
+
                 android:layout_weight="0.9"
                 tools:text="Level 3: High (Over 40kW)" />
 
             <ImageView
                 android:id="@+id/connection_fast"
-                android:layout_width="@dimen/icon_size_small"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginEnd="@dimen/margin_medium"
-                android:layout_marginLeft="@dimen/margin_medium"
-                android:layout_marginRight="@dimen/margin_medium"
-                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_weight="0.1"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginLeft="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_marginRight="@dimen/margin_small"
                 android:contentDescription="@string/img_fast"
-                tools:src="@drawable/ic_fast" />
+                tools:src="@drawable/ic_flash" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_small"
+
             android:orientation="horizontal">
 
             <TextView
@@ -102,6 +103,8 @@
                 android:paddingRight="@dimen/padding_small"
                 android:text="400V/110A/44.0kW" />
         </LinearLayout>
-    </LinearLayout>
 
+    </LinearLayout>
 </LinearLayout>
+
+

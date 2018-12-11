@@ -108,7 +108,7 @@ public class ConnectionAdapter extends RecyclerView.Adapter<ConnectionAdapter.Co
         );
 
         if (mCursor.getInt(BottomSheetStationFragment.INDEX_CONN_LEVEL_FAST) == 1) {
-            holder.connFastView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_fast));
+            holder.connFastView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_flash));
             holder.connFastView.setContentDescription(mContext.getString(R.string.fast_charger));
         } else {
             holder.connFastView.setVisibility(View.INVISIBLE);
