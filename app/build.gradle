@@ -20,14 +20,15 @@ android {
         applicationId "re.sourcecode.android.wattsnearby"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 101
-        versionName "1.01"
+        versionCode 103
+        versionName "1.03"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
             minifyEnabled true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.customkeystoreconfig
         }

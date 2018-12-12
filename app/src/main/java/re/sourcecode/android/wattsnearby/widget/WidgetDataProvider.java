@@ -59,7 +59,18 @@ public class WidgetDataProvider implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public void onDataSetChanged() {
-        initData();
+        // solution on permission problem from https://stackoverflow.com/a/13197534
+        Thread thread = new Thread() {
+            public void run() {
+                initData();
+            }
+        };
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+        }
+
     }
 
     @Override

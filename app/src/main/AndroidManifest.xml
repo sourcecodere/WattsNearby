@@ -23,6 +23,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- Permission for content provider. Require same developer keys -->
+    <permission android:name="re.sourcecode.android.wattsnearby.READ"
+        android:protectionLevel="signature"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -53,10 +57,13 @@
         <activity android:name=".SettingsActivity"></activity>
 
         <!-- Our ContentProvider -->
+        
         <provider
             android:name=".data.ChargingStationProvider"
             android:authorities="@string/content_authority"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="re.sourcecode.android.wattsnearby.READ"
+            />
 
 
         <!-- We'll need to add two entries to our manifest for our collection view widget -->
@@ -64,7 +71,8 @@
         <!-- 1. The broadcast receiver that refers to our widget. This needs the
                 intent-filter android.appwidget.action.APPWIDGET_UPDATE and the
                 meta-data for our XML widget configuration -->
-        <receiver android:name=".widget.CollectionWidget">
+        <receiver android:name=".widget.CollectionWidget"
+            >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -77,7 +85,8 @@
         <!-- 2. The service that will send our collection data to our widget. It needs the
                 permission android.permission.BIND_REMOTEVIEWS -->
         <service android:name=".widget.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false"/>
     </application>
 
 </manifest>

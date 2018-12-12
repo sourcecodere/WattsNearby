@@ -1,7 +1,7 @@
 # Watts Nearby: Electric Car Charge Map
 
 ## Version
-__1.0__
+__1.02__
 
 
 ## Description
