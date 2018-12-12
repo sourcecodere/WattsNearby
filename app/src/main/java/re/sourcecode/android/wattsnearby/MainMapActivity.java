@@ -551,7 +551,7 @@ public class MainMapActivity extends AppCompatActivity implements
         }
 
         // Moves the bottom map elements up a bit to fit the adView.
-        mMap.setPadding(0, 0, 0, AdSize.BANNER.getHeightInPixels(this));
+       // mMap.setPadding(0, 0, 0, AdSize.SMART_BANNER.getHeightInPixels(this));
 
         // lastly try to move the camera to current position
         updateCurrentLocation(true);

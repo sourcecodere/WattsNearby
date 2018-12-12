@@ -31,7 +31,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@color/primary">
 
 
         <fragment
@@ -43,12 +44,14 @@
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/ad_min_width"
+            android:layout_height="@dimen/ad_min_height"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id"/>
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id"
+
+            />
 
         <ProgressBar
             android:id="@+id/progress_bar_spinner"
@@ -70,7 +73,7 @@
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="@string/btn_my_location"
-        android:src="@drawable/ic_my_location_white"
+        app:srcCompat="@drawable/ic_my_location_white"
         android:theme="@style/FloatingButton"
         app:fabSize="mini"
         app:rippleColor="@color/accent" />
