@@ -49,6 +49,6 @@
     <dimen name="directions_poly_line_width">4.0px</dimen>
 
     <!-- Ad -->
-    <dimen name="ad_min_width">320dp</dimen>
+    <dimen name="ad_min_width">325dp</dimen>
     <dimen name="ad_min_height">50dp</dimen>
 </resources>

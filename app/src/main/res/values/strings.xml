@@ -22,7 +22,7 @@
 
     <!-- Image desctiptions -->
     <string name="img_electric_car">Electric car</string>
-    <string name="img_fast">Fast charger</string>
+    <string name="img_fast">Rapid charger</string>
 
     <!-- Map marker strings -->
     <string name="marker_current">That\'s you!</string>
@@ -61,7 +61,7 @@
     <!-- Strings related to enable only fast chargers preference -->
     <string name="filter_charge_speed">Charging speed filter</string>
     <string name="pref_enable_only_fast_chargers_key" translatable="false">enable_only_fast</string>
-    <string name="pref_enable_only_fast_chargers_label" translatable="false">Only display fast chargers</string>
+    <string name="pref_enable_only_fast_chargers_label" translatable="false">Only display rapid chargers</string>
     <string name="pref_enable_only_fast_chargers_true" translatable="false">Enabled</string>
     <string name="pref_enable_only_fast_chargers_false" translatable="false">Not Enabled</string>
     <!-- Strings related to charger types preferences -->

@@ -10,7 +10,7 @@ android {
         customkeystoreconfig {
             keyAlias 'wattsnearby_key_20170531'
             keyPassword keystoreProperties['keyPassword']
-            storeFile file('keystore/keystore.jks')
+            storeFile file('/Users/olem/src/github_sourcecodere/WattsNearby/app/keystore/keystore.jks')
             storePassword keystoreProperties['storePassword']
         }
     }
@@ -20,8 +20,8 @@ android {
         applicationId "re.sourcecode.android.wattsnearby"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 103
-        versionName "1.03"
+        versionCode 104
+        versionName "1.04"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
