@@ -1,13 +1,12 @@
 package re.sourcecode.android.wattsnearby.loader;
 
 import android.content.ContentValues;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.v4.content.AsyncTaskLoader;
+
+import androidx.loader.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.OperationCanceledException;
-import android.support.v4.content.Loader;
+import androidx.loader.content.Loader;
 
 import com.google.android.gms.maps.model.LatLng;
 

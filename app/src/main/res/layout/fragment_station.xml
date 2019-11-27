@@ -154,7 +154,7 @@
                     android:src="@drawable/ic_directions_white" />
             </LinearLayout>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/favorite_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -193,14 +193,14 @@
 
 
     <!-- no support for ListView in CoordinatorLayout!!-->
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/primary_light"
         android:padding="16dp">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
 
 </LinearLayout>
