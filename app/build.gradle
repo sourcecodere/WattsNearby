@@ -3,7 +3,9 @@ apply plugin: 'com.android.application'
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
+def apiKeyPropertiesFile = rootProject.file("apikey.properties")
+def apiKeyProperties = new Properties()
+apiKeyProperties.load(new FileInputStream(apiKeyPropertiesFile))
 
 android {
     signingConfigs {
@@ -25,6 +27,7 @@ android {
         versionName "1.04"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        buildConfigField("String", "GOOGLE_CLOUD_API_KEY", apiKeyProperties['GOOGLE_CLOUD_API_KEY'])
     }
     buildTypes {
         release {
@@ -39,6 +42,7 @@ android {
             signingConfig signingConfigs.customkeystoreconfig
         }
     }
+
 }
 
 dependencies {

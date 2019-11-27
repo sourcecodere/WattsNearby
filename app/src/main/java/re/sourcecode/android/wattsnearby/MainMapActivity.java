@@ -12,18 +12,24 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.core.app.ActivityCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.core.content.ContextCompat;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import android.os.Bundle;
+
 import androidx.loader.content.Loader;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -38,9 +44,9 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-//import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-//import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
+
+// Location
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -49,18 +55,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 
+// Google Places
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.libraries.places.api.model.Place;
 
-//AutocompleteActivityMode
 
-
-//import com.google.android.gms.location.places.Place;
-//import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-//import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -98,7 +100,6 @@ import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
  **/
 
 public class MainMapActivity extends AppCompatActivity implements
-        //PlaceSelectionListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
@@ -166,6 +167,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
     // shared preferences
     public static final String FILTER_CHANGED_KEY = "filters_changed"; // used in main to check for changes and in settings fragment to set changes
+
     /**
      * AppCompatActivity override
      * <p/>
@@ -182,7 +184,7 @@ public class MainMapActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         // google cloud api key for Directions API, Maps SDK for Android, Places SDK for Android
-        String apiKey = getString(R.string.google_api_key);
+        String apiKey = BuildConfig.GOOGLE_CLOUD_API_KEY;
 
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_main_map);
@@ -411,7 +413,10 @@ public class MainMapActivity extends AppCompatActivity implements
             Log.d(TAG, "onOptionsItemSelected");
         }
         int id = item.getItemId();
+
+
         if (id == R.id.action_search) {
+            // If search for place is tapped.
             List<Place.Field> fields = Arrays.asList(
                     Place.Field.ID,
                     Place.Field.NAME,
@@ -422,19 +427,8 @@ public class MainMapActivity extends AppCompatActivity implements
                     AutocompleteActivityMode.OVERLAY, fields)
                     .build(this);
             startActivityForResult(intent, INTENT_PLACE);
-
-
-/*            try {
-                Intent intent = new PlaceAutocomplete.IntentBuilder
-                        (PlaceAutocomplete.MODE_OVERLAY)
-                        .setBoundsBias(mMap.getProjection().getVisibleRegion().latLngBounds)
-                        .build(MainMapActivity.this);
-                startActivityForResult(intent, INTENT_PLACE);
-            } catch (GooglePlayServicesRepairableException |
-                    GooglePlayServicesNotAvailableException e) {
-                e.printStackTrace();
-            }*/
             return true;
+
         } else if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return false;
@@ -580,7 +574,7 @@ public class MainMapActivity extends AppCompatActivity implements
         }
 
         // Moves the bottom map elements up a bit to fit the adView.
-       // mMap.setPadding(0, 0, 0, AdSize.SMART_BANNER.getHeightInPixels(this));
+        // mMap.setPadding(0, 0, 0, AdSize.SMART_BANNER.getHeightInPixels(this));
 
         // lastly try to move the camera to current position
         updateCurrentLocation(true);
@@ -670,7 +664,7 @@ public class MainMapActivity extends AppCompatActivity implements
 
         int currentZoom = Math.round(mMap.getCameraPosition().zoom);
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "currentZoom " + currentZoom + " triggerlevel "+ getResources().getInteger(R.integer.min_zoom_level));
+            Log.d(TAG, "currentZoom " + currentZoom + " triggerlevel " + getResources().getInteger(R.integer.min_zoom_level));
         }
 
         // First check that the zoom level is high enough
@@ -682,7 +676,7 @@ public class MainMapActivity extends AppCompatActivity implements
             // If results has length 3 or greater, the final bearing is stored in results[2].
             float[] results = new float[3];
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "mLastCameraCenter " + mLastCameraCenter + " mLastOCMCameraCenter "+ mLastOCMCameraCenter);
+                Log.d(TAG, "mLastCameraCenter " + mLastCameraCenter + " mLastOCMCameraCenter " + mLastOCMCameraCenter);
             }
             if ((mLastCameraCenter != null) && (mLastOCMCameraCenter != null)) {
                 Location.distanceBetween(
@@ -988,34 +982,36 @@ public class MainMapActivity extends AppCompatActivity implements
                                 mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
                                 // move the camera to the new position
                                 updateCurrentLocation(moveCamera);
+                            } else {
+                                // Start the spinner progress bar waiting for position
+                                mProgressBarSpinner.setVisibility(View.VISIBLE);
+                                Snackbar.make(
+                                        MainMapActivity.this.findViewById(R.id.main_layout),
+                                        getString(R.string.snackbar_no_last_location),
+                                        Snackbar.LENGTH_INDEFINITE)
+                                        .setAction(
+                                                getString(R.string.snackbar_ok_btn),
+                                                new View.OnClickListener() {
+                                                    /**
+                                                     * Called when a view has been clicked.
+                                                     *
+                                                     * @param v The view that was clicked.
+                                                     */
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        getLastLocation(false);
+                                                    }
+                                                }).show();
                             }
-                        } else {
-                            // Start the spinner progress bar waiting for position
-                            mProgressBarSpinner.setVisibility(View.VISIBLE);
-                            Snackbar.make(
-                                    MainMapActivity.this.findViewById(R.id.main_layout),
-                                    getString(R.string.snackbar_no_last_location),
-                                    Snackbar.LENGTH_INDEFINITE)
-                                    .setAction(
-                                            getString(R.string.snackbar_ok_btn),
-                                            new View.OnClickListener() {
-                                                /**
-                                                 * Called when a view has been clicked.
-                                                 *
-                                                 * @param v The view that was clicked.
-                                                 */
-                                                @Override
-                                                public void onClick(View v) {
-                                                    getLastLocation(false);
-                                                }
-                                            }).show();
                         }
                     }
                 });
             }
-        } catch (SecurityException e) {
+        } catch (
+                SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
+
     }
 
     protected void startPeriodicLocationUpdates() {
