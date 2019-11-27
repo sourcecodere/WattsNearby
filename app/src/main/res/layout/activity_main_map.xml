@@ -8,7 +8,6 @@
     android:fitsSystemWindows="true"
     tools:context="re.sourcecode.android.wattsnearby.MainMapActivity">
 
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"

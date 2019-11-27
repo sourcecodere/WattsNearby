@@ -38,8 +38,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
+//import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+//import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -48,9 +48,19 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.libraries.places.api.model.Place;
+
+//AutocompleteActivityMode
+
+
+//import com.google.android.gms.location.places.Place;
+//import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+//import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,6 +79,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.PolyUtil;
 
 import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 
 import re.sourcecode.android.wattsnearby.fragment.BottomSheetGenericFragment;
@@ -87,7 +98,7 @@ import re.sourcecode.android.wattsnearby.utilities.MarkerUtils;
  **/
 
 public class MainMapActivity extends AppCompatActivity implements
-        PlaceSelectionListener,
+        //PlaceSelectionListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnMarkerClickListener,
@@ -170,6 +181,9 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         super.onCreate(savedInstanceState);
 
+        // google cloud api key for Directions API, Maps SDK for Android, Places SDK for Android
+        String apiKey = getString(R.string.google_api_key);
+
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_main_map);
 
@@ -221,9 +235,22 @@ public class MainMapActivity extends AppCompatActivity implements
                     .show();
         }
 
-        // Intent with stationId (e.g. from widget list item click)
-        if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
-            mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0L);
+        //Check if Google Play Services Available or not
+        if (!checkGooglePlayServices()) {
+            if (BuildConfig.DEBUG) {
+                Log.d("onCreate", "Google Play Services are not available");
+            }
+            finish();
+        } else {
+            if (BuildConfig.DEBUG) {
+                Log.d("onCreate", "Google Play Services available.");
+            }
+        }
+
+
+        // Setup Places Client
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), apiKey);
         }
 
         // Obtain the FirebaseAnalytics instance.
@@ -238,9 +265,13 @@ public class MainMapActivity extends AppCompatActivity implements
                 .build();
         adView.loadAd(adRequest);
 
+        // Intent with stationId (e.g. from widget list item click)
+        if (getIntent().hasExtra(ARG_WIDGET_INTENT_KEY)) {
+            mStationIdFromIntent = getIntent().getLongExtra(ARG_WIDGET_INTENT_KEY, 0L);
+        }
+
         // set the default value of filter changed flag to false
         // and the units changed key to the default
-
         PreferenceManager
                 .getDefaultSharedPreferences(this)
                 .edit()
@@ -381,7 +412,19 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            try {
+            List<Place.Field> fields = Arrays.asList(
+                    Place.Field.ID,
+                    Place.Field.NAME,
+                    Place.Field.LAT_LNG
+            );
+
+            Intent intent = new Autocomplete.IntentBuilder(
+                    AutocompleteActivityMode.OVERLAY, fields)
+                    .build(this);
+            startActivityForResult(intent, INTENT_PLACE);
+
+
+/*            try {
                 Intent intent = new PlaceAutocomplete.IntentBuilder
                         (PlaceAutocomplete.MODE_OVERLAY)
                         .setBoundsBias(mMap.getProjection().getVisibleRegion().latLngBounds)
@@ -390,7 +433,7 @@ public class MainMapActivity extends AppCompatActivity implements
             } catch (GooglePlayServicesRepairableException |
                     GooglePlayServicesNotAvailableException e) {
                 e.printStackTrace();
-            }
+            }*/
             return true;
         } else if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
@@ -439,19 +482,6 @@ public class MainMapActivity extends AppCompatActivity implements
             }
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
-        }
-
-
-        //Check if Google Play Services Available or not
-        if (!checkGooglePlayServices()) {
-            if (BuildConfig.DEBUG) {
-                Log.d("onCreate", "Google Play Services are not available");
-            }
-            finish();
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.d("onCreate", "Google Play Services available.");
-            }
         }
 
         // Create the car location marker, set position later
@@ -735,55 +765,35 @@ public class MainMapActivity extends AppCompatActivity implements
         }
         if (requestCode == INTENT_PLACE) {
             if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                this.onPlaceSelected(place);
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                this.onError(status);
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                LatLng placeLatLng = place.getLatLng();
+                Log.i(TAG, "Place: " + place.getName() + ", " + placeLatLng + ", " + place.getId());
+
+                // move the camera
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                        placeLatLng,
+                        getResources().getInteger(R.integer.zoom_places_search)
+                );
+                mMap.animateCamera(cameraUpdate);
+
+                // TODO: could possibly be removed if distance from last OCM sync would work on large distances
+                initiateOCMSync(
+                        placeLatLng,
+                        (double) getResources().getInteger(R.integer.ocm_radius_km_near)
+                );
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+                Toast.makeText(this, getText(R.string.toast_place_selection_failed) + status.getStatusMessage(),
+                        Toast.LENGTH_SHORT).show();
+
             }
+
+            super.onActivityResult(requestCode, resultCode, data);
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
-
-    /**
-     * Places API
-     * <p/>
-     * Callback invoked when a place has been selected from the PlaceAutocompleteFragment.
-     */
-    @Override
-    public void onPlaceSelected(Place place) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Place Selected: " + place.getName());
-        }
-        LatLng placeLatLng = place.getLatLng();
-
-        // move the camera
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                placeLatLng,
-                getResources().getInteger(R.integer.zoom_places_search)
-        );
-        mMap.animateCamera(cameraUpdate);
-        // TODO: could possibly be removed if distance from last OCM sync would work on large distances
-        initiateOCMSync(
-                placeLatLng,
-                (double) getResources().getInteger(R.integer.ocm_radius_km_near)
-        );
-    }
-
-    /**
-     * Places API
-     * <p/>
-     * Callback invoked when PlaceAutocompleteFragment encounters an error.
-     */
-    @Override
-    public void onError(Status status) {
-        Log.e(TAG, "onError: Status = " + status.toString());
-
-        Toast.makeText(this, getText(R.string.toast_place_selection_failed) + status.getStatusMessage(),
-                Toast.LENGTH_SHORT).show();
-    }
-
 
     /**
      * Instantiate and return a new Loader for the given ID.
@@ -950,7 +960,6 @@ public class MainMapActivity extends AppCompatActivity implements
         );
 
         OCMSyncTask.execute();
-
 
     }
 

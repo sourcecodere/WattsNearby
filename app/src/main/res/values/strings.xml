@@ -6,7 +6,7 @@
     <string name="content_authority" translatable="false">re.sourcecode.android.wattsnearby</string>
 
     <!-- Google api key -->
-    <string name="google_maps_api_key" translatable="false">AIzaSyDdcEhJlgjfekRMb2x_mc6Hx5spxT2G87s</string>
+    <string name="google_cloud_api_key" translatable="false">AIzaSyDdcEhJlgjfekRMb2x_mc6Hx5spxT2G87s</string>
 
     <!-- Banner ad unit id -->
     <string name="banner_ad_unit_id_test" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
