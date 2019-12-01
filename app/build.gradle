@@ -12,7 +12,7 @@ android {
         customkeystoreconfig {
             keyAlias 'wattsnearby_key_20170531'
             keyPassword keystoreProperties['keyPassword']
-            storeFile file('/Users/olem/src/github_sourcecodere/WattsNearby/app/keystore/keystore.jks')
+            storeFile file('keystore/keystore.jks')
             storePassword keystoreProperties['storePassword']
         }
     }
@@ -23,8 +23,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 104
-        versionName "1.04"
+        versionCode 105
+        versionName "1.05"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         buildConfigField("String", "GOOGLE_CLOUD_API_KEY", apiKeyProperties['GOOGLE_CLOUD_API_KEY'])
